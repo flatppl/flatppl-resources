@@ -1,0 +1,33 @@
+flatppl_compat = "0.1"
+
+# Four groups with unequal sample sizes.
+trials_data = [10, 20, 50, 100]
+hits_data = [2, 7, 18, 31]
+J = lengthof(trials_data)
+
+# Population mean and concentration.
+phi ~ Beta(2, 2)
+kappa ~ Gamma(shape = 2, rate = 0.1)
+
+# A reusable, single-expression helper.
+shapes(m, k) = record(
+    alpha = m * k, beta = (1 - m) * k)
+population = Beta(shapes(phi, kappa))
+
+# Group rates share the same population.
+theta ~ iid(population, J)
+y ~ Binomial.(trials_data, theta)
+
+# Retain both population and group rates.
+prior = lawof(record(
+    phi = phi, kappa = kappa,
+    theta = theta))
+K = kernelof(record(y = y),
+    phi, kappa, theta)
+L = likelihoodof(K, record(y = hits_data))
+posterior = bayesupdate(L, prior)
+
+# Extract a deterministic graph fragment.
+f_shapes = functionof(shapes(phi, kappa),
+    m = phi, k = kappa)
+example_shapes = f_shapes(m = 0.3, k = 10)

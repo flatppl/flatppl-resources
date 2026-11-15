@@ -1,0 +1,30 @@
+flatppl_compat = "0.1"
+
+# Paired measurements.
+x_data = [0.0, 1.0, 2.0, 3.0]
+y_data = [0.8, 2.1, 2.9, 4.2]
+
+# Three unknowns with proper priors.
+alpha ~ Normal(0, 5)
+beta ~ Normal(0, 2)
+sigma ~ LogNormal(0, 0.5)
+
+# One mean and one observation per row.
+mu = alpha .+ beta .* x_data
+y ~ Normal.(mu, sigma)
+
+# Keep the parameters in a named record.
+prior = lawof(record(
+    alpha = alpha, beta = beta,
+    sigma = sigma))
+
+# Cut the graph at the parameters.
+K = kernelof(record(y = y),
+    alpha, beta, sigma)
+L = likelihoodof(K, record(y = y_data))
+posterior = bayesupdate(L, prior)
+
+# Evaluate the log-likelihood at a point.
+point = record(
+    alpha = 1.0, beta = 1.0, sigma = 0.5)
+log_L = logdensityof(L, point)

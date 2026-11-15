@@ -1,0 +1,31 @@
+flatppl_compat = "0.1"
+
+# A conjugate model with known noise.
+y_data = [0.5, 1.0, 1.5, 1.0]
+mu ~ Normal(0, 2)
+y ~ iid(Normal(mu, 1), 4)
+
+# Separate parameter and observation laws.
+prior = lawof(record(mu = mu))
+K = kernelof(record(y = y), mu)
+L = likelihoodof(K, record(y = y_data))
+posterior = bayesupdate(L, prior)
+
+# The same posterior via the joint law.
+joint_model = lawof(record(mu = mu, y = y))
+conditioned = restrict(joint_model,
+    record(y = y_data))
+
+# Scores refer to explicit measures.
+point = record(mu = 1.0)
+log_L = logdensityof(L, point)
+log_post = logdensityof(posterior, point)
+
+# Probability measures need unit mass.
+post_prob = normalize(posterior)
+evidence = totalmass(posterior)
+
+# Prediction before and after observing y.
+prior_predictive = lawof(record(y = y))
+predict = p -> K(mu = p.mu)
+post_predictive = kchain(post_prob, predict)

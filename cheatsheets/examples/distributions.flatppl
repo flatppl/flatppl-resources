@@ -1,0 +1,22 @@
+flatppl_compat = "0.1"
+
+# One rate shared by three exposures.
+exposure = [0.5, 1.0, 2.0]
+rate_dist = Gamma(shape = 2, rate = 1)
+lambda ~ rate_dist
+
+# The expected count changes with exposure.
+expected = lambda .* exposure
+counts ~ Poisson.(rate = expected)
+
+# The joint law retains the shared rate.
+model = lawof(record(
+    lambda = lambda, counts = counts))
+
+# Hold the rate fixed at the boundary.
+K = kernelof(counts, lambda)
+at_two = K(lambda = 2.0)
+
+# Equal means instead: three IID counts.
+equal_counts ~ iid(Poisson(2.0), 3)
+equal_law = lawof(equal_counts)
