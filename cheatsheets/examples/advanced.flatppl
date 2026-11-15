@@ -1,29 +1,32 @@
+%%%
+A mixture built directly from measures.
+%%%
 flatppl_compat = "0.1"
+y_data = [-1.1, -0.7, 0.2, 1.4, 3.0]
+n = lengthof(y_data)
+p = elementof(unitinterval)
+mu = elementof(reals)
 
-# Stochastic graph.
-y_data = [0.5, 1.0, 1.5, 1.0]
-mu ~ Normal(0, 2)
-y ~ iid(Normal(mu, 1), 4)
+# Components share the scalar event space.
+M1 = Normal(mu, 0.7)
+M2 = Gamma(shape = 2, rate = 1)
+mixture = superpose(
+    weighted(p, M1), weighted(1 - p, M2))
 
-# Reification with and without a boundary.
-prior = lawof(record(mu = mu))
-K = kernelof(record(y = y), mu)
-joint_model = lawof(record(mu = mu, y = y))
-
-# Likelihood and posterior construction.
+# Reify a measure-valued expression.
+K = functionof(joint(y = iid(mixture, n)))
+prior = joint(p = Beta(2, 2),
+    mu = Normal(0, 2))
 L = likelihoodof(K, record(y = y_data))
 posterior = bayesupdate(L, prior)
+
+# Retain or marginalize the parameters.
+joint_model = jointchain(prior, K)
+prior_predictive = kchain(prior, K)
+K_alt, prior_alt = disintegrate(
+    ["y"], joint_model)
 conditioned = restrict(joint_model,
     record(y = y_data))
 
-# Explicit density evaluation.
-point = record(mu = 1.0)
+point = record(p = 0.4, mu = -1.0)
 log_L = logdensityof(L, point)
-log_post = logdensityof(posterior, point)
-
-# Measure normalization and composition.
-post_prob = normalize(posterior)
-evidence = totalmass(posterior)
-prior_predictive = lawof(record(y = y))
-predict = p -> K(mu = p.mu)
-post_predictive = kchain(post_prob, predict)

@@ -6,26 +6,32 @@ Cheatsheets and brand assets for FlatPPL.
 
 ## Cheatsheets
 
-[Download the full set](cheatsheets/flatppl-cheatsheets.pdf), or choose a sheet:
+[Download the seven-sheet set](cheatsheets/flatppl-cheatsheets.pdf).
 
-- [Distributions](cheatsheets/distributions.pdf)
-- [Language fundamentals](cheatsheets/beginner.pdf)
-- [Functions and reification](cheatsheets/intermediate.pdf)
-- [Measure algebra](cheatsheets/advanced.pdf)
+| Sheet | Outcome |
+| --- | --- |
+| [Distributions](cheatsheets/distributions.pdf) | Construct scalar, vector, and product distributions |
+| [Beginner: simple models](cheatsheets/beginner.pdf) | Author a complete Bayesian or likelihood-only model |
+| [Intermediate: hierarchical models](cheatsheets/intermediate.pdf) | Author grouped and multilevel models |
+| [Advanced: measure composition](cheatsheets/advanced.pdf) | Build models from measures and kernels |
+| [Particle counting and spectra](cheatsheets/particle-physics.pdf) | Combine channels, nuisances, templates, and event intensities |
+| [Hadron amplitudes and Dalitz plots](cheatsheets/hadron-physics.pdf) | Construct a Bose-symmetric amplitude and phase-space measure |
+| [Neutrino oscillations](cheatsheets/neutrino-physics.pdf) | Connect propagation functions to observed counts |
 
-Each A4 landscape sheet pairs a complete vertical example with numbered excerpts and side notes.
-The sheets cover FlatPPL syntax and semantics, with syntax highlighting from the maintained FlatPPL grammar.
-The [Typst sources and build instructions](cheatsheets/README.md) sit beside the PDFs.
+Each A4 landscape sheet pairs a complete example with annotated excerpts and related modelling patterns.
+All code blocks use FlatPPL syntax highlighting.
+The [corpus map](cheatsheets/examples-map.md) links every curated example to the relevant level or domain.
+[Sources and build instructions](cheatsheets/README.md) accompany the PDFs.
 
 ## Branding
 
-The [branding directory](branding/) contains copies of the FlatPPL logo, editable source art, wordmark, and favicon set.
+[branding/](branding/) contains copies of the logo, editable art, wordmark, and favicon set.
 The sheets use the [rounded squircle badge](branding/logo-rounded.svg).
 Brand assets use [CC BY 4.0](branding/LICENSE.txt).
 
 ## Build
 
-Install Typst 0.15.1 or later, then run:
+With Typst 0.15.1 or later:
 
 ```sh
 make -C cheatsheets

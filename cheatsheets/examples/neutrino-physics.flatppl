@@ -1,0 +1,30 @@
+%%%
+Two-flavour vacuum appearance, synthetic counts.
+%%%
+flatppl_compat = "0.1"
+energy = [0.45, 0.6, 0.9, 1.2]
+baseline = 295.0
+trials = [1000, 1000, 1000, 1000]
+appearance_data = [67, 87, 65, 43]
+
+# GeV, km, eV^2, and radians.
+phase(E, d, L) = 1.266932679039099 * d * L / E
+appearance(E, t, d, L) = (
+    sin(2 * t)^2 * sin(phase(E, d, L))^2)
+
+theta ~ Uniform(interval(0.1, 0.2))
+dm2 ~ Uniform(interval(0.002, 0.003))
+probability = appearance.(energy, theta,
+    dm2, baseline)
+y ~ Binomial.(trials, probability)
+
+# Infer angle and mass-squared splitting.
+prior = lawof(record(theta = theta, dm2 = dm2))
+K = kernelof(record(y = y), theta, dm2)
+L = likelihoodof(K, record(y = appearance_data))
+posterior = bayesupdate(L, prior)
+
+point = record(theta = 0.15, dm2 = 0.0025)
+log_L = logdensityof(L, point)
+f_prob = functionof(probability, theta, dm2)
+prob_at_point = f_prob(point)

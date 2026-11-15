@@ -10,24 +10,27 @@
 
 #let code(source, size: 7.0pt) = {
   set text(font: mono, size: size, fill: ink)
-  set par(leading: 2.2pt, spacing: 0pt)
+  set par(leading: 1.7pt, spacing: 0pt)
   raw(source, block: true, lang: "flatppl",
     syntaxes: "syntax/flatppl.sublime-syntax", theme: "syntax/flatppl.tmTheme")
 }
 
 #let card(body, color: graph-color) = block(
-  width: 100%, breakable: false, inset: 6pt,
+  width: 100%, breakable: false, inset: 5pt,
   radius: 5pt, fill: color.lighten(93%), body,
 )
 
-#let frame(title, color, body) = block(
-  width: 100%, height: 444pt, inset: 7pt,
-  radius: 9pt, stroke: 1.7pt + color,
-)[
-  #text(size: 11.5pt, weight: "bold", fill: color, title)
-  #v(6pt)
-  #body
-]
+#let frame(title, color, body) = layout(size => context {
+  let content = [
+    #text(size: 11.5pt, weight: "bold", fill: color, title)
+    #v(6pt)
+    #body
+  ]
+  let used = measure(content, width: size.width - 14pt).height
+  assert(used <= 436pt, message: title + " exceeds column height: " + repr(used))
+  block(width: 100%, height: 450pt, inset: 7pt,
+    radius: 9pt, stroke: 1.7pt + color, content)
+})
 
 #let excerpt(lines, start, end, accent) = block(width: 100%, inset: (y: 4pt))[
   #code(lines.slice(start - 1, end).join("\n"), size: 6.6pt)
@@ -44,8 +47,8 @@
   #text(fill: graph-color.darken(25%), body)
 ]
 
-#let ref(title, body) = card(color: reference-color)[
-  #label(color: reference-color, title)
+#let ref(title, body, color: reference-color) = card(color: color)[
+  #label(color: color, title)
   #v(4pt)
   #body
 ]
@@ -58,7 +61,7 @@
 ]
 
 #let sheet(number: "01", title: "", subtitle: "", topic: "", accent: model-color,
-  file: "", model_title: "", model_note: [], notes: (), refs: (), takeaway: [], sources: "") = {
+  file: "", model_title: "", model_note: [], model_refs: (), notes: (), notes_refs: (), refs: (), takeaway: [], sources: "") = {
   let lines = read(file).trim().split("\n")
   set document(title: if sys.inputs.at("collection", default: "false") == "true" {
     "FlatPPL / Cheatsheets"
@@ -66,11 +69,11 @@
   set page(paper: "a4", flipped: true, margin: (x: 8mm, top: 8mm, bottom: 10mm), fill: paper,
     footer: grid(columns: (1fr, auto), gutter: 10pt,
       text(size: 5.8pt, fill: muted, sources),
-      text(size: 5.8pt, fill: muted)[FlatPPL 0.1 · #number / 04],
+      text(size: 5.8pt, fill: muted)[FlatPPL 0.1 · #number / 07],
     ),
   )
-  set text(font: ("Helvetica Neue", "Arial"), size: 7.7pt, fill: ink)
-  set par(leading: 2.8pt, spacing: 4pt)
+  set text(font: ("Helvetica Neue", "Arial"), size: 7.5pt, fill: ink)
+  set par(leading: 2.5pt, spacing: 4pt)
   show raw.where(block: false): it => text(font: mono, size: 0.9em, fill: ink, it)
 
   grid(columns: (34pt, auto, 1fr, auto), gutter: 9pt, align: horizon,
@@ -81,7 +84,7 @@
       #linebreak()
       #label(color: muted)[#topic]
     ],
-    label(color: accent)[#number / 04],
+    label(color: accent)[#number / 07],
   )
   v(5pt)
   text(size: 8.0pt, fill: muted, subtitle)
@@ -106,23 +109,31 @@
               if ln.text == "" { [#h(1pt)] } else { ln.body },
             ),
           )
-          v(1.5pt)
+          v(0.8pt)
         }
         #code(lines.join("\n"), size: 6.6pt)
       ]
       #v(7pt)
-      #card(color: model-color)[#text(fill: model-color.darken(20%), model_note)]
+      #text(size: 7.1pt, fill: muted, model_note)
+      #for r in model_refs {
+        v(4pt)
+        r
+      }
     ],
     frame("Language constructs", graph-color)[
       #for n in notes {
         note(lines, accent, ..n)
-        v(6pt)
+        v(4pt)
+      }
+      #for r in notes_refs {
+        r
+        v(4pt)
       }
     ],
     frame("Reference", reference-color)[
       #for r in refs {
         r
-        v(6pt)
+        v(4pt)
       }
     ],
   )

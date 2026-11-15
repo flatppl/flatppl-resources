@@ -1,0 +1,32 @@
+%%%
+Two counting channels with a shared nuisance.
+%%%
+flatppl_compat = "0.1"
+channels = table(
+    exposure = [1.0, 2.0],
+    efficiency = [0.8, 0.7],
+    background_rate = [3.0, 4.0],
+    counts = [5, 10])
+
+# Signal production and detector nuisance.
+S ~ Gamma(shape = 2, rate = 1)
+b_scale ~ LogNormal(0, 0.2)
+background = b_scale .* channels.background_rate
+signal = channels.efficiency .* S
+expected = channels.exposure .* (
+    background .+ signal)
+counts ~ Poisson.(expected)
+
+# One nuisance is shared by both channels.
+prior = lawof(record(S = S, b_scale = b_scale))
+K = kernelof(record(counts = counts),
+    S, b_scale)
+L = likelihoodof(K,
+    record(counts = channels.counts))
+posterior = bayesupdate(L, prior)
+
+# Independent check point: [4.6, 10.8].
+point = record(S = 2.0, b_scale = 1.0)
+log_L = logdensityof(L, point)
+expected_fn = functionof(expected, S, b_scale)
+expected_at_point = expected_fn(point)

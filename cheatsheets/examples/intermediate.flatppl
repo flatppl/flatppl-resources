@@ -1,24 +1,33 @@
+%%%
+Noncentered grouped logistic regression.
+%%%
 flatppl_compat = "0.1"
+G = 3
+x_data = [-1.2, 0.4, 1.1, -0.3, 0.8, 2.0]
+group_data = [1, 2, 3, 1, 2, 3]
+y_data = [0, 1, 1, 0, 1, 1]
 
-# Fixed arrays and parametric inputs.
-x_data = [0.0, 1.0, 2.0]
-y_data = [1.1, 2.8, 5.2]
-sigma = 0.5
-alpha = elementof(reals)
-beta = elementof(reals)
+# Population parameters and group effects.
+mu_a ~ Normal(0, 1)
+tau ~ LogNormal(0, 0.5)
+z ~ iid(Normal(0, 1), G)
+a = mu_a .+ tau .* z
+beta ~ Normal(0, 2)
 
-# A named function with a single expression.
-affine(a, b, x) = a .+ b .* x
-mu = affine(alpha, beta, x_data)
+# Gather one group intercept per observation.
+eta = a[group_data] .+ beta .* x_data
+probability = invlogit.(eta)
+y ~ Bernoulli.(probability)
 
-# Inferred and explicit function boundaries.
-f_auto = functionof(mu)
-f = functionof(mu, a = alpha, b = beta)
-coefficients = record(a = 1.0, b = 2.0)
-at_point = f(coefficients)
-
-# A stochastic graph with the same boundary.
-y ~ Normal.(mu, sigma)
+# The prior retains z, not its transform a.
+prior = lawof(record(mu_a = mu_a,
+    tau = tau, z = z, beta = beta))
 K = kernelof(record(y = y),
-    a = alpha, b = beta)
+    mu_a, tau, z, beta)
 L = likelihoodof(K, record(y = y_data))
+posterior = bayesupdate(L, prior)
+
+# Evaluate the observation model at a point.
+point = record(mu_a = 0.0, tau = 1.0,
+    z = [0.0, 0.0, 0.0], beta = 1.0)
+log_L = logdensityof(L, point)

@@ -1,47 +1,55 @@
 #import "theme.typ": *
-
 #sheet(
-  number: "04", title: "Measure algebra", topic: "Advanced",
-  subtitle: "Reified laws, likelihood objects, conditioning, normalization, and kernel composition.",
+  number: "04", title: "Measure composition", topic: "Advanced",
+  subtitle: "Construct mixtures, products, dependent laws, transformations, and sequential models from first-class measures.",
   accent: rgb("97583e"), file: "examples/advanced.flatppl",
-  model_title: "Measure operations on a stochastic graph",
-  model_note: [Measures, kernels, and likelihoods are first-class objects. Density evaluation and numerical inference are separate operations on those objects.],
+  model_title: "A complete mixture model",
+  model_note: [Sources: `dissimilar-mixture` and the `bayesian_inference` series.],
+  model_refs: (
+    ref("Many components from a table", [
+      #code("components = table(mu = [-2,2],\n    sigma = [0.7,0.9])\nweights ~ Dirichlet([2,2])\nM = ksuperpose(Normal, weights, components)")
+      Simplex weights give unit mass. Table columns bind constructor arguments by name. See `normal-mixture`.
+    ]),
+  ),
   notes: (
-    (1, "Laws and kernels", 9, 11, [
-      `prior` retains `mu`. `joint_model` retains both `mu` and `y`. The explicit boundary in `K` makes `mu` an input rather than a stochastic ancestor to marginalize.
+    (1, "Measures and explicit parameters", 7, 12, [
+      `elementof` declares free parameters. A constructor yields a measure, without drawing a variate. Both component measures here act on real scalars, despite their different supports.
     ]),
-    (2, "Likelihood and restriction", 14, 17, [
-      `likelihoodof` binds observed data to a kernel. `bayesupdate` weights the prior by the likelihood. `restrict` constructs the same unnormalized posterior directly from this joint law.
+    (2, "Weighted sum versus product", 13, 14, [
+      `weighted` scales mass and `superpose` adds measures. These complement weights sum to one, so the mixture is normalized. General weights require `normalize`. `iid` forms the observation product.
     ]),
-    (3, "Normalization and composition", 25, 29, [
-      `normalize` gives unit mass. `kchain` integrates over its input variate and retains the final output. The adapter `predict` extracts `mu` from the parameter record before calling `K`.
+    (3, "Independent prior and observation kernel", 17, 21, [
+      `joint` constructs an independent prior over named parameters. The observation kernel returns a record with field `y`. Its input record and the prior variate have the same field names.
+    ]),
+    (4, "Dependent composition and conditioning", 24, 29, [
+      `jointchain` retains parameters and observations. `kchain` marginalizes the parameters. `disintegrate` recovers a kernel and marginal. `restrict` conditions the joint law without automatically normalizing it.
     ]),
   ),
   refs: (
-    ref("Density evaluation", [
-      #code("densityof(L, point)\nlogdensityof(L, point)\nlogdensityof(posterior, point)")
-      A likelihood is an object, not an ordinary function. Its parameter point is a record, including for a single input. The last expression includes the prior density.
+    ref("Measure transformations", [
+      #code("positive = pushfwd(exp, Normal(0,1))\nmu_law = pushfwd(fn(get(_, [\"mu\"])),\n    joint_model)")
+      Transform values or project fields. A transformed density needs an inverse and volume element. A projected density can require marginalization.
     ]),
-    ref("Structural disintegration", [
-      #code("K_alt, prior_alt = disintegrate(\n    [\"y\"], joint_model)")
-      The selector names the observation fields. `disintegrate` returns a tuple containing the conditional kernel and the marginal measure on the remaining fields.
+    ref("Finite intensity and event counts", [
+      #code("I = superpose(weighted(ns, signal),\n    weighted(nb, background))\nevents ~ PoissonProcess(I)")
+      With unit-mass component shapes, total intensity is `ns + nb`. Do not normalize an intensity whose mass represents an expected count.
     ]),
-    ref("Mass and normalization", [
-      `bayesupdate` and `restrict` return unnormalized measures. `totalmass` evaluates the total mass of a closed measure. `normalize` requires finite, positive mass.
-
-      In this example the posterior mass is the evidence. Its evaluation, and predictive density evaluation, may require integration that an engine cannot perform.
+    ref("Support and density-defined measures", [
+      #code("base = Lebesgue(interval(-2,2))\nM = normalize(weighted(\n    x -> exp(-x^4), base))")
+      `weighted(f, M)` multiplies by a nonnegative density factor. Supply a domain with finite, positive total mass after weighting.
     ]),
-    ref("Dependent composition", [
-      #code("jointchain(prior, predict)\nkchain(prior, predict)")
-      `jointchain` retains intermediate and final variates. `kchain` retains only the final variate. A kernel with one positional input receives a record whole, which motivates the adapter.
+    ref("Explicit callback parameters", [
+      #code("w(x,p) = exp(-p.a * x^2)\nM = weighted(w, base, record(a = 2))")
+      The optional final object becomes the callback's final argument. This keeps changing parameters explicit rather than closing over stochastic values.
     ]),
-    ref("Transformation and projection", [
-      #code("pushfwd(exp, Normal(0, 1))\npushfwd(fn(get(_, [\"mu\"])),\n    joint_model)")
-      `pushfwd` transforms a measure or projects selected fields. `fn` turns a hole expression, containing `_`, into a function.
-
-      Density evaluation requires the inverse and volume element, or a marginalization procedure, as appropriate.
+    ref("Sequential kernels", [
+      #code("step(x,p) = Normal(p.rho*x,p.sigma)\npath = markovchain(step, 0.0, 20,\n    record(rho = 0.8, sigma = 0.2))")
+      The trajectory excludes its initial value. `kscan` also supplies an exogenous value at each step. Independent broadcasting does not represent sequential dependence.
+    ]),
+    ref("Normalization and engine support", [
+      `bayesupdate` and `restrict` preserve unnormalized mass. `totalmass` and `normalize` can require integration. A defined measure need not have a tractable density. A host tool performs optimization or sampling on the chosen target.
     ]),
   ),
-  takeaway: [*Object interfaces:* `lawof` retains selected variates. `kernelof` exposes graph inputs. `likelihoodof` fixes observations. Measure operations act on the resulting objects.],
-  sources: "Specification: Reification to measures · Likelihoods and posteriors · Structural disintegration · Dependent composition",
+  takeaway: [*Corpus:* `normal-mixture`, `dissimilar-mixture`, `bayesian_inference_1/3/4`, `ar1-noise-estimation`. After this sheet: construct and combine measure-valued models directly.],
+  sources: "Corpus: dissimilar-mixture · normal-mixture · bayesian_inference_* · Spec: Measure algebra, Explicit callback parameters",
 )
