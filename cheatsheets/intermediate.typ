@@ -1,45 +1,46 @@
 #import "theme.typ": *
 
 #sheet(
-  number: "03", title: "Intermediate / modelling", topic: "Hierarchies and reuse",
-  subtitle: "Share information across groups and extract reusable graph fragments. Assumes the beginner sheet.",
+  number: "03", title: "Functions and reification", topic: "Intermediate",
+  subtitle: "Named functions, inferred inputs, explicit graph boundaries, and callable interfaces.",
   accent: rgb("3f5d6c"), file: "examples/intermediate.flatppl",
-  model_title: "Partial pooling of group rates",
-  model_note: [Each group has its own rate. All group rates share uncertain population parameters. The observed sample sizes differ.],
+  model_title: "Reifying a deterministic and stochastic graph",
+  model_note: [Reification turns an existing graph fragment into a callable or measure. Explicit boundaries determine where the ancestor trace stops.],
   notes: (
-    (1, "Expose useful parameters", 9, 15, [
-      `phi` is the population mean. `kappa` is the concentration. The helper converts them to Beta shapes and returns a record that auto-splats into `Beta`.
+    (1, "Named functions", 11, 12, [
+      `affine(a, b, x) = expr` binds a single-expression function. Its argument names are local. Dotted operators apply the arithmetic elementwise.
     ]),
-    (2, "Share through the graph", 18, 19, [
-      `theta` has `J` entries. They are IID *given* `phi` and `kappa`. The Binomial broadcast pairs each entry with its group's trial count.
+    (2, "Function boundaries", 15, 18, [
+      `f_auto` exposes the parametric leaves `alpha` and `beta`. `f` instead declares inputs `a` and `b`. Both close over `x_data`. The record auto-splats into `f`.
     ]),
-    (3, "Extract a function", 31, 33, [
-      `functionof` cuts the graph at `phi` and `kappa`, naming its inputs `m` and `k`. The result here is `record(alpha = 3, beta = 7)`.
+    (3, "Kernel boundaries", 21, 24, [
+      `kernelof` reifies the stochastic graph below `alpha` and `beta` as a kernel with inputs `a` and `b`. Its output and the observed data both have a field named `y`.
     ]),
   ),
   refs: (
-    ref("What controls pooling?", [
-      The population has mean $phi$ and variance $phi (1 - phi) / (kappa + 1)$.
+    ref("Reification operations", [
+      #code("lawof(y)\nfunctionof(mu, a = alpha, b = beta)\nkernelof(y, a = alpha, b = beta)")
+      `lawof` returns the law of a value. `functionof` returns a function, or a kernel for a measure-valued expression. `kernelof` reifies a value as a probability kernel.
+    ]),
+    ref("Calling conventions", [
+      #code("f(a = 1, b = 2)\nf(1, 2)\nf(record(a = 1, b = 2))")
+      Explicit boundaries define positional order. An inferred boundary supports keyword calls only. Record auto-splatting applies when the callable does not accept a lone positional argument.
+    ]),
+    ref("Boundary semantics", [
+      Boundaries replace the designated nodes with independent inputs before the ancestor trace. The input names belong to the new callable.
 
-      Larger `kappa` concentrates group rates near `phi`. At fixed population parameters, more observations give a group's own data more weight.
+      Boundary lists are all explicit or all inferred. Explicit lists may use bare names, as in `functionof(mu, alpha, beta)`.
     ]),
-    ref("Choose the right reification", [
-      #code("lawof(theta)\nfunctionof(expr, m = phi, k = kappa)\nkernelof(y, phi, kappa, theta)")
-      `lawof` makes a law. `functionof` makes a deterministic callable here. `kernelof` makes a probability kernel with the chosen inputs.
+    ref("Modules and external inputs", [
+      #code("# component.flatppl\nn = external(posintegers)\nmeasure = iid(Normal(0, 1), n)")
+      #v(5pt)
+      #code("# caller.flatppl\npart = load_module(\"component.flatppl\",\n    n = 3)\nM = part.measure")
+      `external` declares a module input fixed at load time. Loaded modules expose fixed and parametric public bindings, including reified measures and callables.
     ]),
-    ref("Keep the full parameter interface", [
-      Lines 22–26 retain both population and group parameters. The observation kernel depends on `theta` only, but accepts `phi` and `kappa` too.
-
-      Explicit boundaries replace each chosen node with an independent input. They remove the original dependencies between those inputs.
-    ]),
-    ref("Separate files", [
-      #code("part = load_module(\"population.flatppl\")\nhelper = part.shapes")
-      Use public functions, kernels, and measures from a loaded module. Reify its stochastic values inside that module before export.
-    ]),
-    ref("Track array shapes", [
-      `theta`, `trials_data`, and `hits_data` all have length `J`. Scalars broadcast. Array ranks must match, with equal or singleton axis sizes.
+    ref("Broadcast shapes", [
+      Scalars remain constant during broadcasting. Collection operands require equal rank. Corresponding axis sizes must agree or equal one.
     ]),
   ),
-  takeaway: [*Reuse a graph:* write a fresh helper with `f(x) = expr`. Extract an existing calculation with `functionof`. Extract a stochastic model with `kernelof`.],
-  sources: "Spec: Named functions · Calling conventions · Reification boundaries · Broadcasting",
+  takeaway: [*Boundary notation:* `functionof(expr, alpha, beta)` abbreviates `functionof(expr, alpha = alpha, beta = beta)`. The same notation applies to `kernelof`.],
+  sources: "Specification: Named functions · Calling conventions · Reification to functions and kernels · Module composition",
 )

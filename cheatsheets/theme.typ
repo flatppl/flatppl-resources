@@ -11,7 +11,8 @@
 #let code(source, size: 7.0pt) = {
   set text(font: mono, size: size, fill: ink)
   set par(leading: 2.2pt, spacing: 0pt)
-  raw(source, block: true)
+  raw(source, block: true, lang: "flatppl",
+    syntaxes: "syntax/flatppl.sublime-syntax", theme: "syntax/flatppl.tmTheme")
 }
 
 #let card(body, color: graph-color) = block(
@@ -87,38 +88,38 @@
   v(8pt)
 
   grid(columns: (1.1fr, 1fr, 1fr), column-gutter: 10pt,
-    frame("Complete example", model-color)[
+    frame("Example", model-color)[
       #card(color: model-color)[
         #label(color: model-color, model_title)
         #v(5pt)
         #set par(leading: 0pt, spacing: 0pt)
-        #for (i, ln) in lines.enumerate() {
-          let active = notes.filter(n => i + 1 >= n.at(2) and i + 1 <= n.at(3))
-          let starts = notes.filter(n => i + 1 == n.at(2))
+        #show raw.line: ln => {
+          let active = notes.filter(n => ln.number >= n.at(2) and ln.number <= n.at(3))
+          let starts = notes.filter(n => ln.number == n.at(2))
           block(width: 100%, fill: if active.len() > 0 { model-color.lighten(86%) } else { none },
             grid(columns: (9pt, 11pt, 1fr), gutter: 3pt, align: horizon,
               if starts.len() > 0 {
                 box(width: 9pt, height: 9pt, fill: graph-color, radius: 4.5pt,
                   align(center + horizon, text(size: 5.5pt, weight: "bold", fill: white, str(starts.first().at(0)))))
               } else { [] },
-              align(right, text(font: mono, size: 5.5pt, fill: muted, str(i + 1))),
-              text(font: mono, size: 6.6pt, fill: if ln.starts-with("#") { muted } else { ink },
-                if ln == "" { [#h(1pt)] } else { ln }),
+              align(right, text(font: mono, size: 5.5pt, fill: muted, str(ln.number))),
+              if ln.text == "" { [#h(1pt)] } else { ln.body },
             ),
           )
           v(1.5pt)
         }
+        #code(lines.join("\n"), size: 6.6pt)
       ]
       #v(7pt)
       #card(color: model-color)[#text(fill: model-color.darken(20%), model_note)]
     ],
-    frame("Read the graph", graph-color)[
+    frame("Language constructs", graph-color)[
       #for n in notes {
         note(lines, accent, ..n)
         v(6pt)
       }
     ],
-    frame("Keep at hand", reference-color)[
+    frame("Reference", reference-color)[
       #for r in refs {
         r
         v(6pt)

@@ -1,30 +1,20 @@
 flatppl_compat = "0.1"
 
-# Paired measurements.
-x_data = [0.0, 1.0, 2.0, 3.0]
-y_data = [0.8, 2.1, 2.9, 4.2]
+# Fixed values and a parameter domain.
+sigma = 0.5
+y_data = [0.8, 1.1, 1.0]
+n = lengthof(y_data)
+mu = elementof(reals)
 
-# Three unknowns with proper priors.
-alpha ~ Normal(0, 5)
-beta ~ Normal(0, 2)
-sigma ~ LogNormal(0, 0.5)
+# Stochastic and deterministic expressions.
+y ~ iid(Normal(mu, sigma), n)
+residual = y .- mu
+result = record(y = y, residual = residual)
 
-# One mean and one observation per row.
-mu = alpha .+ beta .* x_data
-y ~ Normal.(mu, sigma)
+# Kernel reification and observed data.
+K = kernelof(y)
+L = likelihoodof(K, y_data)
 
-# Keep the parameters in a named record.
-prior = lawof(record(
-    alpha = alpha, beta = beta,
-    sigma = sigma))
-
-# Cut the graph at the parameters.
-K = kernelof(record(y = y),
-    alpha, beta, sigma)
-L = likelihoodof(K, record(y = y_data))
-posterior = bayesupdate(L, prior)
-
-# Evaluate the log-likelihood at a point.
-point = record(
-    alpha = 1.0, beta = 1.0, sigma = 0.5)
+# A named parameter point.
+point = record(mu = 1.0)
 log_L = logdensityof(L, point)

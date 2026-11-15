@@ -1,48 +1,47 @@
 #import "theme.typ": *
 
 #sheet(
-  number: "04", title: "Advanced / inference", topic: "Scores and prediction",
-  subtitle: "Choose the measure to score or predict from. Assumes model construction and reification.",
+  number: "04", title: "Measure algebra", topic: "Advanced",
+  subtitle: "Reified laws, likelihood objects, conditioning, normalization, and kernel composition.",
   accent: rgb("97583e"), file: "examples/advanced.flatppl",
-  model_title: "One model, several inference objects",
-  model_note: [FlatPPL defines the inference objects. A host tool selects and runs an optimizer, sampler, or integration method.],
+  model_title: "Measure operations on a stochastic graph",
+  model_note: [Measures, kernels, and likelihoods are first-class objects. Density evaluation and numerical inference are separate operations on those objects.],
   notes: (
-    (1, "Two routes to a posterior", 9, 17, [
-      `bayesupdate` combines a prior and likelihood. `restrict` conditions the joint law on `y`. Both retain `mu` and produce the same unnormalized posterior here.
+    (1, "Laws and kernels", 9, 11, [
+      `prior` retains `mu`. `joint_model` retains both `mu` and `y`. The explicit boundary in `K` makes `mu` an input rather than a stochastic ancestor to marginalize.
     ]),
-    (2, "Choose the scoring target", 20, 22, [
-      `log_L` scores the likelihood. `log_post` also includes the prior density. Even a one-parameter likelihood takes a named parameter record.
+    (2, "Likelihood and restriction", 14, 17, [
+      `likelihoodof` binds observed data to a kernel. `bayesupdate` weights the prior by the likelihood. `restrict` constructs the same unnormalized posterior directly from this joint law.
     ]),
-    (3, "Predict through the kernel", 25, 31, [
-      `normalize` gives a probability measure. `predict` passes the record's `mu` field to `K`. `kchain` integrates over parameters and keeps four new observations.
+    (3, "Normalization and composition", 25, 29, [
+      `normalize` gives unit mass. `kchain` integrates over its input variate and retains the final output. The adapter `predict` extracts `mu` from the parameter record before calling `K`.
     ]),
   ),
   refs: (
-    ref("Know the normalizing constant", [
-      `posterior` has density $L(mu) pi(mu)$. Its mass is the evidence $Z$. `post_prob` has density $L(mu) pi(mu) / Z$.
+    ref("Density evaluation", [
+      #code("densityof(L, point)\nlogdensityof(L, point)\nlogdensityof(posterior, point)")
+      A likelihood is an object, not an ordinary function. Its parameter point is a record, including for a single input. The last expression includes the prior density.
+    ]),
+    ref("Structural disintegration", [
+      #code("K_alt, prior_alt = disintegrate(\n    [\"y\"], joint_model)")
+      The selector names the observation fields. `disintegrate` returns a tuple containing the conditional kernel and the marginal measure on the remaining fields.
+    ]),
+    ref("Mass and normalization", [
+      `bayesupdate` and `restrict` return unnormalized measures. `totalmass` evaluates the total mass of a closed measure. `normalize` requires finite, positive mass.
 
-      Relative posterior scores do not need $Z$. A normalized posterior density does.
+      In this example the posterior mass is the evidence. Its evaluation, and predictive density evaluation, may require integration that an engine cannot perform.
     ]),
-    ref("An exact check for this example", [
-      The prior variance is 4. The noise variance is 1. There are four observations with mean 1.
+    ref("Dependent composition", [
+      #code("jointchain(prior, predict)\nkchain(prior, predict)")
+      `jointchain` retains intermediate and final variates. `kchain` retains only the final variate. A kernel with one positional input receives a record whole, which motivates the adapter.
+    ]),
+    ref("Transformation and projection", [
+      #code("pushfwd(exp, Normal(0, 1))\npushfwd(fn(get(_, [\"mu\"])),\n    joint_model)")
+      `pushfwd` transforms a measure or projects selected fields. `fn` turns a hole expression, containing `_`, into a function.
 
-      $ v = (1/4 + 4)^(-1) = 4/17 $
-      $ m = v (0/4 + 4 times 1) = 16/17 $
-      The posterior marginal for `mu` is `Normal(16/17, sqrt(4/17))`.
-    ]),
-    ref("Joint, marginal, or predictive?", [
-      #code("lawof(record(mu = mu, y = y))\nlawof(record(y = y))\nkchain(post_prob, predict)")
-      The joint law retains `mu` and `y`. The prior predictive integrates out `mu`. The posterior predictive instead uses the updated parameter law.
-    ]),
-    ref("A changed coordinate needs a density", [
-      `pushfwd(f, M)` transforms a measure. A bijective transform's density needs its inverse and volume element. `bijection` can supply both.
-
-      A deterministic function from `functionof` alone does not define a prior on its inputs.
-    ]),
-    ref("Check the engine's query support", [
-      Normalization, evidence, and predictive densities can require integration. Engines may refuse unsupported queries. Defining a measure does not promise a closed-form density.
+      Density evaluation requires the inverse and volume element, or a marginalization procedure, as appropriate.
     ]),
   ),
-  takeaway: [*Choose a target:* maximum likelihood uses `L`. MAP and posterior samplers use `posterior`. Prediction uses a parameter probability law followed by `K`.],
-  sources: "Spec: Likelihoods and posteriors · Measure restriction · Dependent composition",
+  takeaway: [*Object interfaces:* `lawof` retains selected variates. `kernelof` exposes graph inputs. `likelihoodof` fixes observations. Measure operations act on the resulting objects.],
+  sources: "Specification: Reification to measures · Likelihoods and posteriors · Structural disintegration · Dependent composition",
 )
