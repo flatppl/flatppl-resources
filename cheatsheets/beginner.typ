@@ -4,24 +4,24 @@
   subtitle: "Define parameters, vectorize observations, construct a likelihood and posterior, and evaluate a named point.",
   accent: rgb("236d62"), file: "examples/beginner.flatppl",
   model_title: "Complete regression model",
-  model_note: [Source: `linear-regression`. Replace the predictor and observation distribution for simple count or binary models.],
+  model_note: [Parameter domains and priors are separate bindings.],
   model_refs: (
-    ref("Likelihood-only variant", [
-      #code("alpha = elementof(reals)\nbeta = elementof(reals)\nsigma = elementof(posreals)")
-      These domains replace the prior draws. Construct `K` and `L` as above. Omit `prior` and `posterior` when only a likelihood is required.
+    ref("Stochastic parameter bindings", [
+      #code("alpha ~ Normal(0,5)\nbeta ~ Normal(0,2)\nsigma ~ LogNormal(0,0.5)\nK = kernelof(record(y = y),\n    alpha, beta, sigma)")
+      Use `lawof` on these prior variates.
     ]),
   ),
   notes: (
-    (1, "Parameters and stochastic bindings", 9, 11, [
-      `~` introduces a variate from a probability measure. The positive support of `LogNormal` constrains `sigma`. A deterministic binding uses `=` and refers to existing graph nodes.
+    (1, "Parameters and domains", 9, 11, [
+      `elementof(S)` declares a parameter in set `S`. It assigns no prior. Here `alpha` and `beta` are real and `sigma` is positive. Values can vary between likelihood evaluations.
     ]),
-    (2, "A vector of observations", 14, 15, [
-      Dots denote elementwise operations. Scalar parameters broadcast over `x_data`. `Normal.(mu, sigma)` returns one array-valued product measure. The observed array must have the same length.
+    (2, "Observations and the likelihood", 14, 17, [
+      Dots apply operations elementwise. `~` creates a variate. `kernelof` exposes the three `elementof` inputs and closes over fixed data. Observation fields and array shapes must match.
     ]),
-    (3, "A complete parameter interface", 18, 23, [
-      `lawof` collects the parameter law. The explicit kernel boundary exposes all three parameters. Observation fields match by name. `bayesupdate` returns an unnormalized posterior measure.
+    (3, "An optional prior and posterior", 20, 25, [
+      The record names fields `alpha`, `beta`, and `sigma` to match the likelihood inputs. `bayesupdate` returns an unnormalized posterior. Omit this block for likelihood-only inference.
     ]),
-    (4, "Scores and reusable predictions", 26, 28, [
+    (4, "Scores and reusable predictions", 27, 29, [
       A likelihood point is a record, including for a single parameter. `logdensityof(L, point)` returns a log-likelihood. Lines 31–32 extract the fixed-data predictor as a function of the two coefficients.
     ]),
   ),
@@ -57,6 +57,5 @@
       Declare data and priors. Define predictors and observation variates. Retain all inferred parameters. Match kernel inputs and observation fields. Score a named point before inference.
     ]),
   ),
-  takeaway: [*Corpus:* `linear-regression`, `poisson-model`, `capture-recapture`, `poisson-glm-link`. After this sheet: author a complete simple Bayesian or likelihood-only model.],
-  sources: "Corpus: linear-regression · poisson-model · Spec: Variates and measures, Broadcasting, Likelihoods and posteriors",
+  takeaway: [After this sheet: author a complete simple Bayesian or likelihood-only model with explicit parameter domains.],
 )

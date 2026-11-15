@@ -4,7 +4,7 @@
   subtitle: "A reduced D⁻ → π⁺π⁻π⁻ model: invariant masses, Bose symmetry, coherent interference, and the phase-space measure.",
   accent: rgb("97583e"), file: "examples/hadron-physics.flatppl",
   model_title: "Bose-symmetric scalar amplitude",
-  model_note: [Reduced from `dminus-to-3pi-amplitude`. This constant-width S-wave model omits spin tensors, barrier factors and detector resolution. The example defines a normalized shape, not an absolute decay rate.],
+  model_note: [This constant-width S-wave model omits spin tensors, barrier factors and detector resolution. The example defines a normalized shape, not an absolute decay rate.],
   notes: (
     (1, "Invariant kinematics on a rectangle", 9, 13, [
       `m` is the same-sign pair mass and `c` is its helicity-angle cosine. `s12(m,c)` is the opposite-sign pair mass squared. The other pairing is `s12(m,-c)`. All masses use GeV.
@@ -46,6 +46,5 @@
       The full example adds covariant spin factors and more resonances. The particle-physics module supplies mass-dependent widths and breakup momenta. Absolute rates require the physical constants and the identical-particle $1/2!$ factor. Normalization here needs numerical integration support.
     ]),
   ),
-  takeaway: [*Corpus:* `dminus-to-3pi-amplitude`, `flatppl-amplitudes`. Preserve Bose symmetry, the coordinate Jacobian, coherent phases, and parameter-dependent normalization when extending the model.],
-  sources: "Corpus: dminus-to-3pi-amplitude · Spec: weighted(f,M,p), Normalization, Complex arithmetic, Resonance functions",
+  takeaway: [Preserve Bose symmetry, the coordinate Jacobian, coherent phases and parameter-dependent normalization when extending the amplitude model.],
 )

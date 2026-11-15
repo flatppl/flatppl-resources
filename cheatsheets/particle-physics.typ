@@ -4,7 +4,7 @@
   subtitle: "Expected yields, shared detector nuisances, histogram templates, and extended unbinned observations.",
   accent: rgb("3f5d6c"), file: "examples/particle-physics.flatppl",
   model_title: "Two channels with a shared nuisance",
-  model_note: [Reduced from `signal-background-counting`. `S` is produced signal per exposure. Background rates are detected counts per exposure. The illustrative data are not an experimental analysis.],
+  model_note: [`S` is produced signal per exposure. Background rates are detected counts per exposure. The illustrative data are not an experimental analysis.],
   model_refs: (
     ref("Shared or separate nuisances", [
       #code("b_scale ~ LogNormal(0,0.2)\nb_scales ~ iid(LogNormal(0,0.2), 2)")
@@ -50,6 +50,5 @@
       Use Binomial counts for successes from a fixed trial total. Use Poisson counts for an expected event yield. Keep rate, exposure, acceptance and efficiency distinct. Zero expected yield assigns mass only to zero counts.
     ]),
   ),
-  takeaway: [*Corpus:* `signal-background-counting`, `resonance-chebyshev-mixture`. After this sheet: construct multichannel counts, binned templates, and extended event models with explicit nuisance dependence.],
-  sources: "Corpus: signal-background-counting · Spec: Poisson processes, Superposition, Combining likelihoods",
+  takeaway: [After this sheet: construct multichannel counts, binned templates and extended event models with explicit nuisance dependence.],
 )

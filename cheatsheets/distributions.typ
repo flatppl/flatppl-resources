@@ -75,5 +75,4 @@
     ]),
   ),
   takeaway: [*Notation:* `x ~ M` is equivalent to `x = draw(M)`. Distribution constructors and measure operations produce objects that can be bound to names.],
-  sources: "Specification: Built-in distributions · Broadcasting · Support restriction",
 )

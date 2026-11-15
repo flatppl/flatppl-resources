@@ -7,7 +7,7 @@ The domain sheets assume the relevant core levels and introduce physical convent
 | Sheet | Main example | Additional coverage |
 | --- | --- | --- |
 | [Distributions](distributions.pdf) | Scalar and array-valued draws | Supports, parameters, correlated vectors, simplex weights |
-| [Beginner](beginner.pdf) | Complete linear regression | Counts, binary observations, likelihood-only parameters, named points |
+| [Beginner](beginner.pdf) | Complete linear regression | Parameter domains with `elementof`, optional priors, counts, binary observations, named points |
 | [Intermediate](intermediate.pdf) | Noncentered grouped logistic regression | Centered effects, eight schools, Beta–Binomial pooling, helpers, modules |
 | [Advanced](advanced.pdf) | A measure-composed Normal–Gamma mixture | Products, intensities, transformations, callback parameters, Markov kernels |
 | [Particle physics](particle-physics.pdf) | Two count channels with a shared nuisance | Templates, selection windows, point processes, calibration likelihoods |
@@ -28,6 +28,7 @@ Update excerpt line ranges when changing the examples. The layout rejects column
 
 The layout follows the supplied Wren reference, with a separate slate, teal, ochre, and copper palette.
 The build uses the repository root to load `branding/logo-rounded.svg`.
+Printed sheets omit provenance lines. Source links and adaptation notes remain in the example map.
 
 ## Syntax highlighting
 

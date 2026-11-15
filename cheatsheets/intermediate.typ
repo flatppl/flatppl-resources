@@ -4,7 +4,7 @@
   subtitle: "Build latent arrays, share population parameters, gather group effects, and choose a parameterization.",
   accent: rgb("3f5d6c"), file: "examples/intermediate.flatppl",
   model_title: "Grouped logistic regression",
-  model_note: [Sources: `hierarchical-logistic` and noncentered radon. Infer `mu_a`, `tau`, `z`, and `beta`. The group intercepts `a` are derived.],
+  model_note: [Infer `mu_a`, `tau`, `z`, and `beta`. The group intercepts `a` are derived.],
   model_refs: (
     ref("Named helper and extracted graph", [
       #code("predict(a, b, x) = a .+ b .* x\nf_a = functionof(a, mu_a, tau, z)")
@@ -50,6 +50,5 @@
       Group labels index the latent array. Predictors and observations share length. Array ranks match and axis sizes agree or equal one. Scales stay positive. Noncentering preserves the hierarchical law.
     ]),
   ),
-  takeaway: [*Corpus:* `eight-schools`, `hierarchical-logistic`, `partial-pooling`, noncentered radon. After this sheet: author grouped and multilevel models with explicit latent interfaces.],
-  sources: "Corpus: hierarchical-logistic · eight-schools · radon_variable_intercept_slope_noncentered · Spec: Reification, Broadcasting",
+  takeaway: [After this sheet: author grouped and multilevel models with explicit latent interfaces.],
 )

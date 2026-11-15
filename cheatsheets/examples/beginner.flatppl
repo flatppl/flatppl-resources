@@ -1,32 +1,32 @@
 %%%
-Linear regression with three scalar parameters.
+Regression with parameter domains and optional priors.
 %%%
 flatppl_compat = "0.1"
 x_data = [0.0, 1.0, 2.0, 3.0]
 y_data = [0.8, 2.1, 2.9, 4.2]
 
-# Stochastic parameter bindings.
-alpha ~ Normal(0, 5)
-beta ~ Normal(0, 2)
-sigma ~ LogNormal(0, 0.5)
+# Parameter declarations and domains.
+alpha = elementof(reals)
+beta = elementof(reals)
+sigma = elementof(posreals)
 
-# Vectorized observation model.
+# Observation model and likelihood.
 mu = alpha .+ beta .* x_data
 y ~ Normal.(mu, sigma)
-
-# Retain every inferred parameter.
-prior = lawof(record(alpha = alpha,
-    beta = beta, sigma = sigma))
-K = kernelof(record(y = y),
-    alpha, beta, sigma)
+K = kernelof(record(y = y))
 L = likelihoodof(K, record(y = y_data))
+
+# Optional prior on the named parameters.
+a ~ Normal(0, 5)
+b ~ Normal(0, 2)
+s ~ LogNormal(0, 0.5)
+prior = lawof(record(alpha = a,
+    beta = b, sigma = s))
 posterior = bayesupdate(L, prior)
 
-# A named point and its likelihood score.
 point = record(alpha = 1.0,
     beta = 1.0, sigma = 0.5)
 log_L = logdensityof(L, point)
 
-# Reuse the deterministic predictor.
 f_mean = functionof(mu, alpha, beta)
 fitted = f_mean(alpha = 1.0, beta = 1.0)

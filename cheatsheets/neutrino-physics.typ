@@ -4,7 +4,7 @@
   subtitle: "Two-flavour vacuum appearance with synthetic Binomial counts, followed by interfaces for three-flavour propagation.",
   accent: rgb("236d62"), file: "examples/neutrino-physics.flatppl",
   model_title: "Angle and mass-splitting inference",
-  model_note: [A two-flavour vacuum reduction of the community neutrino example. It omits matter effects, other flavours, flux and detector response. The illustrative counts do not represent an experimental likelihood.],
+  model_note: [An illustrative two-flavour vacuum model. It omits matter effects, other flavours, flux and detector response. The illustrative counts do not represent an experimental likelihood.],
   model_refs: (
     ref("Prediction at the stated point", [
       #code("pred = f_prob(theta=0.15, dm2=0.0025)")
@@ -34,7 +34,7 @@
   refs: (
     ref("Three-flavour library interface", [
       #code("p = nu.parameters(t12,t13,t23,\n    delta,dm21,dm31)\nP = nu.vacuum_probabilities(E,L,p,false)")
-      Load the linked community library as `nu`. Probability rows are final flavour and columns are initial flavour. Flavour order is electron, muon, tau. `P[1,2]` means muon to electron.
+      Load `flatppl-physics-neutrinos` as `nu`. Probability rows are final flavour and columns are initial flavour. Flavour order is electron, muon, tau. `P[1,2]` means muon to electron.
     ]),
     ref("Matter and antineutrinos", [
       #code("P = nu.matter_probabilities(\n    E,L,p,electron_density,false)")
@@ -55,6 +55,5 @@
       Zero baseline or zero mixing gives zero appearance in the two-flavour model. Maximal mixing at phase $pi/2$ gives probability one. A full probability matrix has unit column sums. Compose layer amplitudes before squaring, not layer probabilities.
     ]),
   ),
-  takeaway: [*Source:* `flatppl-physics-neutrinos/examples/playground`. Use the self-contained reduction for syntax, then replace its prediction function with a validated three-flavour and detector model.],
-  sources: "Community: flatppl-physics-neutrinos · Reference: Units and conventions, Coherent propagation · Synthetic data",
+  takeaway: [Replace the two-flavour prediction function with a validated three-flavour and detector model when the application requires it.],
 )

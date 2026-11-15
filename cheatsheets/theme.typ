@@ -61,17 +61,12 @@
 ]
 
 #let sheet(number: "01", title: "", subtitle: "", topic: "", accent: model-color,
-  file: "", model_title: "", model_note: [], model_refs: (), notes: (), notes_refs: (), refs: (), takeaway: [], sources: "") = {
+  file: "", model_title: "", model_note: [], model_refs: (), notes: (), notes_refs: (), refs: (), takeaway: []) = {
   let lines = read(file).trim().split("\n")
   set document(title: if sys.inputs.at("collection", default: "false") == "true" {
     "FlatPPL / Cheatsheets"
   } else { "FlatPPL / " + title }, author: "")
-  set page(paper: "a4", flipped: true, margin: (x: 8mm, top: 8mm, bottom: 10mm), fill: paper,
-    footer: grid(columns: (1fr, auto), gutter: 10pt,
-      text(size: 5.8pt, fill: muted, sources),
-      text(size: 5.8pt, fill: muted)[FlatPPL 0.1 · #number / 07],
-    ),
-  )
+  set page(paper: "a4", flipped: true, margin: (x: 8mm, top: 8mm, bottom: 10mm), fill: paper)
   set text(font: ("Helvetica Neue", "Arial"), size: 7.5pt, fill: ink)
   set par(leading: 2.5pt, spacing: 4pt)
   show raw.where(block: false): it => text(font: mono, size: 0.9em, fill: ink, it)

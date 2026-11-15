@@ -4,16 +4,16 @@
   subtitle: "Construct mixtures, products, dependent laws, transformations, and sequential models from first-class measures.",
   accent: rgb("97583e"), file: "examples/advanced.flatppl",
   model_title: "A complete mixture model",
-  model_note: [Sources: `dissimilar-mixture` and the `bayesian_inference` series.],
+  model_note: [The component measures share a scalar event space. Their supports may differ.],
   model_refs: (
     ref("Many components from a table", [
       #code("components = table(mu = [-2,2],\n    sigma = [0.7,0.9])\nweights ~ Dirichlet([2,2])\nM = ksuperpose(Normal, weights, components)")
-      Simplex weights give unit mass. Table columns bind constructor arguments by name. See `normal-mixture`.
+      Simplex weights give unit mass. Table columns bind constructor arguments by name.
     ]),
   ),
   notes: (
-    (1, "Measures and explicit parameters", 7, 12, [
-      `elementof` declares free parameters. A constructor yields a measure, without drawing a variate. Both component measures here act on real scalars, despite their different supports.
+    (1, "Measure-valued expressions", 11, 12, [
+      Distribution constructors yield measures without drawing variates. The components depend on fit parameters and share a scalar event space.
     ]),
     (2, "Weighted sum versus product", 13, 14, [
       `weighted` scales mass and `superpose` adds measures. These complement weights sum to one, so the mixture is normalized. General weights require `normalize`. `iid` forms the observation product.
@@ -23,6 +23,12 @@
     ]),
     (4, "Dependent composition and conditioning", 24, 29, [
       `jointchain` retains parameters and observations. `kchain` marginalizes the parameters. `disintegrate` recovers a kernel and marginal. `restrict` conditions the joint law without automatically normalizing it.
+    ]),
+  ),
+  notes_refs: (
+    ref("An annotated transformation", color: graph-color, [
+      #code("f_exp = bijection(exp, log, identity)\nM_positive = pushfwd(f_exp, Normal(0,1))")
+      Density evaluation subtracts the forward log-volume at the preimage.
     ]),
   ),
   refs: (
@@ -50,6 +56,5 @@
       `bayesupdate` and `restrict` preserve unnormalized mass. `totalmass` and `normalize` can require integration. A defined measure need not have a tractable density. A host tool performs optimization or sampling on the chosen target.
     ]),
   ),
-  takeaway: [*Corpus:* `normal-mixture`, `dissimilar-mixture`, `bayesian_inference_1/3/4`, `ar1-noise-estimation`. After this sheet: construct and combine measure-valued models directly.],
-  sources: "Corpus: dissimilar-mixture · normal-mixture · bayesian_inference_* · Spec: Measure algebra, Explicit callback parameters",
+  takeaway: [After this sheet: construct and combine measure-valued models directly.],
 )

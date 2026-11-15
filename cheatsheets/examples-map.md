@@ -37,7 +37,7 @@ The map uses [flatppl-examples at 3bb871d](https://github.com/flatppl/flatppl-ex
 
 ## Authoring outcomes
 
-- **Beginner:** define scalar priors and fixed data, vectorize an observation model, retain all inferred parameters, construct a likelihood and posterior, and score a named point.
+- **Beginner:** declare parameters and domains with `elementof`, define fixed data, vectorize an observation model, construct a likelihood, optionally assign a prior and posterior, and score a named point.
 - **Intermediate:** define population and latent group variables, gather by group, choose centered or noncentered coordinates, and preserve the complete hierarchical interface.
 - **Advanced:** construct a model from measures, combine components through products or superposition, compose kernels, transform or project a law, and condition or normalize the resulting measure.
 
@@ -45,7 +45,7 @@ The map uses [flatppl-examples at 3bb871d](https://github.com/flatppl/flatppl-ex
 
 | Sheet | Adaptation |
 | --- | --- |
-| [Simple models](beginner.pdf) | The regression structure remains. Independent coefficient and LogNormal scale priors replace the original conjugate scale coupling. |
+| [Simple models](beginner.pdf) | The regression structure remains. `elementof` declares the parameter domains first. Separate prior variates give a law over the same named inputs for an optional Bayesian update. Independent coefficient and LogNormal scale priors replace the original conjugate scale coupling. |
 | [Hierarchical models](intermediate.pdf) | The grouped logistic predictor remains. Standard-Normal latent coordinates produce noncentered intercepts, with simpler scale and slope priors. |
 | [Measure composition](advanced.pdf) | The Normal–Gamma mixture retains unknown weight and location. Component scale and Gamma parameters are fixed. Measures replace prior and observation draws. |
 | [Particle counting](particle-physics.pdf) | Five-channel counts and event spectra reduce to two count channels and one shared background-scale nuisance. Spectral and point-process extensions occupy the reference column. |
