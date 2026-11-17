@@ -1,0 +1,31 @@
+%%%
+Two Ising spins, one bond, zero applied field.
+%%%
+flatppl_compat = "0.1"
+ratio = 3.0
+K = log(ratio) / 2
+
+same = exp(K)
+opposite = exp(-K)
+pp = [1, 1]
+pm = [1, -1]
+mp = [-1, 1]
+mm = [-1, -1]
+
+M = superpose(
+    weighted(same, Dirac(pp)),
+    weighted(opposite, Dirac(pm)),
+    weighted(opposite, Dirac(mp)),
+    weighted(same, Dirac(mm)))
+
+Z = totalmass(M)
+P = normalize(M)
+
+p_pp = densityof(P, pp)
+p_pm = densityof(P, pm)
+p_mp = densityof(P, mp)
+p_mm = densityof(P, mm)
+
+p_aligned = p_pp + p_mm
+correlation = p_aligned - (p_pm + p_mp)
+Z_exact = 4 * cosh(K)

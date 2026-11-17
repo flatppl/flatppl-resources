@@ -1,7 +1,7 @@
 #import "theme.typ": *
 
 #sheet(
-  number: "02", topic: "Beginner", title: "Parameters and likelihoods", accent: rgb("285c48"),
+  topic: "Beginner", title: "Parameters and likelihoods", accent: rgb("285c48"),
   formula: ("Conditional mean", [$mu_i = alpha + beta x_i$]),
   reference-title: "Predictions and variants",
   file: "examples/beginner.flatppl", example: "Linear regression",

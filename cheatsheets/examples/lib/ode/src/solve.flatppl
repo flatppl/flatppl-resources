@@ -1,0 +1,4 @@
+% # Solve on a supplied time grid
+flatppl_compat = "0.1"
+step_state(state, next_time, args) = record(y = args[2](args[1], state.t, state.y, next_time - state.t, args[3]), t = next_time)
+solve(step, f, initial, times, p) = scan(step_state, record(y = initial, t = times[1]), times, (f, step, p)).y

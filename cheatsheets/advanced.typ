@@ -1,7 +1,7 @@
 #import "theme.typ": *
 
 #sheet(
-  number: "04", topic: "Advanced", title: "Measure composition", accent: rgb("70516f"),
+  topic: "Advanced", title: "Measure composition", accent: rgb("70516f"),
   formula: ("Mixture measure", [$M = p M_1 + (1-p) M_2$]),
   reference-title: "Measure operators",
   file: "examples/advanced.flatppl", example: "A mixture of Normal and Gamma laws",

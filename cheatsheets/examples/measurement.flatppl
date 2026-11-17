@@ -1,0 +1,25 @@
+%%%
+Two independent reports of a shared mean.
+%%%
+flatppl_compat = "0.1"
+mu = elementof(reals)
+lo = 0.95
+hi = 1.05
+cut = 1.20
+
+cdf(x, m, s) = invprobit((x - m) / s)
+tail(x, m, s) = invprobit((m - x) / s)
+
+p_cell = ifelse(lo >= mu,
+    tail(lo, mu, 0.2) - tail(hi, mu, 0.2),
+    cdf(hi, mu, 0.2) - cdf(lo, mu, 0.2))
+p_flag = tail(cut, mu, 0.3)
+
+cell ~ Bernoulli(p_cell)
+flag ~ Bernoulli(p_flag)
+reports = record(cell = cell, flag = flag)
+K = kernelof(reports, mu = mu)
+
+data = record(cell = 1, flag = 1)
+L = likelihoodof(K, data)
+at_one = logdensityof(L, record(mu = 1.0))

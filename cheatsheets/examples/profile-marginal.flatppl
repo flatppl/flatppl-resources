@@ -1,0 +1,27 @@
+%%%
+Two treatments of an unknown background yield.
+%%%
+flatppl_compat = "0.1"
+counts = load_module("lib/counts/main.flatppl")
+n = 7
+m = 12
+ratio = 5.0
+data = record(on = n, off = m)
+
+law(s, b) = joint(on = Poisson(s + b),
+    off = Poisson(ratio * b))
+joint_at(s, b) = logdensityof(law(s, b), data)
+
+b_hat(s) = counts.onoff_background_mle(
+    n, m, s, ratio)
+profile(s) = joint_at(s, b_hat(s))
+
+shape = 2.0
+rate = 1.0
+marginal(s) = counts.onoff_gamma_logdensity(
+    n, m, s, ratio, shape, rate)
+
+s = 3.0
+bg_at_s = b_hat(s)
+log_profile = profile(s)
+log_marginal = marginal(s)

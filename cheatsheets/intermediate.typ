@@ -1,7 +1,7 @@
 #import "theme.typ": *
 
 #sheet(
-  number: "03", topic: "Intermediate", title: "Hierarchical models", accent: rgb("365d70"),
+  topic: "Intermediate", title: "Hierarchical models", accent: rgb("365d70"),
   formula: ("Group intercept", [$a_g = mu_a + tau z_g, quad z_g tilde.op cal(N)(0,1)$]),
   reference-title: "Indexing and pooling",
   file: "examples/intermediate.flatppl", example: "Grouped logistic regression",

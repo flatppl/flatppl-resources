@@ -1,0 +1,19 @@
+%%%
+Eight readings with one mean and precision.
+%%%
+flatppl_compat = "0.1"
+
+observed = external(cartpow(reals, 8))
+
+tau = elementof(posreals)
+mu = elementof(reals)
+sigma = 1.0 / sqrt(tau)
+
+y ~ iid(Normal(mu, sigma), 8)
+K = kernelof(record(y = y), mu = mu, tau = tau)
+
+L = likelihoodof(K, record(y = observed))
+
+# Mean and precision at any named point.
+point = record(mu = 1.15, tau = 3.0)
+log_L = logdensityof(L, point)

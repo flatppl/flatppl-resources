@@ -33,6 +33,10 @@
       <key>settings</key><dict><key>foreground</key><string>#226b62</string></dict>
     </dict>
     <dict>
+      <key>scope</key><string>variable.other.member.variance.flatppl</string>
+      <key>settings</key><dict><key>foreground</key><string>#864c2a</string><key>fontStyle</key><string>bold</string></dict>
+    </dict>
+    <dict>
       <key>scope</key><string>keyword.operator</string>
       <key>settings</key><dict><key>foreground</key><string>#6b4f5e</string></dict>
     </dict>

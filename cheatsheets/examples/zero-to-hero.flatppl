@@ -1,0 +1,31 @@
+%%%
+A shared event rate in three exposures.
+%%%
+flatppl_compat = "0.1"
+
+exposure = [1.0, 2.0, 1.0]
+counts = [2, 3, 1]
+rate ~ Gamma(shape = 2.0, rate = 1.0)
+
+expected = rate .* exposure
+n ~ Poisson.(expected)
+
+prior = lawof(record(rate = rate))
+K = kernelof(record(n = n), rate = rate)
+L = likelihoodof(K, record(n = counts))
+posterior = bayesupdate(L, prior)
+
+point = record(rate = 1.5)
+log_L = logdensityof(L, point)
+predict = functionof(expected, rate = rate)
+fitted = predict(rate = point.rate)
+
+# Exact update for this Poisson model.
+shape_post = 2.0 + sum(counts)
+rate_post = 1.0 + sum(exposure)
+mean_rate = shape_post / rate_post
+
+# Predict the count in two new exposure units.
+rate_law = Gamma(shape_post, rate_post)
+r, state = rand(rate_law, rnginit(41))
+next_n, state2 = rand(Poisson(2.0 * r), state)

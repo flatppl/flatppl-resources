@@ -1,7 +1,7 @@
 #import "theme.typ": *
 
 #sheet(
-  number: "06", topic: "Hadron physics", title: "Dalitz amplitudes", accent: rgb("894b36"),
+  topic: "Hadron physics", title: "Dalitz amplitudes", accent: rgb("894b36"),
   formula: ("Density in mass and helicity angle", [$dif P prop m q(m) k(m) abs(A)^2 dif m dif c$]),
   reference-title: "Phase space and intensity",
   file: "examples/hadron-physics.flatppl", example: "The decay D⁻ → π⁺π⁻π⁻",

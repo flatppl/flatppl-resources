@@ -1,0 +1,22 @@
+%%%
+Eleven solution times, three measurements.
+%%%
+flatppl_compat = "0.1"
+ode = load_module("lib/ode/main.flatppl")
+t_grid = linspace(0.0, 1.0, 11)
+y_data = [1.02, 0.57, 0.38]
+rate = elementof(posreals)
+
+rhs(t, y, k) = -k .* y
+states = ode.vern7(rhs, [1.0], t_grid, rate)
+
+Y = rowstack(states)
+mu = [Y[1, 1], Y[6, 1], Y[11, 1]]
+
+reading ~ Normal.(mu, 0.05)
+K = kernelof(reading, rate = rate)
+L = likelihoodof(K, y_data)
+
+score = logdensityof(L, record(rate = 1.0))
+predict = functionof(mu, rate = rate)
+fitted = predict(rate = 1.0)

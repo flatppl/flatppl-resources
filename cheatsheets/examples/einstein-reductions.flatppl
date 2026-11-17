@@ -1,0 +1,24 @@
+%%%
+Two arrays with a shared three-entry axis.
+%%%
+flatppl_compat = "0.1"
+A = rowstack([[1, 3, 5], [9, 5, 1]])
+B = rowstack([[1, 0], [0, 1], [1, 1]])
+
+C[.i, .k] := A[.i, .j] * B[.j, .k]
+
+C_again = aggregate(sum, [.i, .k],
+    A[.i, .j] * B[.j, .k])
+
+col_var = aggregate(var, [.j], A[.i, .j])
+row_max = aggregate(maximum, [.i], A[.i, .j])
+
+diagonal_sum[] := C[.i, .i]
+total[] := C[.i, .k]
+
+# Change only the order of the free axes.
+Ct[.k, .i] := A[.i, .j] * B[.j, .k]
+
+outputs = record(product = C, maxima = row_max,
+    variance = col_var, trace = diagonal_sum,
+    sum = total)

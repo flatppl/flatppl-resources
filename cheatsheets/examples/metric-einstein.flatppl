@@ -1,0 +1,23 @@
+%%%
+Two vectors in an oblique Euclidean basis.
+%%%
+flatppl_compat = "0.1"
+
+g = rowstack([[2.0, -1.0], [-1.0, 1.0]])
+u = [2.0, 1.0]
+v = [-1.0, 2.0]
+
+g: uv[] := u[.i^] * v[.i_]
+g: uu[] := u[.i^] * u[.i_]
+g: vv[] := v[.i^] * v[.i_]
+cos_angle = uv / sqrt(uu * vv)
+
+v_down = inv(g) * v
+raw_dot[] := u[.i] * v[.i]
+
+g: twice[.i_] := 2.0 * v[.i_]
+g: check[] := u[.i^] * twice[.i_]
+
+outputs = record(product = uv, lower = v_down,
+    cosine = cos_angle, stored = twice,
+    check = check)

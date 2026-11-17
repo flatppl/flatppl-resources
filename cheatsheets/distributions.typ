@@ -1,7 +1,7 @@
 #import "theme.typ": *
 
 #sheet(
-  number: "01", topic: "Reference", title: "Distributions and draws", accent: rgb("885a31"),
+  topic: "Reference", title: "Distributions and draws", accent: rgb("885a31"),
   formula: ("Half-Normal density", [$f_+(x) = 2 phi(x) quad (x >= 0)$]),
   reference-title: "Constructor index",
   file: "examples/distributions.flatppl", example: "Scalar and vector draws",

@@ -1,7 +1,7 @@
 #import "theme.typ": *
 
 #sheet(
-  number: "07", topic: "Neutrino physics", title: "Neutrino oscillations", accent: rgb("46654f"),
+  topic: "Neutrino physics", title: "Neutrino oscillations", accent: rgb("46654f"),
   formula: ("Two-flavour vacuum appearance", [$P = sin^2(2 theta) sin^2 Phi$]),
   reference-title: "Propagation and response",
   file: "examples/neutrino-physics.flatppl", example: "Appearance in four energy bins",

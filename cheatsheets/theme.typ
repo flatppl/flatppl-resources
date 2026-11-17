@@ -5,6 +5,7 @@
 #let sans = ("Helvetica Neue", "Arial")
 #let mono = ("DejaVu Sans Mono", "Menlo")
 #let letters = ("A", "B", "C", "D")
+#let sheet-names = read("sheets.txt").trim().split("\n")
 #let column-height = 492pt
 
 #let label(body, fill: secondary) = text(
@@ -14,10 +15,10 @@
 #let hairline = line(length: 100%, stroke: 0.5pt + rule)
 
 // Typst normally scales raw text down. Set the printed size on the raw element.
-#let highlighted(source, size) = {
+#let highlighted(source, size, lang: "flatppl") = {
   show raw: set text(font: mono, size: size)
   set par(leading: 2.0pt, spacing: 0pt)
-  raw(source, block: true, lang: "flatppl",
+  raw(source, block: true, lang: lang,
     syntaxes: "syntax/flatppl.sublime-syntax", theme: "syntax/flatppl.tmTheme")
 }
 
@@ -27,9 +28,9 @@
   assert(needed <= available, message: "Code exceeds column width: " + longest)
 }
 
-#let code(source, size: 8pt) = layout(region => context {
+#let code(source, size: 8pt, lang: "flatppl") = layout(region => context {
   check-width(source, size, region.width)
-  highlighted(source, size)
+  highlighted(source, size, lang: lang)
 })
 
 #let entry(title, body) = block(width: 100%, breakable: false)[
@@ -76,7 +77,8 @@
   block(width: 100%, breakable: false)[
     #grid(columns: (12pt, 1fr, auto), column-gutter: 4.5pt, align: horizon,
       marker(letters.at(index), accent), subhead(title),
-      text(font: mono, size: 6.6pt, fill: secondary, str(start) + "–" + str(end)))
+      text(font: mono, size: 6.6pt, fill: secondary,
+        if start == end { str(start) } else { str(start) + "–" + str(end) }))
     #v(3.8pt)
     #block(width: 100%, inset: (left: 7pt, right: 4pt, y: 4pt),
       stroke: (left: 1.25pt + accent), fill: accent.lighten(96%))[
@@ -106,10 +108,12 @@
   #detail
 ]
 
-#let sheet(number: "", title: "", topic: "", accent: ink, formula: (), file: "",
+#let sheet(title: "", topic: "", accent: ink, formula: (), file: "",
   example: "", illustration: (), notes: (), variants: (), reference-title: "Reference",
   references: (), after-notes: ()) = {
   let source = read(file).trim()
+  let index = sheet-names.position(name => file == "examples/" + name + ".flatppl")
+  let number = str(index + 1)
   let lines = source.split("\n")
   let fig = illustration
   set document(title: if sys.inputs.at("collection", default: "false") == "true" {
@@ -136,7 +140,7 @@
         #v(4pt)
         #text(size: 12.2pt, formula.at(1))
       ],
-      align(right)[#text(font: serif, size: 19pt, fill: accent, number)#h(1.5pt)#text(size: 7.5pt, fill: secondary, "/ 07")],
+      align(right)[#text(font: serif, size: 19pt, fill: accent, if number.len() == 1 { "0" + number } else { number })#h(1.5pt)#text(size: 7.5pt, fill: secondary, "/ " + str(sheet-names.len()))],
     )
   ]
   line(length: 100%, stroke: 0.85pt + accent)

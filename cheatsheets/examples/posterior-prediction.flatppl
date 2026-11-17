@@ -1,0 +1,30 @@
+%%%
+A new reading from the beginner regression.
+%%%
+flatppl_compat = "0.1"
+x = [0.0, 1.0, 2.0, 3.0]
+y = [0.8, 2.1, 2.9, 4.2]
+sigma = 0.5
+
+X = colstack([ones(4), x])
+Xt = transpose(X)
+P0 = diagmat([1.0 / 25, 1.0 / 4])
+
+V = inv(P0 + (Xt * X) / sigma^2)
+m = V * (Xt * y) / sigma^2
+coefficients = MvNormal(m, V)
+x_new = 1.5
+h = [1.0, x_new]
+
+center = sum(h .* m)
+v_mean = sum(h .* (V * h))
+v_new = v_mean + sigma^2
+
+beta, state = rand(coefficients, rnginit(42))
+line = sum(h .* beta)
+reading, next_state = rand(Normal(line, sigma),
+    state)
+
+z = probit(0.95)
+width_mean = z * sqrt(v_mean)
+width_new = z * sqrt(v_new)

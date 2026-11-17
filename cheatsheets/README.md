@@ -1,18 +1,29 @@
 # FlatPPL cheatsheets
 
-Seven A4 landscape sheets pair a complete program with four passages marked A–D. Each sheet includes a figure drawn from its example.
+Seventeen A4 landscape sheets pair a complete program with four passages marked A–D. Each sheet includes a figure drawn from its example.
+Start with the rate model on the first page. The two tensor sheets can be read together before the detector-response example.
 The three core levels progress from complete simple models to hierarchy and explicit measure composition.
 The domain sheets assume the relevant core levels and introduce physical conventions alongside the code.
 
 | Sheet | Main example | Additional coverage |
 | --- | --- | --- |
+| [Zero to hero](zero-to-hero.pdf) | Poisson counts with unequal exposures | Host data, positive rates, likelihoods, priors, prediction, and a conjugate check |
 | [Distributions](distributions.pdf) | Scalar and array-valued draws | Supports, parameters, correlated vectors, simplex weights |
 | [Beginner](beginner.pdf) | Complete linear regression | Parameter domains with `elementof`, optional priors, counts, binary observations, named points |
 | [Intermediate](intermediate.pdf) | Noncentered grouped logistic regression | Centered effects, eight schools, Beta–Binomial pooling, helpers, modules |
 | [Advanced](advanced.pdf) | A measure-composed Normal–Gamma mixture | Products, intensities, transformations, callback parameters, Markov kernels |
+| [Einstein summation and reductions](einstein-reductions.pdf) | A two-by-three matrix product | Named axes, diagonal and full sums, Boolean and sample reductions |
+| [Metric Einstein summation](metric-einstein.pdf) | Two vectors in oblique coordinates | Inverse Gram matrix, canonical storage, outer products, and invariant mass |
+| [Posterior prediction](posterior-prediction.pdf) | The beginner regression with known noise | Coefficient draws, predictive variance, pointwise intervals, and replicated data |
+| [From a model to a fit](fitting-from-python.pdf) | Gaussian mean and precision from eight readings | External data, free coordinates, BFGS, and a closed-form estimate |
+| [Rounded readings and detection flags](measurement.pdf) | A rounding cell and an independent threshold flag | CDF differences, Gaussian tails, conditional independence, and censoring |
+| [Profiling and marginalization](profile-marginal.pdf) | One signal count and one control count | Joint likelihood, conditional background maximum, and a Gamma marginal |
 | [Particle physics](particle-physics.pdf) | Two count channels with a shared nuisance | Templates, selection windows, point processes, calibration likelihoods |
 | [Hadron physics](hadron-physics.pdf) | A 37-line Bose-symmetric Dalitz amplitude | Phase-space Jacobian, interference, efficiency, normalization |
 | [Neutrino physics](neutrino-physics.pdf) | Two-flavour vacuum appearance | Three-flavour API, units, matter, response, physical limits |
+| [Forward-folding a photon spectrum](gamma-ray-response.pdf) | Three true energies and two reconstructed bins | Quadrature, attenuation, exposure, migration, and losses |
+| [From a decay law to a likelihood](decay-ode.pdf) | An exponential decay with three readings | Derivative callbacks, fixed-step integration, and measurement noise |
+| [Two spins and a partition function](two-spins.pdf) | Four states of an Ising pair | Point masses, Boltzmann weights, degeneracy, and correlation |
 
 [Read the full set](flatppl-cheatsheets.pdf).
 The [example map](examples-map.md) covers all 29 curated corpus modules, their learning roles, and the reductions used here.
@@ -28,11 +39,11 @@ Update excerpt line ranges when changing the examples. The layout checks code wi
 
 The build loads the squircle logo from `branding/` and the finished figures from `figures/`.
 To redraw the figures after changing the examples, run `python figures/draw.py` in this directory with Matplotlib and NumPy available. Then run `make`.
-The seven-page PDF has a bookmark for each sheet. Source links and adaptation notes are in the example map.
+The combined PDF has a bookmark for each sheet. `sheets.txt` sets the build list, page order, and folios.
 
 ## Syntax highlighting
 
-Code blocks use an unmodified copy of the [Sublime/syntect FlatPPL grammar at f3efb30](https://github.com/flatppl/flatppl-grammars/blob/f3efb30adf9990859b28f2c58ed505a3b0a43bea/sublime/flatppl.sublime-syntax), under its [MIT license](syntax/LICENSE.txt).
+FlatPPL blocks use an unmodified copy of the [Sublime/syntect FlatPPL grammar at f3efb30](https://github.com/flatppl/flatppl-grammars/blob/f3efb30adf9990859b28f2c58ed505a3b0a43bea/sublime/flatppl.sublime-syntax), under its [MIT license](syntax/LICENSE.txt).
 `syntax/flatppl.tmTheme` defines print colors. Typst's highlighted line elements preserve multiline lexical state while adding line numbers and excerpt markers.
 
 ## Language and model sources
@@ -46,7 +57,9 @@ The sheets follow FlatPPL 0.1 at specification commit `eed1724e276357d159a32f21b
 
 The [corpus map](examples-map.md) records the source revisions and model changes.
 Adapted examples retain their [MIT license](examples/LICENSE.txt) and [attribution](examples/NOTICE.md).
-The line breaks and comments are intentional. Lint with `flatppl lint --allow not-canonical --deny-warnings examples/*.flatppl`.
+Run `make check-examples` with the FlatPPL CLI on your path. This checks all models with their imports and preserves the printed line breaks.
+The ON/OFF and ODE models load local copies of the community libraries in `examples/lib/`. Both run offline.
+Run `python examples/fit.py` with the FlatPPL Python SDK, JAX, NumPy, and Optimistix to reproduce the host fit.
 
 ## Numerical scope
 

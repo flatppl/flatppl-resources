@@ -1,7 +1,7 @@
 #import "theme.typ": *
 
 #sheet(
-  number: "05", topic: "Particle physics", title: "Counting experiments", accent: rgb("355b76"),
+  topic: "Particle physics", title: "Counting experiments", accent: rgb("355b76"),
   formula: ("Expected yield in channel j", [$lambda_j = T_j (b rho_j + epsilon_j S)$]),
   reference-title: "Counts and spectra",
   file: "examples/particle-physics.flatppl", example: "Two channels, one background scale",
