@@ -2,7 +2,9 @@
 Two treatments of an unknown background yield.
 %%%
 flatppl_compat = "0.1"
-counts = load_module("lib/counts/main.flatppl")
+counts = load_module(
+    "https://raw.githubusercontent.com/flatppl-community/flatppl-stats-counts/4f0a6a8eedf0595d1d779fe6ba6a5579fa96eaf4/main.flatppl"
+)
 n = 7
 m = 12
 ratio = 5.0

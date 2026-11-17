@@ -3,23 +3,23 @@
 #sheet(
   topic: "Gamma-ray astronomy", title: "Forward-folding a photon spectrum", accent: rgb("315b70"),
   formula: ("Expected source counts", [$s_r = sum_j M_(r j) T A_j w_j phi_j$]),
-  reference-title: "Reading the detector response",
+  reference-title: "Response matrix and exposure",
   file: "examples/gamma-ray-response.flatppl", example: "Three true energies, two detector bins",
-  illustration: ("Where the expected photons go",
+  illustration: ("Migration into reconstructed bins",
     "Stacked bars show the source counts contributed by each of three true energies to two detector bins and to the lost fraction.",
-    [Each color labels a true energy. The first two bars give expected source counts in detector bins. The third collects the fraction missing from the migration columns.]),
+    [Colour identifies the true energy. The first two bars give expected source counts in the reconstructed bins. The third gives the expected loss from the corresponding column deficits.]),
   notes: (
-    ("Orient the migration matrix", 11, 12, [
-      A column gives the probabilities for one true energy. A row collects arrivals in one reconstructed bin. The column sums are 0.8, 0.8 and 0.7.
+    ("True and reconstructed bin indices", 11, 12, [
+      Each column gives the outcome probabilities at one true energy. Each row gives contributions to one reconstructed bin. The column sums are 0.8, 0.8 and 0.7.
     ]),
     ("Fold a differential flux", 14, 16, [
-      Multiply flux by effective area, exposure, and quadrature weight at each true energy. The matrix then redistributes expected counts. Here the flux is a power law times attenuation.
+      At each true energy, multiply the attenuated power-law flux by effective area, exposure and quadrature weight. Apply the migration matrix to the resulting vector of expected counts.
     ]),
     ("Add the observation law", 22, 23, [
-      The signal-region mean adds the two fixed backgrounds to the reconstructed signal. The control exposure is four times as large. The four counts are conditionally independent.
+      Add the fixed background in each bin to its reconstructed signal. The control exposure is four times the signal exposure. Conditional on the flux amplitude, the four counts are independent.
     ]),
     ("Score one flux amplitude", 25, 28, [
-      The kernel returns named arrays for both regions. At the stated amplitude, the detector receives 16.0075 and 13.1101 expected source counts. The joint log likelihood is −14.91365.
+      The kernel returns a named count vector for each region. At the specified amplitude the expected source counts are 16.0075 and 13.1101. The joint log likelihood is −14.91365.
     ]),
   ),
   after-notes: (
@@ -28,10 +28,10 @@
     ]),
   ),
   variants: (
-    entry("Recover the count balance", [
+    entry("Expected counts before and after migration", [
       #code("kept = aggregate(sum, [.j], M[.r, .j])\nlost = 1 .- kept")
       #v(3pt)
-      The three true-energy contributions total 37.0253 expected counts before migration. The two reconstructed bins retain 29.1175. The remaining 7.9078 follow the lost fractions.
+      Before migration the three energies contribute 37.0253 expected counts. The two reconstructed bins retain 29.1175. The expected loss is 7.9078.
     ]),
     entry("Interpret the spectral scale", [
       `a` is the unattenuated differential flux at 1 TeV. `tau` gives optical depth. The factor `exp.(-0.8 .* tau)` attenuates each energy before migration.
@@ -41,13 +41,13 @@
     entry("Write the fold with named axes", [
       #code("s[.r] := M[.r, .j] * truth[.j]")
       #v(3pt)
-      Here `truth` holds the three expected counts before migration. `.j` is summed and `.r` survives. This is the matrix–vector product on the reductions sheet.
+      `truth` contains the three expected counts before migration. Sum over true energy `.j` and retain reconstructed bin `.r`. The #module-link("flatppl-astro-gamma", "4ef7f6a001d6bf2701741653fa34a6a56019fe18")[gamma-ray module] implements the fold as `fold_spectrum`.
     ]),
     entry("Check one detector bin", [
-      The first bin receives 13.4511 counts from 0.5 TeV, 2.5564 from 1 TeV, and zero from 2 TeV. Background enters after these contributions are summed.
+      The first bin receives 13.4511 counts from 0.5 TeV, 2.5564 from 1 TeV, and zero from 2 TeV. Add the background after summing the source contributions.
     ]),
-    entry("Preserve losses", [
-      A column sum below one assigns the remainder to events outside these detector bins. Renormalizing each column to one would redistribute those losses into the measured bins.
+    entry("Detection losses", [
+      A column deficit is the probability of an event falling outside the selected bins. Renormalizing that column assigns the lost events to the measured bins.
     ]),
     entry("Scale the exposure", [
       At fixed spectrum, doubling the observing time doubles every expected source count. Changing the flux amplitude has the same linear effect on the signal.

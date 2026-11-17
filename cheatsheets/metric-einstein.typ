@@ -1,63 +1,55 @@
 #import "theme.typ": *
 
 #sheet(
-  topic: "Tensor language", title: "Metric Einstein summation", accent: rgb("70516f"),
-  formula: ("A scalar contraction", [$u^i v_i = u^i g_(i j) v^j$]),
-  reference-title: "Variance and storage",
-  file: "examples/metric-einstein.flatppl", example: "Two vectors in an oblique basis",
-  illustration: ("The angle in the physical plane",
-    "The basis directions are (1,0) and (1,1). The physical vectors end at (3,1) and (1,2) and enclose 45 degrees.",
-    [The basis vectors are $e_1=(1,0)$ and $e_2=(1,1)$. In Cartesian coordinates $u=(3,1)$ and $v=(1,2)$. Their angle is 45°.]),
+  topic: "Tensor coordinates", title: "Metric Einstein summation", accent: rgb("70516f"),
+  formula: ("Squared Mahalanobis distance", [$d^2 = q^T G^(-1) q$]),
+  reference-title: "Coordinate and likelihood checks",
+  file: "examples/metric-einstein.flatppl", example: "One residual in two coordinate systems",
+  illustration: ("One contour in two coordinate systems",
+    "The circle through (2,1) becomes an ellipse through (3,1) after the shear. Both points have squared Mahalanobis distance 5.",
+    [The same residual lies on the contour $d^2=5$ in both panels. The shear maps the circle to an ellipse. At fixed $q_1$, increasing $q_2$ increases $y$ and decreases $x$ by the same amount.]),
   notes: (
-    ("Supply the inverse Gram matrix", 6, 8, [
-      FlatPPL stores upper components. Here `g` stores $g^(i j)$. Its inverse is the basis Gram matrix $g_(i j)$ with rows `[1, 1]` and `[1, 2]`.
+    ("Transform the covariance with the data", 9, 10, [
+      The first run on the preceding sheet gives `r = [2, 1]` with identity noise covariance. The instrument now reports `q = [x + y, y]`. Its covariance is $G=J J^T$, with rows `[2, 1]` and `[1, 1]`.
     ]),
-    ("Contract an upper and a lower index", 10, 12, [
-      `.i^` reads stored components. `.i_` lowers them with `inv(g)`. Repeating the pair and leaving `[]` on the left gives a scalar. Here `uv = 5`, `uu = 10`, and `vv = 5`.
+    ("Contract one upper and one lower index", 12, 14, [
+      `.i^` reads the stored vector. `.i_` applies the inverse of the supplied metric. The metric contraction gives 5 in both systems. Summing the squares of the reported components gives $3^2+1^2=10$.
     ]),
-    ("Inspect the lower components", 15, 16, [
-      `v_down` gives `[1, 3]`. Its ordinary dot product with `u` is 5. Multiplying the two stored coordinate arrays directly gives `raw_dot = 0`.
+    ("Recover the component products", 16, 17, [
+      The precision matrix has rows `[1, −1]` and `[−1, 2]`. Multiplying it by `q` gives the lower components `[2, −1]`. The two products are 6 and −1. Their sum is 5.
     ]),
-    ("Read a lower output back", 18, 19, [
-      The right side computes twice the lower components, `[2, 6]`. FlatPPL raises the result for storage as `[-2, 4]`. The next contraction lowers `twice` on access and returns 10.
+    ("Differentiate the squared distance", 19, 21, [
+      In lower components the derivative is $2 G^(-1) q$, or `[4, −2]`. FlatPPL raises the lower output for storage as `[6, 2]`. Reading `grad[.i_]` recovers the derivative. A step along the second axis has slope −2.
     ]),
   ),
   after-notes: (
-    entry("Spell out the operator", [
-      #code("uv_long = metricsum(g, [], u[.i^] * v[.i_])")
-      #v(3pt)
-      The metric prefix and `:=` in the listing express this call. Every tensor axis inside `metricsum` carries a variance mark.
+    entry("Finite displacement", [
+      Hold the first reported component at 3. Increasing the second to $1+h$ yields the original residual $(2-h, 1+h)$. Its squared length is $5-2h+2h^2$, which verifies the derivative at $h=0$.
     ]),
   ),
   variants: (
-    entry("Start with covariant data", [
-      #code("lower_values = [1.0, 3.0]\nv_upper = g * lower_values")
+    entry("The metric argument", [
+      FlatPPL takes the upper components $g^(i j)$. For a Gaussian residual these are the covariance entries. Pass `G`. Lowering then applies the precision matrix $G^(-1)$.
+    ]),
+    entry("The explicit contraction", [
+      #code("d = metricsum(G, [], q[.i^] * q[.i_])")
       #v(3pt)
-      If a calculation gives lower components, convert them to the upper components FlatPPL stores. This recovers `[-1, 2]` in the example basis.
-    ]),
-    entry("Check the scalar independently", [
-      In Cartesian coordinates $u dot v = 3 times 1 + 1 times 2 = 5$. Dividing by their lengths gives $cos theta = 5 / sqrt(50) = 1 / sqrt(2)$.
-    ]),
-    entry("Read a mixed metric index", [
-      Within `metricsum`, `g[.i^, .j_]` represents the identity tensor. One multiplication by the inverse metric converts $g^(i k) g_(k j)$ into the Kronecker delta.
+      Empty brackets request a scalar. Each repeated contracted index must occur once upper and once lower. A free index retains the variance declared on the left.
     ]),
   ),
   references: (
-    entry("Check index pairs", [
-      A repeated contracted name must occur exactly twice, once upper and once lower. A free name must match its output variance. A lone omitted index sums components and depends on the coordinates.
+    entry("The Gaussian score", [
+      The two-dimensional log density is $-frac(1,2)(d^2+log det G+2 log(2 pi))$. Here $det G=1$, so `log_L` is −4.33788. For a general change of scale the determinant also contributes.
     ]),
-    entry("Choose the metric", [
-      Pass a symmetric, invertible square matrix of upper metric components. With `eye(n)`, lowering leaves components unchanged and the contraction agrees with ordinary sum aggregation.
-    ]),
-    entry("Form and contract a tensor", [
-      #code("g: T[.i^, .j^] := u[.i^] * v[.j^]\ng: w[.i^] := T[.i^, .j^] * v[.j_]")
+    entry("An index left free", [
+      #code("G: T[.i^, .j^] := q[.i^] * q[.j^]\nG: w[.i^] := T[.i^, .j^] * q[.j_]")
       #v(3pt)
-      The outer product retains both indices. Contracting its second slot with `v` gives $u (v dot v)=5 u$. The stored result is `[10, 5]`.
+      `T` contains the outer product. Contracting its second slot gives $w^i = q^i d^2$. In reported coordinates the result is `[15, 5]`.
     ]),
-    entry("Use a spacetime metric", [
+    entry("Spacetime signature", [
       #code("eta = diagmat([1, -1, -1, -1])\np = [5, 3, 0, 0]\neta: m2[] := p[.a^] * p[.a_]")
       #v(3pt)
-      With $c=1$, this four-momentum has invariant mass squared $5^2-3^2=16$.
+      A metric may be indefinite. With signature $(+, -, -, -)$ and $c=1$, this contraction gives the invariant mass squared $5^2-3^2=16$.
     ]),
   ),
 )

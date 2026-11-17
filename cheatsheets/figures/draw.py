@@ -232,56 +232,63 @@ def zero_to_hero():
 
 
 def einstein_reductions():
-    from matplotlib.patches import Rectangle
-
     sheet = "einstein-reductions"
-    a, b = (matrix_literal(sheet, name) for name in ("A", "B"))
-    fig, ax = plt.subplots(figsize=(3.45, 1.45))
-    fig.subplots_adjust(left=0.01, right=0.99, top=0.97, bottom=0.03)
-    ax.set(xlim=(-0.15, 10.65), ylim=(-0.1, 4.3), aspect="equal")
+    design, coefficients, observed = (matrix_literal(sheet, name) for name in ("X", "B", "y"))
+    squared = (observed - design @ coefficients.T) ** 2
+    rows = [[str(i + 1), *row, row.sum()] for i, row in enumerate(squared)]
+    rows.append(["Total", *squared.sum(axis=0), squared.sum()])
+
+    fig, ax = plt.subplots(figsize=(3.45, 1.46))
+    fig.subplots_adjust(left=0.02, right=0.98, top=0.96, bottom=0.05)
     ax.axis("off")
-    for matrix, x, name in ((a, 0, "A"), (b, 4.15, "B"), (a @ b, 8.15, "C")):
-        rows, cols = matrix.shape
-        ax.text(x + cols / 2, 3.98, name, size=11, ha="center", va="center", weight="bold")
-        for (i, j), value in np.ndenumerate(matrix):
-            active = {"A": i == 0, "B": j == 0, "C": (i, j) == (0, 0)}[name]
-            y = 1.65 + rows / 2 - i - 1
-            ax.add_patch(Rectangle((x + j, y), 1, 1, fc="#d6e6e4" if active else "white",
-                                   ec=BLUE if active else RULE, lw=0.9 if active else 0.45))
-            ax.text(x + j + 0.5, y + 0.5, str(value), ha="center", va="center",
-                    weight="bold" if active else "normal", color=BLUE if active else MUTED, size=9)
-    for x, symbol in ((3.58, "×"), (7.08, "=")):
-        ax.text(x, 1.65, symbol, ha="center", va="center", size=13)
+    grid = ax.table(cellText=rows, colLabels=["Run", "Sensor 1", "Sensor 2", "Run total"],
+                    loc="center", cellLoc="center", bbox=[0, 0, 1, 1])
+    grid.auto_set_font_size(False)
+    grid.set_fontsize(8.8)
+    for (row, col), cell in grid.get_celld().items():
+        cell.set_edgecolor(RULE)
+        cell.set_linewidth(0.45)
+        if row == 0:
+            fill, ink = "#eef2f1", INK
+        elif row == len(rows) and col == 3:
+            fill, ink = INK, "white"
+        elif row == len(rows):
+            fill, ink = "#ebf2ec", GREEN
+        elif col == 3:
+            fill, ink = "#e9eff4", BLUE
+        else:
+            continue
+        cell.set_facecolor(fill)
+        cell.set_text_props(weight="bold", color=ink)
     save(fig, sheet)
 
 
 def metric_einstein():
-    from matplotlib.patches import Arc
-
     sheet = "metric-einstein"
-    basis = np.linalg.cholesky(np.linalg.inv(matrix_literal(sheet, "g"))).T
-    u, v = (basis @ coords for coords in literals(sheet, "u", "v"))
-    fig, ax = plt.subplots(figsize=(3.45, 1.8))
-    fig.subplots_adjust(left=0.06, right=0.98, top=0.94, bottom=0.09)
-    ax.set(aspect="equal", xlim=(-0.25, 3.65), ylim=(-0.26, 2.32))
-    ax.axis("off")
-    for i in range(-3, 5):
-        for j in (0, 1):
-            ends = [basis[:, j] * i + basis[:, 1-j] * k for k in (-4, 5)]
-            ax.plot(*np.array(ends).T, color=RULE, lw=0.5, zorder=0)
-    for name, vector, colour in (("u", u, BLUE), ("v", v, PLUM)):
-        ax.annotate("", xy=vector, xytext=(0, 0),
-                    arrowprops=dict(arrowstyle="-|>", color=colour, lw=1.8, shrinkA=0, shrinkB=0))
-        ax.text(*(vector + [0.06, 0.10]), name, color=colour, size=12, style="italic")
-    for i, label in enumerate(("$e_1$", "$e_2$")):
-        end = basis[:, i]
-        ax.annotate("", xy=end, xytext=(0, 0),
-                    arrowprops=dict(arrowstyle="->", lw=0.9, color=MUTED, shrinkA=0, shrinkB=0))
-        ax.text(end[0] + 0.05, end[1] - 0.13, label, color=MUTED, size=8)
-    angles = np.degrees([np.arctan2(vec[1], vec[0]) for vec in (u, v)])
-    ax.add_patch(Arc((0, 0), 1.25, 1.25, theta1=angles[0], theta2=angles[1], color=INK, lw=0.75))
-    ax.text(0.49, 0.43, f"{np.diff(angles).item():.0f}°", size=8, color=INK,
-            bbox=dict(facecolor="white", edgecolor="none", pad=0.4))
+    residual, = literals(sheet, "r")
+    residual = np.asarray(residual)
+    shear = matrix_literal(sheet, "J")
+    angles = np.linspace(0, 2 * np.pi, 241)
+    contour = np.linalg.norm(residual) * np.array([np.cos(angles), np.sin(angles)])
+    fig, panels = plt.subplots(1, 2, figsize=(3.45, 1.67))
+    fig.subplots_adjust(left=0.03, right=0.99, top=0.80, bottom=0.13, wspace=0.24)
+    for ax, matrix, title, colour in zip(panels, [np.eye(2), shear],
+                                          ["Original  (x, y)", "Reported  (x + y, y)"],
+                                          [BLUE, PLUM]):
+        curve = matrix @ contour
+        x, y = matrix @ residual
+        ax.fill(*curve, color=colour, alpha=0.07)
+        ax.plot(*curve, color=colour, lw=1.15)
+        ax.axhline(0, color=RULE, lw=0.65)
+        ax.axvline(0, color=RULE, lw=0.65)
+        ax.plot([0, x], [0, y], color=colour, lw=1.15)
+        ax.plot(x, y, "o", ms=3.5, color=colour)
+        ax.annotate(f"({x:g}, {y:g})", (x, y), xytext=(-1, 6),
+                    textcoords="offset points", ha="right", size=7.4, color=colour)
+        ax.set(xlim=(-3.5, 3.5), ylim=(-2.65, 2.65), aspect="equal",
+               xticks=[-2, 0, 2], yticks=[])
+        ax.spines["left"].set_visible(False)
+        ax.set_title(title, fontsize=8.2, color=INK, pad=4)
     save(fig, sheet)
 
 

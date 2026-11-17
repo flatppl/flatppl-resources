@@ -1,24 +1,25 @@
 %%%
-Two arrays with a shared three-entry axis.
+Two sensors measure the same three runs.
 %%%
 flatppl_compat = "0.1"
-A = rowstack([[1, 3, 5], [9, 5, 1]])
-B = rowstack([[1, 0], [0, 1], [1, 1]])
+X = rowstack([[1, 0], [1, 1], [1, 2]])
+B = rowstack([[1, 2], [2, -1]])
+y = rowstack([[3, 3], [3, 3], [6, -1]])
 
-C[.i, .k] := A[.i, .j] * B[.j, .k]
+pred[.t, .s] := X[.t, .k] * B[.s, .k]
+r = y .- pred
 
-C_again = aggregate(sum, [.i, .k],
-    A[.i, .j] * B[.j, .k])
+by_run[.t] := r[.t, .s]^2
+total[] := by_run[.t]
 
-col_var = aggregate(var, [.j], A[.i, .j])
-row_max = aggregate(maximum, [.i], A[.i, .j])
+mse = aggregate(mean, [.s], r[.t, .s]^2)
+within = aggregate(lall, [.t],
+    abs(r[.t, .s]) <= 1)
 
-diagonal_sum[] := C[.i, .i]
-total[] := C[.i, .k]
+gram[.a, .b] := r[.t, .a] * r[.t, .b]
+diag_sum[] := gram[.s, .s]
 
-# Change only the order of the free axes.
-Ct[.k, .i] := A[.i, .j] * B[.j, .k]
-
-outputs = record(product = C, maxima = row_max,
-    variance = col_var, trace = diagonal_sum,
-    sum = total)
+log_L = logdensityof(Normal.(pred, 1.0), y)
+outputs = record(pred = pred, cost = by_run,
+    mse = mse, within = within, gram = gram,
+    total = total, log_L = log_L)

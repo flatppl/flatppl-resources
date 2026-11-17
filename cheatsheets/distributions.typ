@@ -9,24 +9,24 @@
     "The standard Normal density is symmetric about zero. Its normalized positive half doubles the density for positive x.",
     [The dashed curve has half its mass on either side of zero. The solid curve is the law used by `z` on line 18. Both integrate to one.]),
   notes: (
-    ("Construct a law, then draw", 4, 7, [
-      `Normal` returns a probability measure. A binding with `=` gives the measure a name. The `~` in `x ~ standard` introduces a variate with that law. Constructor arguments can be positional or named.
+    ("Probability measures and variates", 4, 7, [
+      `Normal` constructs a probability measure. Name it with `=`. The declaration `x ~ standard` introduces a variate with that law. Constructors accept positional or named arguments.
     ]),
-    ("Form an array-valued draw", 10, 13, [
-      `iid` repeats the same law three times. The dotted constructor uses each entry of `means` with the scalar scale. Each expression defines one product measure whose variates are length-three arrays.
+    ("Independent arrays", 10, 13, [
+      `iid` uses the same law for all three entries. The dotted constructor pairs each entry of `means` with the common scale. Both produce a product measure on length-three arrays.
     ]),
     ("Restrict the support", 16, 18, [
-      `truncate` keeps the mass in the specified set. Here that mass is $1/2$. `normalize` divides by the retained mass before the draw. It requires finite, strictly positive mass.
+      `truncate` retains the mass on the specified set, here $1/2$. To draw from the conditional law, apply `normalize`. The retained mass must be finite and strictly positive.
     ]),
-    ("Recover the law of a value", 21, 22, [
-      `lawof(x)` gives a scalar law. `lawof(v)` retains the whole vector, including any dependence among its entries. For this example the coordinates of `v` are independent.
+    ("Laws of scalars and vectors", 21, 22, [
+      `lawof(x)` gives the scalar law. `lawof(v)` preserves the joint law of the vector. Its coordinates are independent in this example.
     ]),
   ),
   after-notes: (
     entry("Mixture weights", [
       #code("mix = superpose(weighted(0.3, standard),\n    weighted(0.7, shifted))\nw ~ mix")
       #v(3pt)
-      The weights sum to one. A draw is one real value. In the product on line 13, a draw contains three coordinates.
+      A mixture with weights summing to one produces a single real draw. A draw from the product on line 13 has three coordinates.
     ]),
   ),
   variants: (
@@ -38,12 +38,12 @@
     entry("A random probability vector", [
       #code("p ~ Dirichlet([2.0, 2.0, 2.0])\ncategory ~ Categorical(p)\ncounts ~ Multinomial(12, p)")
       #v(3pt)
-      The concentrations are positive. The entries of `p` sum to one. `category` is in `1..3`. The entries of `counts` sum to 12. `Categorical0` numbers the same categories from zero.
+      Supply positive concentrations. The components of `p` sum to one. `category` ranges over `1..3` and the components of `counts` sum to 12. Use `Categorical0` for zero-based categories.
     ]),
     entry("Distribution parameters by name", [
       #code("args = record(mu = 2.0, sigma = 0.5)\nM = Normal(args)")
       #v(3pt)
-      The fields supply the constructor's two inputs by name. `sigma` is the standard deviation.
+      Pass the constructor arguments as named record fields. The field `sigma` denotes the standard deviation.
     ]),
   ),
   references: (

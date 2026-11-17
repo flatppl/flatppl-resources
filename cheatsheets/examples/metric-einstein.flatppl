@@ -1,23 +1,26 @@
 %%%
-Two vectors in an oblique Euclidean basis.
+One sensor residual in two coordinate systems.
 %%%
 flatppl_compat = "0.1"
+r = [2.0, 1.0]
+I2 = eye(2)
+J = rowstack([[1.0, 1.0], [0.0, 1.0]])
 
-g = rowstack([[2.0, -1.0], [-1.0, 1.0]])
-u = [2.0, 1.0]
-v = [-1.0, 2.0]
+q = J * r
+G = J * transpose(J)
 
-g: uv[] := u[.i^] * v[.i_]
-g: uu[] := u[.i^] * u[.i_]
-g: vv[] := v[.i^] * v[.i_]
-cos_angle = uv / sqrt(uu * vv)
+I2: old[] := r[.i^] * r[.i_]
+G: dist2[] := q[.i^] * q[.i_]
+raw[] := q[.i] * q[.i]
 
-v_down = inv(g) * v
-raw_dot[] := u[.i] * v[.i]
+dual = inv(G) * q
+parts[.i] := q[.i] * dual[.i]
 
-g: twice[.i_] := 2.0 * v[.i_]
-g: check[] := u[.i^] * twice[.i_]
+G: grad[.i_] := 2.0 * q[.i_]
+step = [0.0, 1.0]
+G: slope[] := grad[.i_] * step[.i^]
 
-outputs = record(product = uv, lower = v_down,
-    cosine = cos_angle, stored = twice,
-    check = check)
+noise = MvNormal([0.0, 0.0], G)
+log_L = logdensityof(noise, q)
+outputs = record(distance2 = dist2,
+    log_L = log_L, directional = slope)

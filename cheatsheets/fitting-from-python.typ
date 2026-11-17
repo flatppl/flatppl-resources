@@ -7,56 +7,56 @@
   formula: ("Likelihood estimate", [$hat(tau) = frac(n, sum_i (y_i - overline(y))^2)$]),
   reference-title: "Python driver",
   file: "examples/fitting-from-python.flatppl", example: "A Gaussian mean and precision",
-  illustration: ("The peak in model coordinates",
+  illustration: ("Likelihood contours in mean and precision",
     "Likelihood contours in mean and precision surround the exact maximum at 1.15 and 2.985. A cross marks the estimate.",
     [Contours show drops in log likelihood from its maximum. The cross marks the fitted mean and precision in their model coordinates.]),
   notes: (
-    ("Declare the data boundary", 6, 6, [
-      `external` declares a real vector of length eight. Python supplies its values with `.set(observed=data)`. The same model accepts a second vector with this shape.
+    ("External observations", 6, 6, [
+      Declare the eight readings as an external real vector. Supply them from Python with `.set(observed=data)`. A new vector of the same shape can use the same model.
     ]),
     ("Choose fitting coordinates", 8, 10, [
-      The mean is real and the precision is positive. The Normal constructor takes a standard deviation. Its value is $1/sqrt(tau)$.
+      Declare a real mean and a positive precision. Pass $1/sqrt(tau)$ as the Normal standard deviation.
     ]),
     ("Name the kernel inputs", 12, 13, [
-      `iid` gives eight independent readings from one law. `kernelof` exposes the two fitted parameters. The output record names the vector `y`.
+      Use `iid` for eight independent readings with a common law. `kernelof` takes the two fitted parameters. Its output record contains the reading vector under `y`.
     ]),
-    ("Expose the likelihood", 15, 15, [
-      `likelihoodof` fixes `y` to the eight supplied readings. Python selects this binding by the string `"L"`. The objective uses the negative log likelihood.
+    ("Select the likelihood from Python", 15, 15, [
+      Bind `y` to the eight readings with `likelihoodof`. Select the resulting binding in Python by its name, `"L"`. Minimize the negative log likelihood.
     ]),
   ),
   after-notes: (
-    entry("A second, exact estimate", [
-      The sample mean is 1.15. The sum of squared deviations is 2.68, so the maximum-likelihood precision is $8/2.68=2.98507$. At that point $log L=-6.97701$.
+    entry("Analytic maximum", [
+      The sample mean is 1.15 and the squared deviations sum to 2.68. The maximum-likelihood precision is therefore $8/2.68=2.98507$. The fitted log likelihood is $log L=-6.97701$.
     ]),
   ),
   variants: (
     entry("Python imports", [
       #driver(1,6)
     ]),
-    entry("Run the companion", [
+    entry("Run the fit", [
       Run `python examples/fit.py` from the cheatsheets directory with FlatPPL, NumPy, JAX and Optimistix installed. The script prints both estimates and checks them against the analytic solution.
     ]),
     entry("Bind the data", [
       #driver(8,12)
       #v(3pt)
-      The driver sits beside its `.flatppl` file. `Path` resolves the model relative to the driver, regardless of the working directory.
+      `Path` locates the model beside the driver, independently of the current working directory.
     ]),
   ),
   references: (
     entry("Evaluate in free coordinates", [
       #driver(14,18)
       #v(3pt)
-      `jacobian=False` keeps the likelihood value at the corresponding model point. The optimizer can search freely in log precision.
+      Set `jacobian=False` to optimize in log precision while preserving the likelihood at the corresponding model point.
     ]),
-    entry("Minimize, then recover the point", [
+    entry("Return to model coordinates", [
       #driver(20,23)
       #v(3pt)
-      These lines remain inside the 64-bit context. `constrain` maps the fitted values back to `mu` and positive `tau`.
+      Keep the minimization inside the 64-bit context. Apply `constrain` to recover the fitted `mu` and positive `tau`.
     ]),
     entry("Check the result", [
       #driver(25,28)
       #v(3pt)
-      NumPy’s default variance divides by eight. Its reciprocal is the maximum-likelihood precision for these data.
+      NumPy divides by eight for the default variance of these observations. Its reciprocal gives the maximum-likelihood precision.
     ]),
   ),
 )

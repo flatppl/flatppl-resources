@@ -3,23 +3,23 @@
 #sheet(
   topic: "Statistical mechanics", title: "Two spins and a partition function", accent: rgb("88533e"),
   formula: ("One bond at zero field", [$Z=e^K+e^(-K)+e^(-K)+e^K$]),
-  reference-title: "Reading the Gibbs law",
+  reference-title: "State probabilities and degeneracy",
   file: "examples/two-spins.flatppl", example: "A finite Gibbs measure",
   illustration: ("Four states at two temperatures",
     "At K = 0 all four states have probability one quarter. At K = log(3)/2 the probabilities are three eighths, one eighth, one eighth and three eighths.",
     [The four pairs preserve the order of the spins. At the positive coupling in the listing, each aligned state is three times as likely as either opposed state.]),
   notes: (
-    ("Give each bond its energy", 8, 9, [
-      Let $K=beta J$ and $E=-J s_1 s_2$. For aligned spins the Boltzmann weight is $e^K$. Opposed spins carry $e^(-K)$. The model has one bond and zero field.
+    ("Bond energy and Boltzmann weight", 8, 9, [
+      For one bond at zero field, write $K=beta J$ and $E=-J s_1 s_2$. The Boltzmann weights are $e^K$ for aligned spins and $e^(-K)$ for opposed spins.
     ]),
     ("Assemble the state space", 15, 19, [
-      `Dirac` places unit mass at one ordered pair. `weighted` multiplies that mass. `superpose` adds all four atoms while keeping the arrangements `[1, -1]` and `[-1, 1]` distinct.
+      Place a unit `Dirac` mass at each ordered pair and multiply it by its Boltzmann weight with `weighted`. Add the four atoms with `superpose`. The pairs `[1, -1]` and `[-1, 1]` are distinct states.
     ]),
-    ("Turn weights into probabilities", 21, 22, [
-      `totalmass(M)` gives the partition function. `normalize(M)` divides every state weight by that same finite total. Changing `K` changes both the weights and their normalizer.
+    ("Partition function and normalization", 21, 22, [
+      Compute the partition function with `totalmass(M)`. `normalize(M)` divides each weight by this finite total. Both the weights and the normalizing constant depend on `K`.
     ]),
-    ("Read an atom’s probability", 24, 27, [
-      Here `densityof(P, pair)` gives the mass of that state on the discrete support. Add the two aligned states to find the chance that the spins agree.
+    ("Mass of an individual state", 24, 27, [
+      On this discrete support, `densityof(P, pair)` gives the probability of one state. Sum the masses of the two aligned states for the probability of equal spins.
     ]),
   ),
   after-notes: (
@@ -28,10 +28,10 @@
     ]),
   ),
   variants: (
-    entry("A correlation from the same measure", [
+    entry("Spin correlation", [
       #code("closed_form = tanh(K)")
       #v(3pt)
-      The product $s_1 s_2$ is +1 on aligned states and −1 on opposed states. Its expectation is `correlation`. At the stated coupling, $3/4-1/4=1/2$.
+      The product $s_1 s_2$ takes the value +1 for aligned spins and −1 for opposed spins. Its expectation, `correlation`, is $3/4-1/4=1/2$ at this coupling.
     ]),
     entry("Vary the temperature", [
       Set `ratio = 1` for $K=0$. All four atoms then have the same unit weight and probability $1/4$. For positive $J$, cooling increases $K$ and favours alignment.
@@ -41,13 +41,13 @@
     entry("Check symmetry", [
       Simultaneously reversing both spins preserves the energy. Hence `p_pp = p_mm` and `p_pm = p_mp`. Each individual spin still has equal probabilities of +1 and −1.
     ]),
-    entry("Read the degeneracy", [
-      There are two microstates at each energy. A probability for the aligned energy level therefore includes both aligned atoms. The probability of one particular aligned microstate is $3/8$.
+    entry("Microstates per energy level", [
+      Each energy level has two microstates. The probability of the aligned level is their combined mass. One aligned microstate has probability $3/8$.
     ]),
-    entry("Change the physics locally", [
+    entry("External magnetic field", [
       #code("weight(s, h) = exp(K * s[1] * s[2]\n    + h * sum(s))")
       #v(3pt)
-      Here `h` is the dimensionless field. Recompute each Boltzmann weight with this function. The four atoms and their normalization still apply.
+      Include the dimensionless field `h` in each Boltzmann weight. Use the same four atoms and normalize the resulting measure.
     ]),
   ),
 )

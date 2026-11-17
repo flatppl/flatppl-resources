@@ -45,12 +45,39 @@
   radius: size/2, fill: accent, align(center + horizon,
     text(font: sans, size: size * 0.66, weight: "bold", fill: white, letter)))
 
+#let module-link(name, revision, body) = link(
+  "https://github.com/flatppl-community/" + name + "/tree/" + revision,
+  underline(stroke: 0.5pt + secondary, body),
+)
+
+// Keep the URL literal intact in the source. Wrap its printed link at path separators.
+#let print-line(line, columns) = {
+  let match = line.match(regex("^( *)\"(https?://[^\"]+)\"$"))
+  if match == none { return (url: none, rows: (line,)) }
+  let (indent, url) = match.captures
+  let parts = url.matches(regex("https?://|[^/]+/?|/")).map(part => part.text)
+  parts.last() += "\""
+  let rows = ()
+  let row = indent + "\""
+  for part in parts {
+    if row.len() + part.len() > columns {
+      rows.push(row)
+      row = indent
+    }
+    row += part
+  }
+  (url: url, rows: rows + (row,))
+}
+
 // One lexical pass keeps documentation comments highlighted across lines.
-#let program(source, notes, accent) = layout(region => context {
+#let program(source, notes, accent, lang: "flatppl") = layout(region => context {
   let size = 8.25pt
   let inset = 7pt
   let gutter = 25pt
-  check-width(source, size, region.width - inset * 2 - gutter - 3.5pt)
+  let available = region.width - inset * 2 - gutter - 3.5pt
+  let columns = calc.floor(available / measure(text(font: mono, size: size, "0")).width)
+  let printed = source.split("\n").map(line => print-line(line, columns))
+  check-width(printed.map(p => p.rows).flatten().join("\n"), size, available)
   block(width: 100%, inset: (x: inset, y: 8pt), radius: 5pt,
     fill: accent.lighten(95%), stroke: 0.5pt + accent.lighten(76%))[
     #set par(leading: 0pt, spacing: 0pt)
@@ -59,19 +86,27 @@
         if ln.text == "" { return block(height: 4.8pt) }
         let mark = notes.position(n => n.at(1) == ln.number)
         let selected = notes.any(n => n.at(1) <= ln.number and ln.number <= n.at(2))
-        block(width: 100%, height: 10.25pt,
-          grid(columns: (9pt, 11pt, 1fr), column-gutter: 2.5pt, align: horizon,
+        let printed-line = printed.at(ln.number - 1)
+        let height = 10.25pt * printed-line.rows.len()
+        let body = if printed-line.url == none { ln.body } else {
+          stack(dir: ttb, spacing: 0pt, ..printed-line.rows.map(row =>
+            block(height: 10.25pt, link(printed-line.url,
+              text(font: mono, size: size, fill: rgb("895b20"), row)))))
+        }
+        block(width: 100%, height: height,
+          grid(columns: (9pt, 11pt, 1fr), column-gutter: 2.5pt,
+            align: if printed-line.rows.len() > 1 { top } else { horizon },
             if mark != none { marker(letters.at(mark), accent, size: 8.8pt) },
             align(right, text(font: mono, size: 5.6pt, fill: secondary, str(ln.number))),
-            block(width: 100%, height: 10.25pt, inset: (left: 3.5pt), stroke: (
-              left: if selected { 1.15pt + accent } else { none }), ln.body),
+            block(width: 100%, height: height, inset: (left: 3.5pt), stroke: (
+              left: if selected { 1.15pt + accent } else { none }), body),
           ))
       }))
-    #highlighted(source, size)
+    #highlighted(source, size, lang: lang)
   ]
 })
 
-#let annotation(lines, note, index, accent) = {
+#let annotation(lines, note, index, accent, lang: "flatppl") = {
   let (title, start, end, body) = note
   assert(1 <= start and start <= end and end <= lines.len(), message: title + ": invalid excerpt")
   block(width: 100%, breakable: false)[
@@ -82,7 +117,7 @@
     #v(3.8pt)
     #block(width: 100%, inset: (left: 7pt, right: 4pt, y: 4pt),
       stroke: (left: 1.25pt + accent), fill: accent.lighten(96%))[
-      #code(lines.slice(start - 1, end).join("\n"))
+      #code(lines.slice(start - 1, end).join("\n"), lang: lang)
     ]
     #v(3.5pt)
     #body
@@ -108,14 +143,8 @@
   #detail
 ]
 
-#let sheet(title: "", topic: "", accent: ink, formula: (), file: "",
-  example: "", illustration: (), notes: (), variants: (), reference-title: "Reference",
-  references: (), after-notes: ()) = {
-  let source = read(file).trim()
-  let index = sheet-names.position(name => file == "examples/" + name + ".flatppl")
-  let number = str(index + 1)
-  let lines = source.split("\n")
-  let fig = illustration
+#let sheet-page(name, title, topic, accent, formula, body) = {
+  let number = str(sheet-names.position(n => n == name) + 1)
   set document(title: if sys.inputs.at("collection", default: "false") == "true" {
     "FlatPPL / Cheatsheets"
   } else { "FlatPPL / " + title }, author: "FlatPPL")
@@ -145,25 +174,36 @@
   ]
   line(length: 100%, stroke: 0.85pt + accent)
   v(8pt)
-  grid(columns: (1.14fr, 1fr, 1fr), column-gutter: 14pt,
+  body
+}
+
+#let sheet(title: "", topic: "", accent: ink, formula: (), file: "",
+  example: "", illustration: (), notes: (), variants: (), reference-title: "Reference",
+  references: (), after-notes: (), lang: "flatppl", name: none) = {
+  let name = if name == none { file.split("/").last().split(".").first() } else { name }
+  let source = read(file).trim()
+  let lines = source.split("\n")
+  let fig = illustration
+  sheet-page(name, title, topic, accent, formula, grid(columns: (1.14fr, 1fr, 1fr), column-gutter: 14pt,
     column("Complete example", (
-      block(width: 100%)[#subhead(example, size: 15pt)#v(5pt)#program(source, notes, accent)],
+      block(width: 100%)[#subhead(example, size: 15pt)#v(5pt)#program(source, notes, accent, lang: lang)],
       ..variants,
     ), accent),
     column("Annotated lines", (
-      ..notes.enumerate().map(((i,n)) => annotation(lines, n, i, accent)),
+      ..notes.enumerate().map(((i,n)) => annotation(lines, n, i, accent, lang: lang)),
       ..after-notes,
     ), accent),
     column(reference-title, (
       block(width: 100%)[
         #subhead(fig.at(0), size: 15pt)
         #v(4pt)
-        #image(file.replace("examples/", "figures/").replace(".flatppl", ".svg"),
-          width: 100%, alt: fig.at(1))
+        #if type(fig.at(1)) == str {
+          image("figures/" + name + ".svg", width: 100%, alt: fig.at(1))
+        } else { fig.at(1) }
         #v(3pt)
         #text(fill: secondary, fig.at(2))
       ],
       ..references,
     ), accent),
-  )
+  ))
 }

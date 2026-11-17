@@ -1,63 +1,58 @@
 #import "theme.typ": *
 
 #sheet(
-  topic: "Array language", title: "Einstein summation and reductions", accent: rgb("365d70"),
-  formula: ("A contraction", [$C_(i k) = sum_j A_(i j) B_(j k)$]),
-  reference-title: "Reading an indexed expression",
-  file: "examples/einstein-reductions.flatppl", example: "One product, two free axes",
-  illustration: ("One cell of a matrix product",
-    "A shaded row of A and column of B yield the three products 1, 0 and 5. Their sum is the first entry of C.",
-    [For `C[1, 1]`, the first row of `A` meets the first column of `B`. The three values of `.j` contribute $1+0+5=6$.]),
+  topic: "Indexed arrays", title: "Einstein summation and reductions", accent: rgb("365d70"),
+  formula: ("Two sensor calibrations", [$hat(y)_(t s) = sum_k X_(t k) B_(s k)$]),
+  reference-title: "Residuals by run and sensor",
+  file: "examples/einstein-reductions.flatppl", example: "Three runs, two sensors",
+  illustration: ("Sums by run and by sensor",
+    "Three rows of squared residuals have row sums 5, 4, and 2. The two column sums are 5 and 6. All six cells sum to 11.",
+    [Each cell contains one squared residual. Sum across a row for the error in one run. Sum down a column for the error at one sensor. Both partitions give 11 in total.]),
   notes: (
-    ("Name the free axes", 8, 8, [
-      The left side fixes the output order. `.i` runs over two rows and `.k` over two columns. The right side also uses `.j`. Its three values are summed.
+    ("One prediction per run and sensor", 9, 10, [
+      Write the output indices first. `.t` labels the run and `.s` the sensor. Both factors use `.k` to select the same coefficient. Run 3 at sensor 1 gives $1 times 1 + 2 times 2 = 5$.
     ]),
-    ("Expand the shorthand", 10, 11, [
-      `:=` selects `sum`. In the long form, the first argument selects the reduction and the second lists the retained axes. Both expressions produce the same matrix.
+    ("One sum of squares per run", 12, 13, [
+      `by_run` retains `.t`. FlatPPL sums over `.s` even though it occurs only once. The first residual is `[2, 1]`, so the first run contributes 5. Empty brackets sum all three contributions.
     ]),
-    ("Choose the reduction", 13, 14, [
-      `col_var` keeps columns and reduces the two rows using sample variance. `row_max` keeps rows and finds each row’s largest entry. A reduced axis can appear just once.
+    ("Means and logical reductions", 15, 17, [
+      `mean` retains one result per sensor, $[5/3, 2]$. `lall` retains one result per run. Only run 3 has both readings within one unit of their predictions.
     ]),
-    ("Tie two axes to a diagonal", 16, 17, [
-      In `C[.i, .i]` the same index selects the row and column together. Two independent names in `C[.i, .k]` visit all four cells. Both empty output lists return a scalar.
+    ("Pairs of sensor residuals", 19, 20, [
+      Two free names, `.a` and `.b`, select sensors independently. The off-diagonal entry is $2 times 1 + 0 times 2 + 1 times (-1) = 1$. Reusing `.s` in the trace selects the diagonal entries 5 and 6.
     ]),
   ),
   after-notes: (
-    entry("Check the shapes", [
-      #code("first[] := A[1, .j] * B[.j, 1]")
-      #v(3pt)
-      `A` is $2 times 3$, `B` is $3 times 2$, and `C` is $2 times 2$. The two dimensions named `.j` must have the same length.
+    entry("Gaussian likelihood", [
+      Each reading has independent unit Normal error. The six readings give $log L = -3 log(2 pi) - 11/2 approx -11.01363$. The sum of squares in line 13 supplies the entire data-dependent term.
     ]),
   ),
   variants: (
-    entry("Compare rows with columns", [
-      #code("w = [1, 2, 1]\nD[.i, .k] := w[.j] * (\n    A[.i, .j] - B[.j, .k])^2")
+    entry("Design and coefficient matrices", [
+      A row of `X` is `[1, time]` at times 0, 1, and 2. A row of `B` is `[intercept, slope]` for one sensor. The two lines are $1+2t$ and $2-t$. The columns of `y` follow this sensor order.
+    ]),
+    entry("The explicit reduction", [
+      #code("fitted = aggregate(sum, [.t, .s],\n    X[.t, .k] * B[.s, .k])")
       #v(3pt)
-      The output has the same two free axes as the product. Changing the body gives weighted squared distances. The first entry is 34.
-    ]),
-    entry("Permute the output", [
-      The product is `[[6, 8], [10, 6]]`. Listing `[.k, .i]` stores `[[6, 10], [8, 6]]`. The factors and the contraction stay the same.
-    ]),
-    entry("Check three reductions", [
-      `col_var` gives `[32, 2, 8]`. For column one, the two deviations from 5 are −4 and 4. `diagonal_sum` gives 12 and `total` gives 30.
+      `:=` abbreviates `aggregate(sum, …)`. Both forms produce three rows and two columns. Summing over the shared coefficient index implements $X B^T$.
     ]),
   ),
   references: (
-    entry("Choose an operator", [
-      `sum`, `prod`, `mean`, `median`, `minimum`, and `maximum` reduce numeric entries. `var` and `std` use the sample denominator. `lany` and `lall` reduce Boolean entries.
-    ]),
-    entry("Keep a batch axis", [
-      #code("S = aggregate(sum, [.b, .i],\n    X[.b, .i, .j] * w[.j])")
+    entry("Output order", [
+      #code("T[.s, .t] := X[.t, .k] * B[.s, .k]")
       #v(3pt)
-      Each batch and row has its own weighted sum. The same vector of weights serves every batch.
+      Putting the sensor first gives a $2 times 3$ array. `T[1, 3]` and `pred[3, 1]` both contain the prediction 5.
     ]),
-    entry("Read the brackets", [
-      Write every retained name once in the output list and use it in the body. A numeric subscript fixes one coordinate. Axis names are local to their enclosing expression.
-    ]),
-    entry("Reduce a logical condition", [
-      #code("ok = aggregate(lall, [.i], A[.i, .j] > 0)")
+    entry("Paired and independent indices", [
+      #code("diagonal[] := gram[.s, .s]\nall_cells[] := gram[.a, .b]")
       #v(3pt)
-      This gives one Boolean per row. Both rows in the example satisfy the condition in every column.
+      `diagonal` sums two entries and gives 11. `all_cells` sums four entries and gives 13. A repeated name selects the same coordinate wherever it appears.
+    ]),
+    entry("Reduction operators", [
+      Use `sum` or `prod` for totals and products, `minimum` or `maximum` for extrema, and `mean` or `median` for location. `var` and `std` use the sample denominator. `lany` and `lall` reduce Boolean values.
+    ]),
+    entry("Index lengths", [
+      Every occurrence of a name spans the same number of entries. A numeric subscript fixes one position. For example, `r[1, .s]` selects both sensors in run 1.
     ]),
   ),
 )

@@ -9,17 +9,17 @@
     "Intensity within the physical Dalitz boundary. Resonance bands at s12 and s13 near 0.96 GeV squared are mirror images about the diagonal.",
     [Exchanging $s_(12)$ and $s_(13)$ reflects the resonance band across the diagonal. Colour shows $abs(A)^2$ at `p0`. The constant reference amplitude alone gives one.]),
   notes: (
-    ("Change kinematic coordinates", 9, 13, [
-      `m` is the mass of the two negative pions. `c` is the cosine of their helicity angle. `q` and `k` give the bachelor and daughter momenta in the pair rest frame. The two opposite-sign squared masses are `s12(m,c)` and `s12(m,-c)`.
+    ("Pair mass and helicity angle", 9, 13, [
+      Use the mass `m` of the two negative pions and the cosine `c` of their helicity angle. In the pair rest frame, `q` and `k` are the bachelor and daughter momenta. The opposite-sign squared masses are `s12(m,c)` and `s12(m,-c)`.
     ]),
-    ("Add the amplitudes coherently", 18, 22, [
-      `bw` has denominator $m_R^2-s-i m_R Gamma$. Add both pairings with the same complex coupling `p.r*cis(p.phi)` before taking `abs2`. The constant amplitude `1` provides a phase reference.
+    ("Bose-symmetric amplitude", 18, 22, [
+      The Breit–Wigner denominator is $m_R^2-s-i m_R Gamma$. Give both pairings the same complex coupling `p.r*cis(p.phi)`. Sum their amplitudes and the constant phase reference `1` before applying `abs2`.
     ]),
     ("Declare coordinates and couplings", 25, 29, [
-      `cartprod` defines a rectangle in `[m,c]`. The masses are in GeV and `phi` is in radians. The record passes the two fit parameters together to the density callback.
+      Define the `[m,c]` rectangle with `cartprod`. Express the masses in GeV and `phi` in radians. Pass both fit parameters to the density callback in one record.
     ]),
     ("Construct the event likelihood", 30, 34, [
-      `weighted` calls `weight(x, parameters)` on the Lebesgue base. `normalize` divides by the integral over the rectangle. `functionof(pdf)` exposes `r` and `phi`. The final call fixes one observed `[m,c]`.
+      On the Lebesgue base, `weighted` evaluates `weight(x, parameters)`. Normalize by the integral over the rectangle. `functionof(pdf)` takes `r` and `phi`. Bind one observed `[m,c]` to obtain the event likelihood.
     ]),
   ),
   after-notes: (
@@ -28,10 +28,10 @@
     ]),
   ),
   variants: (
-    entry("Point and exchange checks", [
+    entry("Pion exchange", [
       #code("mirror = weight([1.0, -0.35], p0)")
       #v(3pt)
-      Both weights round to $0.69474017$. Exchanging the negative pions sends $c$ to $-c$.
+      Exchanging the negative pions takes $c$ to $-c$. Both weights round to $0.69474017$.
     ]),
     entry("Kinematic identity", [
       $s_(12) + s_(13) + m^2 = m_D^2 + 3 m_pi^2$. Pions 2 and 3 form the same-sign pair.
@@ -41,7 +41,7 @@
     entry("Include detector efficiency", [
       #code("accepted(x,p) = efficiency(x) * weight(x,p)\nM_acc = normalize(weighted(accepted,\n    Lebesgue(support), parameters))")
       #v(3pt)
-      Apply efficiency inside the integral. Changing a coupling can change the accepted fraction and the normalizing integral.
+      Include the efficiency in the integrand. A change in coupling can alter both the accepted fraction and the normalization integral.
     ]),
     entry("Bind several events", [
       #code("K_events = functionof(iid(pdf, n))\nL_events = likelihoodof(K_events, data)")
@@ -53,8 +53,8 @@
       #v(3pt)
       For a signal fraction `f` and a normalized background on the same coordinates, add their measures. Interference belongs inside the signal amplitude.
     ]),
-    entry("Scope of the amplitude", [
-      The example uses one constant-width S wave and ideal resolution. Spin tensors, barrier factors and mass-dependent widths enter more detailed amplitudes. Absolute rates also need the phase-space constants and the symmetry factor of one half.
+    entry("Amplitude and resolution assumptions", [
+      The model assumes one constant-width S wave and ideal resolution. The #module-link("flatppl-amplitudes", "a522f9ef883239faf81658c763f1f4bd180b5206")[amplitudes module] provides additional lineshapes and angular factors. Absolute rates also require the phase-space constants and the symmetry factor of one half.
     ]),
   ),
 )

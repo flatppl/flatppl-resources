@@ -5,21 +5,21 @@
   formula: ("A nuisance parameter", [$L_(p) (s) = max_(b >= 0) L(s,b)$]),
   reference-title: "Comparing signal likelihoods",
   file: "examples/profile-marginal.flatppl", example: "One signal and one control count",
-  illustration: ("One nuisance parameter, two curves",
+  illustration: ("Profile and marginal signal likelihoods",
     "Joint likelihood contours and the best background at each signal sit above the profile and marginal signal curves.",
-    [The ridge follows the best background at each signal. Below it, each signal curve is shifted to its own peak. The dashed curve integrates over the Gamma prior.]),
+    [The ridge shows the fitted background at each signal. Each log-likelihood curve in the lower panel has its own maximum at zero. The dashed curve integrates over the Gamma prior.]),
   notes: (
-    ("Write the observation law", 11, 13, [
-      The signal region has mean `s + b`. The control region has five times the background exposure, so its mean is `5*b`. The two observed counts are 7 and 12.
+    ("Signal and control counts", 13, 15, [
+      The signal region has Poisson mean `s + b`. The control exposure is five times larger, with mean `5*b`. The observed counts are 7 and 12, respectively.
     ]),
-    ("Profile at fixed signal", 15, 17, [
-      `b_hat(s)` maximizes the joint likelihood over nonnegative background for the supplied signal. Evaluating at that background leaves a function of `s` alone.
+    ("Profile at fixed signal", 17, 19, [
+      At a fixed `s`, maximize the joint likelihood over nonnegative background. Inserting the maximizer `b_hat(s)` gives the profile likelihood as a function of `s`.
     ]),
-    ("Integrate a background prior", 19, 22, [
-      The library computes the exact Gamma-background marginal for integer counts. Shape 2 and rate 1 give a prior mean of 2. This step specifies a law for `b`.
+    ("Integrate a background prior", 21, 24, [
+      For integer counts the module integrates exactly against a Gamma prior for `b`. Shape 2 and rate 1 give a prior mean of 2.
     ]),
-    ("Compare at the same signal", 24, 27, [
-      At `s = 3`, the fitted background is 2.53424. The profile log likelihood is −4.26916 and the marginal log likelihood is −5.37638, before the shifts in the figure.
+    ("Evaluation at a fixed signal", 26, 29, [
+      At `s = 3` the fitted background is 2.53424. Before shifting the curves to their peaks, the log likelihoods are −4.26916 for profiling and −5.37638 for marginalization.
     ]),
   ),
   after-notes: (
@@ -31,24 +31,21 @@
     entry("Evaluate a signal scan", [
       #code("scan_p(t) = counts.onoff_profile_loglikelihood(\n    n, m, t, ratio)\ngrid = linspace(0.0, 12.0, 61)\nlp = scan_p.(grid)\nlm = marginal.(grid)")
       #v(3pt)
-      The library supplies a scalar formula for the profile score. Both dotted calls evaluate the same signal grid.
+      Evaluate the module’s scalar profile formula and the Gamma marginal on the same grid. The dots broadcast both calls over the signal values.
     ]),
     entry("The integral over background", [
-      For a fixed signal, the marginal is $integral_0^infinity L(s,b) pi(b) dif b$. The Gamma density and the differential specify how much weight each background value receives.
-    ]),
-    entry("Keep the signal interpretation", [
-      Both curves depend on the signal. To form a Bayesian posterior for the signal from the marginal, specify its prior and normalize their product.
+      At fixed signal the marginal likelihood is $integral_0^infinity L(s,b) pi(b) dif b$. The Gamma density weights each background interval in the integral.
     ]),
   ),
   references: (
-    entry("Read a likelihood scan", [
-      The profile peaks at 4.60. The marginal peaks near 4.73 for this prior. Comparing their drops from the peak shows how each treats nearby signal values.
+    entry("Locations of the maxima", [
+      The profile peaks at 4.60 and the marginal near 4.73 for this prior. Measure changes in log likelihood relative to each curve’s own maximum.
     ]),
     entry("Interpret the exposure ratio", [
-      `ratio` is the control exposure divided by the signal-region exposure. `b` already denotes a mean count in the signal region. Multiplying by the ratio gives control counts.
+      `ratio` is the control exposure divided by the signal-region exposure. Since `b` denotes the expected signal-region background count, multiplying it by `ratio` gives the expected control count.
     ]),
-    entry("Move the background assumption", [
-      Changing Gamma shape or rate changes the marginal curve. The profile depends only on the joint count law and the constraint $b>=0$. The packaged library supplies both calculations.
+    entry("From a marginal likelihood to a posterior", [
+      The background prior affects only the marginal curve. Multiply that curve by a signal prior and normalize to obtain a signal posterior. The #module-link("flatppl-stats-counts", "4f0a6a8eedf0595d1d779fe6ba6a5579fa96eaf4")[counts module] supplies both scan functions.
     ]),
   ),
 )

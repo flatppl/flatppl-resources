@@ -5,25 +5,25 @@
   formula: ("One rate, unequal exposures", [$n_i tilde.op "Poisson"(r t_i)$]),
   reference-title: "Writing a model",
   file: "examples/zero-to-hero.flatppl", example: "One rate from three counts",
-  illustration: ("What the fitted rate predicts",
+  illustration: ("Expected and observed counts",
     "Three bars give expected counts of 1.5, 3 and 1.5. Three diamonds show the observed counts of 2, 3 and 1.",
     [At `rate = 1.5`, doubling the exposure doubles the expected count. The diamonds are the three observed counts.]),
   notes: (
     ("Set the data and the support", 6, 8, [
-      The two arrays pair each count with its exposure. The Gamma draw gives the positive rate a prior with shape 2 and rate 1.
+      Entry `i` pairs a count with its exposure. The Gamma prior has shape 2 and rate 1 and restricts the event rate to positive values.
     ]),
     ("Build the observation law", 10, 11, [
-      Use `=` for a calculation and `~` for a draw. `.*` scales each exposure. `Poisson.(expected)` gives one independent count per array entry.
+      Use `=` for a calculation and `~` for a draw. Multiplication by `rate` acts elementwise. The dotted Poisson constructor gives independent counts at the resulting means.
     ]),
-    ("Name what the data fix", 13, 16, [
-      `K` takes the rate and returns a law over the field `n`. `likelihoodof` fixes that field to the counts. `bayesupdate` combines the resulting likelihood with the prior.
+    ("Condition on the observed counts", 13, 16, [
+      At each rate, `K` gives a law for the record field `n`. Supply the observed counts to `likelihoodof`, then pass the likelihood and prior to `bayesupdate`.
     ]),
     ("Score a point and predict", 18, 21, [
-      `logdensityof` takes a named parameter record. `functionof` exposes the expected counts as a callable. At this point it returns `[1.5, 3.0, 1.5]`.
+      Evaluate `logdensityof` at a record with the field `rate`. The function returned by `functionof` gives the expected counts `[1.5, 3.0, 1.5]` at that rate.
     ]),
   ),
   after-notes: (
-    entry("Check a model by hand", [
+    entry("Analytic rate estimate", [
       The counts sum to 6 over 4 exposure units. The likelihood peaks at $6/4=1.5$. The exact posterior is `Gamma(8, 5)` with mean 1.6.
     ]),
     entry("Check the file before fitting", [
@@ -34,10 +34,10 @@
     entry("A likelihood without a prior", [
       #code("rate = elementof(posreals)")
       #v(3pt)
-      Keep the observation law, `K`, and `L`. This declaration supplies a free parameter for a likelihood fit. The `prior` and `posterior` bindings belong to the Bayesian version.
+      For a likelihood fit, retain the observation law, `K`, and `L`. Declare the free rate with `elementof`. Add the `prior` and `posterior` bindings for Bayesian inference.
     ]),
     entry("Check the log likelihood", [
-      At `rate = 1.5`, the sum of three Poisson log probabilities is $-3.97267$. This checks the data order, the exposure scale, and the likelihood in one calculation.
+      At `rate = 1.5` the three Poisson log probabilities sum to $-3.97267$. Compare this value with `log_L` to check the ordering of counts and exposures and the exposure scale.
     ]),
   ),
   references: (
@@ -52,15 +52,15 @@
     entry("Accept data from the host", [
       #code("counts = external(cartpow(nonnegintegers, 3))")
       #v(3pt)
-      Replace the literal with this declaration. Bind a length-three count vector before querying `L`. Keep the output field name `n` in the kernel and observation record.
+      Declare the counts as external and supply a length-three vector before evaluating `L`. Use the same field name, `n`, in the kernel and the observation record.
     ]),
     entry("Extend the predictor", [
       #code("eta = alpha .+ beta .* x\nexpected = exposure .* exp.(eta)")
       #v(3pt)
       Declare the intercept and slope as parameters. Give the kernel both inputs. The exponential link keeps each mean positive.
     ]),
-    entry("Choose what to compute", [
-      Fit `L` for a maximum-likelihood estimate or sample `posterior` for parameter uncertainty. Here the exact Gamma update supplies a rate draw for the next exposure. Its predicted mean count is $2 times 1.6=3.2$.
+    entry("Estimation and prediction", [
+      Maximize `L` to estimate the rate, or sample `posterior` to quantify its uncertainty. For prediction, draw a rate from the exact Gamma posterior. The mean count for the next exposure is $2 times 1.6=3.2$.
     ]),
   ),
 )

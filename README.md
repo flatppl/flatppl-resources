@@ -6,7 +6,7 @@ Cheatsheets and brand assets for FlatPPL.
 
 ## Cheatsheets
 
-Start with [Zero to hero](cheatsheets/zero-to-hero.pdf) or download the [complete 17-sheet set](cheatsheets/flatppl-cheatsheets.pdf).
+Download the [complete 19-sheet collection](cheatsheets/flatppl-cheatsheets.pdf). [Zero to hero](cheatsheets/zero-to-hero.pdf) covers the steps for a first model.
 
 | Sheet | Outcome |
 | --- | --- |
@@ -15,8 +15,8 @@ Start with [Zero to hero](cheatsheets/zero-to-hero.pdf) or download the [complet
 | [Beginner: simple models](cheatsheets/beginner.pdf) | Author a complete Bayesian or likelihood-only model |
 | [Intermediate: hierarchical models](cheatsheets/intermediate.pdf) | Author grouped and multilevel models |
 | [Advanced: measure composition](cheatsheets/advanced.pdf) | Build models from measures and kernels |
-| [Einstein summation and reductions](cheatsheets/einstein-reductions.pdf) | Contract arrays and choose which axes survive |
-| [Metric Einstein summation](cheatsheets/metric-einstein.pdf) | Contract upper and lower indices in an oblique basis |
+| [Einstein summation and reductions](cheatsheets/einstein-reductions.pdf) | Compute calibration residuals by run, sensor, or sensor pair |
+| [Metric Einstein summation](cheatsheets/metric-einstein.pdf) | Recover the same squared distance after a change of sensor coordinates |
 | [Posterior prediction](cheatsheets/posterior-prediction.pdf) | Distinguish uncertainty in a mean from a new reading |
 | [From a model to a fit](cheatsheets/fitting-from-python.pdf) | Fit a FlatPPL likelihood from Python and verify the estimate |
 | [Rounded readings and detection flags](cheatsheets/measurement.pdf) | Score the events an instrument actually reports |
@@ -27,9 +27,10 @@ Start with [Zero to hero](cheatsheets/zero-to-hero.pdf) or download the [complet
 | [Forward-folding a photon spectrum](cheatsheets/gamma-ray-response.pdf) | Predict detector counts from a true-energy spectrum |
 | [From a decay law to a likelihood](cheatsheets/decay-ode.pdf) | Fit observations at selected solution times |
 | [Two spins and a partition function](cheatsheets/two-spins.pdf) | Build and normalize a finite Gibbs measure |
+| [FlatPPL for Python](cheatsheets/python-sdk.pdf) | Compile a query, differentiate it, and evaluate a batch with JAX |
+| [The FlatPPL CLI](cheatsheets/cli.pdf) | Find commands for checking, converting, compiling, and packaging a model |
 
-Each A4 landscape sheet pairs a complete program with four annotated passages and a figure drawn from the example.
-FlatPPL listings use the language grammar. The fitting sheet also prints the corresponding Python driver.
+Each worked example occupies one A4 landscape page, with its complete program beside four annotated excerpts. The CLI reference groups commands by task.
 The [corpus map](cheatsheets/examples-map.md) links every curated example to the relevant level or domain.
 [Sources and build instructions](cheatsheets/README.md) accompany the PDFs.
 

@@ -1,0 +1,5 @@
+flatppl_compat = "0.1"
+x = elementof(reals)
+mu = elementof(reals)
+inputs = (x, mu)
+outputs = logdensityof(Normal(mu, 1.0), x)

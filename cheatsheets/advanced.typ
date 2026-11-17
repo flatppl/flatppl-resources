@@ -10,33 +10,33 @@
     [At `p = 0.4` and `mu = -1` the Normal carries 40% of the mass. Below zero the Gamma density vanishes and the sum follows the Normal contribution.]),
   notes: (
     ("Bind component measures", 11, 12, [
-      `M1` and `M2` are measures on the real line. `M1` depends on the free location `mu`. The Gamma component has fixed shape and rate. Neither constructor introduces a variate.
+      `M1` and `M2` denote measures on the real line. The Normal location `mu` is free. The Gamma shape and rate are fixed. A constructor alone introduces no variate.
     ]),
-    ("Scale and add mass", 13, 14, [
-      `weighted` scales each component's mass. `superpose` adds the two measures on their common event space. The complementary weights make the result a probability measure for every allowed `p`.
+    ("Mixture weights", 13, 14, [
+      Scale the component masses with `weighted` and add them on their common event space with `superpose`. The weights sum to one for every admissible `p`.
     ]),
     ("Build a kernel from a measure", 17, 21, [
-      `iid` forms the product over observations. `joint` assigns the array to the field `y`. `functionof` turns the expression into a kernel with inputs `p` and `mu`. The independent prior has those same fields.
+      `iid` forms the product over observations. Name the resulting array `y` with `joint`. The kernel returned by `functionof` takes `p` and `mu`. The independent prior uses the same field names.
     ]),
-    ("Keep, integrate or condition", 24, 29, [
-      `jointchain` retains the parameters alongside `y`. `kchain` integrates them out. `disintegrate` splits the joint into a kernel for `y` and a prior. Fixing `y` with `restrict` gives the unnormalized posterior.
+    ("Marginal and conditional laws", 24, 29, [
+      `jointchain` retains both the parameters and `y`. `kchain` integrates out the parameters. `disintegrate` recovers a prior and a kernel for `y`. Fixing `y` with `restrict` gives the unnormalized posterior.
     ]),
   ),
   after-notes: (
-    entry("Read the likelihood score", [
-      At `point` the five observations contribute $sum_i log(p f_1(y_i)+(1-p) f_2(y_i)) approx -8.93513$. Each observation gets its own mixture sum before the log densities are added.
+    entry("Mixture log likelihood", [
+      At `point` the five observations give $sum_i log(p f_1(y_i)+(1-p) f_2(y_i)) approx -8.93513$. Sum the component densities within each observation before taking its logarithm.
     ]),
   ),
   variants: (
     entry("Build a mixture from a table", [
       #code("components = table(mu = [-2, 2],\n    sigma = [0.7, 0.9])\nweights ~ Dirichlet([2, 2])\nM = ksuperpose(Normal, weights, components)")
       #v(3pt)
-      Each row supplies one component's named constructor arguments. The simplex-valued draw supplies the weights.
+      Each table row supplies named constructor arguments for one component. Draw the vector of weights on the simplex.
     ]),
-    entry("Keep the mass for an event process", [
+    entry("Event intensity and total yield", [
       #code("I = superpose(weighted(ns, signal),\n    weighted(nb, background))\nevents ~ PoissonProcess(I)")
       #v(3pt)
-      For unit-mass shapes, `ns + nb` is the expected event count. Normalizing `I` would discard this count information.
+      With unit-mass shapes, the intensity has total mass `ns + nb`, the expected event count. Normalizing `I` discards that count information.
     ]),
   ),
   references: (
@@ -53,7 +53,7 @@
     entry("Project a joint law", [
       #code("mu_law = pushfwd(fn(get(_, [\"mu\"])),\n    joint_model)")
       #v(3pt)
-      The projection keeps the named field. Evaluating its density can require integrating over the omitted variables.
+      Projection retains the selected field. Its density may require integration over the omitted variables.
     ]),
     entry("Compose sequential kernels", [
       #code("step(x, p) = Normal(p.rho*x, p.sigma)\npath = markovchain(step, 0.0, 20,\n    record(rho = 0.8, sigma = 0.2))")

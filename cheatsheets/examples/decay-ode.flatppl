@@ -2,7 +2,9 @@
 Eleven solution times, three measurements.
 %%%
 flatppl_compat = "0.1"
-ode = load_module("lib/ode/main.flatppl")
+ode = load_module(
+    "https://raw.githubusercontent.com/flatppl-community/flatppl-numerics-ode/a56b4977b3ca4fced2e986bcbbdb6930b9d8c04a/main.flatppl"
+)
 t_grid = linspace(0.0, 1.0, 11)
 y_data = [1.02, 0.57, 0.38]
 rate = elementof(posreals)

@@ -15,3 +15,5 @@ neutrino-physics
 gamma-ray-response
 decay-ode
 two-spins
+python-sdk
+cli
