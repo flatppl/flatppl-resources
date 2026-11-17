@@ -31,8 +31,7 @@ Download the [complete 19-sheet collection](cheatsheets/flatppl-cheatsheets.pdf)
 | [The FlatPPL CLI](cheatsheets/cli.pdf) | Find commands for checking, converting, compiling, and packaging a model |
 
 Each worked example occupies one A4 landscape page, with its complete program beside four annotated excerpts. The CLI reference groups commands by task.
-The [corpus map](cheatsheets/examples-map.md) links every curated example to the relevant level or domain.
-[Sources and build instructions](cheatsheets/README.md) accompany the PDFs.
+Each PDF contains its worked example and data. Specialist sheets assume the core language and can be read in any order. The [authoring guide](cheatsheets/README.md) and [corpus map](cheatsheets/examples-map.md) document the private build.
 
 ## Branding
 

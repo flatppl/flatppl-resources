@@ -60,6 +60,10 @@
   underline(stroke: 0.5pt + secondary, body),
 )
 
+#let attach-example(file) = pdf.attach("/" + file.split("/").last(), read(file, encoding: none),
+  mime-type: if file.ends-with(".json") { "application/json" } else { "text/plain" },
+  relationship: "supplement")
+
 // Keep the URL literal intact in the source. Wrap its printed link at path separators.
 #let print-line(line, columns) = {
   let match = line.match(regex("^( *)\"(https?://[^\"]+)\"$"))
@@ -160,11 +164,10 @@
   #detail
 ]
 
-#let sheet-page(name, title, topic, accent, formula, body) = {
-  let number = str(sheet-names.position(n => n == name) + 1)
+#let sheet-page(title, topic, accent, formula, body) = {
   set document(title: if sys.inputs.at("collection", default: "false") == "true" {
     "FlatPPL / Cheatsheets"
-  } else { "FlatPPL / " + title }, author: "FlatPPL")
+  } else { "FlatPPL / " + title }, author: "Jessica Cox")
   set page(paper: "a4", flipped: true, margin: (x: 18pt, top: 17pt, bottom: 17pt))
   set text(font: sans, size: 9.6pt, fill: ink, lang: "en")
   set par(leading: 3.7pt, spacing: 4pt, justify: false)
@@ -172,8 +175,12 @@
   show raw.where(block: false): set text(font: mono, size: 8.45pt, fill: ink)
   show heading.where(level: 1): it => text(font: serif, size: 28.5pt, weight: "regular", fill: ink, it.body)
   set math.equation(numbering: none)
+  context if here().page() == 1 {
+    pdf.attach("/EXAMPLE-LICENSE.txt", bytes(read("examples/LICENSE.txt") + "\n" + read("examples/NOTICE.md")),
+      mime-type: "text/plain", description: "License and attribution for the example code")
+  }
   block(width: 100%, height: 46pt)[
-    #grid(columns: (35pt, 1fr, 211pt, 44pt), column-gutter: 11pt, align: horizon,
+    #grid(columns: (35pt, 1fr, 183pt, 78pt), column-gutter: 11pt, align: horizon,
       image("../branding/logo-rounded.svg", width: 35pt, alt: "FlatPPL"),
       [
         #text(font: sans, size: 8.3pt, weight: "bold", fill: ink)[FlatPPL 0.1]
@@ -186,7 +193,11 @@
         #v(4pt)
         #text(size: 12.2pt, formula.at(1))
       ],
-      align(right)[#text(font: serif, size: 19pt, fill: accent, if number.len() == 1 { "0" + number } else { number })#h(1.5pt)#text(size: 7.5pt, fill: secondary, "/ " + str(sheet-names.len()))],
+      align(right)[
+        #text(font: serif, size: 12pt, weight: "bold")[Jessica Cox]
+        #v(3pt)
+        #link("mailto:bcox@mpp.mpg.de", text(size: 8.2pt, fill: secondary, "bcox@mpp.mpg.de"))
+      ],
     )
   ]
   line(length: 100%, stroke: 0.85pt + accent)
@@ -196,15 +207,16 @@
 
 #let sheet(title: "", topic: "", accent: ink, formula: (), file: "",
   example: "", illustration: (), notes: (), variants: (), reference-title: "Reference",
-  references: (), after-notes: (), lang: "flatppl", name: none) = {
+  references: (), after-notes: (), lang: "flatppl", name: none, companions: ()) = {
   let name = if name == none { file.split("/").last().split(".").first() } else { name }
   let source = read(file).trim()
+  for path in (file, ..companions) { attach-example(path) }
   let lines = source.split("\n")
   let fig = illustration
   let listings = (9.25pt, 8.85pt, 8.5pt).map(size => block(width: 100%)[
     #subhead(example, size: 15pt)#v(5pt)#program(source, notes, accent, size, lang: lang)
   ])
-  sheet-page(name, title, topic, accent, formula, grid(columns: (1.14fr, 1fr, 1fr), column-gutter: 12pt,
+  sheet-page(title, topic, accent, formula, grid(columns: (1.14fr, 1fr, 1fr), column-gutter: 12pt,
     column("Complete example", variants, accent, first-options: listings),
     column("Annotated lines", (
       ..notes.enumerate().map(((i,n)) => annotation(lines, n, i, accent, lang: lang)),

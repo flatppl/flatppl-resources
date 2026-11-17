@@ -10,7 +10,7 @@
     [The same residual lies on the contour $d^2=5$ in both panels. The shear maps the circle to an ellipse. At fixed $q_1$, increasing $q_2$ increases $y$ and decreases $x$ by the same amount.]),
   notes: (
     ("Transform the covariance with the data", 9, 10, [
-      The first run on the preceding sheet gives `r = [2, 1]` with identity noise covariance. The instrument now reports `q = [x + y, y]`. Its covariance is $G=J J^T$, with rows `[2, 1]` and `[1, 1]`.
+      The original residual is `r = [2, 1]` with identity noise covariance. The instrument reports `q = [x + y, y]`. Its covariance is $G=J J^T$, with rows `[2, 1]` and `[1, 1]`.
     ]),
     ("Contract one upper and one lower index", 12, 14, [
       `.i^` reads the stored vector. `.i_` applies the inverse of the supplied metric. The metric contraction gives 5 in both systems. Summing the squares of the reported components gives $3^2+1^2=10$.

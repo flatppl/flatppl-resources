@@ -7,6 +7,7 @@
   formula: ("Likelihood estimate", [$hat(tau) = frac(n, sum_i (y_i - overline(y))^2)$]),
   reference-title: "Python driver",
   file: "examples/fitting-from-python.flatppl", example: "A Gaussian mean and precision",
+  companions: ("examples/fit.py",),
   illustration: ("Likelihood contours in mean and precision",
     "Likelihood contours in mean and precision surround the exact maximum at 1.15 and 2.985. A cross marks the estimate.",
     [Contours show drops in log likelihood from its maximum. The cross marks the fitted mean and precision in their model coordinates.]),
@@ -41,11 +42,11 @@
     ]),
   ),
   variants: (
+    entry("Save and run the fit", [
+      Save the model as `fitting-from-python.flatppl`. Copy the five Python blocks in reading order into `fit.py` beside it. Run `python fit.py` with FlatPPL, JAX, NumPy and Optimistix installed.
+    ]),
     entry("Python imports", [
       #driver(1,6)
-    ]),
-    entry("Run the fit", [
-      Run `python examples/fit.py` from the cheatsheets directory with FlatPPL, NumPy, JAX and Optimistix installed. The script prints both estimates and checks them against the analytic solution.
     ]),
     entry("Bind the data", [
       #driver(8,12)

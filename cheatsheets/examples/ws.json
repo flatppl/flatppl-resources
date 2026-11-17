@@ -1,0 +1,12 @@
+{
+  "version": "1.0.0",
+  "channels": [{
+    "name": "counter",
+    "samples": [
+      {"name": "signal", "data": [2.0], "modifiers": [{"name": "mu", "type": "normfactor", "data": null}]},
+      {"name": "background", "data": [3.0], "modifiers": []}
+    ]
+  }],
+  "observations": [{"name": "counter", "data": [5]}],
+  "measurements": [{"name": "count", "config": {"poi": "mu", "parameters": []}}]
+}

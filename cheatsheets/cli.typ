@@ -1,6 +1,7 @@
 #import "theme.typ": *
 
 #let accent = rgb("695638")
+#for file in ("score.flatppl", "ws.json", "hs.json") { attach-example("examples/" + file) }
 #let command(title, source, body) = entry(title, [
   #block(width: 100%, inset: (x: 5pt, y: 4pt),
     fill: accent.lighten(96%), stroke: (left: 1pt + accent))[
@@ -10,14 +11,14 @@
   #body
 ])
 
-#sheet-page("cli", "The FlatPPL CLI", "Command-line reference", accent,
+#sheet-page("The FlatPPL CLI", "Command-line reference", accent,
   ("Command help", text(font: mono, size: 9.5pt, "flatppl <command> --help")),
   grid(columns: (1fr, 1fr, 1fr), column-gutter: 12pt,
     column("Write and check", (
       entry("The input file · score.flatppl", [
         #code(read("examples/score.flatppl").trim())
         #v(4pt)
-        Run the commands from `cheatsheets/examples`. This query accepts a reading and a mean and returns a Normal log density.
+        Save this listing as `score.flatppl` in an empty folder. Run the commands there. The query scores a Normal reading. The posterior uses the observed value 1.
       ]),
       command("Check or apply formatting",
         "flatppl fmt --check score.flatppl\nflatppl fmt score.flatppl", [
@@ -63,12 +64,12 @@
         File extensions select the formats. Use `.flatpir.json` for JSON or `.tex`, `.typ`, `.md`, or `.html` for mathematical notation. `--no-header` omits the generated-file banner.
       ]),
       command("Fetch module dependencies",
-        "flatppl prepare profile-marginal.flatppl", [
-        The ON/OFF example uses the #module-link("flatppl-stats-counts", "4f0a6a8eedf0595d1d779fe6ba6a5579fa96eaf4")[counts module]. `prepare` caches its pinned imports after approval. Set `FLATPPL_CACHEDIR` to choose the cache. Inference can then run offline.
+        "flatppl prepare score.flatppl", [
+        The printed model uses built-ins. For models with remote imports, `prepare` fetches and caches them after approval. Set `FLATPPL_CACHEDIR` to choose the cache for offline use.
       ]),
       command("Import a likelihood",
         "flatppl convert --from pyhf ws.json fit.flatppl\nflatppl convert --from hs3 hs.json h.flatppl", [
-        Supply a pyhf workspace or an HS³ document as the JSON input. Both importers require a CLI build with the `hs3` feature.
+        Save `ws.json` and `hs.json` from the PDF attachments, or supply your own pyhf workspace or HS³ document. Both importers require the `hs3` feature.
       ]),
     ), accent),
     column("Compile and share", (
@@ -86,15 +87,15 @@
           [`--target`], [`cpu`], [`gpu`])
       ]),
       command("Export a Stan posterior",
-        "flatppl stan --target posterior \\\n  zero-to-hero.flatppl -o rate.stan \\\n  --data rate.json", [
-        The rate model exports its named posterior and observed data. The CLI build needs the `stan` feature.
+        "flatppl stan --target posterior \\\n  score.flatppl -o mean.stan \\\n  --data mean.json", [
+        This exports the posterior for `mu` and the observed reading. The CLI build needs the `stan` feature.
       ]),
       command("Pack a model",
-        "flatppl pack profile-marginal.flatppl counts.zip", [
+        "flatppl pack score.flatppl score.zip", [
         Prepare remote imports first. The new archive includes the entry model, its imports, and referenced data.
       ]),
       command("Open a portable model",
-        "flatppl infer counts.zip packed.flatpir\nflatppl unpack counts.zip counts-copy", [
+        "flatppl infer score.zip packed.flatpir\nflatppl unpack score.zip score-copy", [
         Inspect a ZIP directly, or extract it into a new directory to edit its contents. The entry file is `main.flatppl`.
       ]),
     ), accent),

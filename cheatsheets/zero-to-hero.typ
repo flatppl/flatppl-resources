@@ -50,7 +50,7 @@
       A scalar parameter can serve every row. Use `iid(M, n)` for repeated draws from one law. Use a dotted constructor when its parameters vary across rows.
     ]),
     entry("Change the observation family", [
-      #code("y ~ Normal.(mu, sigma)\nhits ~ Binomial.(trials, prob)")
+      #code("y ~ Normal.(expected, 0.5)\nhits ~ Binomial.([10, 20, 10], 0.3)")
       #v(3pt)
       Use a Normal law for continuous readings. Use a Binomial law for successes out of known trial totals. Name the observed field in both `K` and `L`.
     ]),
@@ -60,9 +60,9 @@
       Declare the counts as external and supply a length-three vector before evaluating `L`. Use the same field name, `n`, in the kernel and the observation record.
     ]),
     entry("Extend the predictor", [
-      #code("eta = alpha .+ beta .* x\nexpected = exposure .* exp.(eta)")
+      #code("beta = elementof(reals)\neta = log(rate) .+ beta .* [-1, 0, 1]\nexpected = exposure .* exp.(eta)")
       #v(3pt)
-      Declare the intercept and slope as parameters. Give the kernel both inputs. The exponential link keeps each mean positive.
+      Replace the original `expected` binding. The log rate is the intercept and `beta` is the slope. Pass both `rate` and `beta` to the kernel.
     ]),
     entry("Estimation and prediction", [
       Maximize `L` to estimate the rate, or sample `posterior` to quantify its uncertainty. For prediction, draw a rate from the exact Gamma posterior. The mean count for the next exposure is $2 times 1.6=3.2$.

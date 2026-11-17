@@ -39,19 +39,19 @@
   ),
   references: (
     entry("Include detector efficiency", [
-      #code("accepted(x,p) = efficiency(x) * weight(x,p)\nM_acc = normalize(weighted(accepted,\n    Lebesgue(support), parameters))")
+      #code("eff(c) = 1 - 0.2*c^2\naccepted(x,p) = eff(x[2]) * weight(x,p)\nM_acc = normalize(weighted(accepted,\n    Lebesgue(support), parameters))")
       #v(3pt)
-      Include the efficiency in the integrand. A change in coupling can alter both the accepted fraction and the normalization integral.
+      This angular efficiency ranges from 0.8 to 1. Include it in the normalization integral at each coupling.
     ]),
     entry("Bind several events", [
-      #code("K_events = functionof(iid(pdf, n))\nL_events = likelihoodof(K_events, data)")
+      #code("data = [[1.0, 0.35], [0.9, -0.2]]\nK_events = functionof(iid(pdf, 2))\nL_events = likelihoodof(K_events, data)")
       #v(3pt)
-      Supply `n` event pairs in `data`. A normalized score for this model requires numerical integration at the chosen parameter values.
+      Each row is one event. The normalized score requires numerical integration at the chosen couplings.
     ]),
     entry("Add background events", [
-      #code("M = superpose(weighted(f, pdf),\n    weighted(1 - f, background))")
+      #code("bg = normalize(Lebesgue(support))\nM = superpose(weighted(0.8, pdf),\n    weighted(0.2, bg))")
       #v(3pt)
-      For a signal fraction `f` and a normalized background on the same coordinates, add their measures. Interference belongs inside the signal amplitude.
+      Add a 20% background uniform in $(m,c)$. Interference belongs inside the signal amplitude.
     ]),
     entry("Amplitude and resolution assumptions", [
       The model assumes one constant-width S wave and ideal resolution. The #module-link("flatppl-amplitudes", "a522f9ef883239faf81658c763f1f4bd180b5206")[amplitudes module] provides additional lineshapes and angular factors. Absolute rates also require the phase-space constants and the symmetry factor of one half.

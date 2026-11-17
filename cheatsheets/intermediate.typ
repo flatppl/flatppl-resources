@@ -35,24 +35,24 @@
       #v(3pt)
       Draw `a` directly and remove the affine transform of `z`. Substitute `a` for `z` in the prior record, kernel inputs and evaluation point. The conditional law of the intercepts is the same in both parameterizations.
     ]),
-    entry("Reuse a component", [
-      #code("part = load_module(\"component.flatppl\")\nK_group = part.observation_kernel")
+    entry("Reuse the observation kernel", [
+      #code("new_y = [0, 1, 0, 1, 1, 0]\nL_new = likelihoodof(K, record(y = new_y))")
       #v(3pt)
-      Export the reified kernel from the component. A caller can then bind new observations to the same kernel.
+      Bind six new outcomes in the same row order. The kernel retains the original groups and predictors.
     ]),
   ),
   references: (
     entry("Known errors for each group", [
-      #code("theta ~ iid(Normal(mu, tau), J)\ny ~ Normal.(theta, std_errs_data)")
+      #code("theta ~ iid(Normal(mu_a, tau), G)\ny_hat ~ Normal.(theta, [0.3, 0.2, 0.4])")
       #v(3pt)
-      In the eight-schools model each group has an uncertain effect and a known measurement error. Retain `mu`, `tau` and the full `theta` vector.
+      As in eight schools, each group has an uncertain effect and a known standard error. Here the three errors correspond to groups 1, 2 and 3.
     ]),
     entry("Pool success rates", [
-      #code("a_shape = phi * kappa\nb_shape = (1 - phi) * kappa\ntheta ~ iid(Beta(a_shape, b_shape), J)\ny ~ Binomial.(trials_data, theta)")
+      #code("phi ~ Beta(2, 2)\nkappa = 10\nrates ~ iid(Beta(phi*kappa, (1-phi)*kappa), G)\nhits ~ Binomial.([8, 12, 10], rates)")
       #v(3pt)
       `phi` sets the population mean. At fixed `phi`, increasing `kappa` concentrates the group rates around that mean. Supply a trial total and a success count for each group.
     ]),
-    entry("Call a reified function", [
+    entry("Call a named function", [
       #code("f(a, b) = a + b\nu = f(1, 2)\nv = f(record(b = 2, a = 1))")
       #v(3pt)
       An explicit boundary accepts positional inputs. A matching record supplies named inputs when the callable cannot accept one positional argument.

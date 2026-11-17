@@ -43,7 +43,7 @@
   ),
   references: (
     entry("Write the fold with named axes", [
-      #code("s[.r] := M[.r, .j] * truth[.j]")
+      #code("truth = time .* area .* width .* (\n    amplitude .* unit_flux)\ns[.r] := M[.r, .j] * truth[.j]")
       #v(3pt)
       `truth` contains the three expected counts before migration. Sum over true energy `.j` and retain reconstructed bin `.r`. The #module-link("flatppl-astro-gamma", "4ef7f6a001d6bf2701741653fa34a6a56019fe18")[gamma-ray module] implements the fold as `fold_spectrum`.
     ]),

@@ -52,7 +52,7 @@
       For design rows $h_a$ and $h_b$, shared coefficients give covariance $h_a^T V h_b$. Independent measurement errors add $sigma^2$ to each observation variance and leave this cross-covariance unchanged.
     ]),
     entry("An unknown noise scale", [
-      In the beginner model, `sigma` also has a prior. Use the same joint posterior draw of intercept, slope, and noise scale for each replicated data set.
+      If `sigma` has a prior, draw the intercept, slope and noise scale jointly from the posterior. Use one such draw for each replicated data set.
     ]),
     entry("Compare observations with replications", [
       Replicate the four observations at their original predictor values. Compare the observed maximum absolute residual, for example, with the same statistic in the replications.

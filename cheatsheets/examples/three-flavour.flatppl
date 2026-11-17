@@ -1,0 +1,14 @@
+flatppl_compat = "0.1"
+nu = load_module(
+    "https://raw.githubusercontent.com/flatppl-community/flatppl-physics-neutrinos/6c8aa0eaa169e5b2046b44e5941392e3816a3566/main.flatppl"
+)
+baseline = 295.0
+E = 0.6
+p = nu.parameters(0.59, 0.15, 0.78,
+    1.2, 0.000075, 0.0025)
+P = nu.vacuum_probabilities(E, baseline,
+    p, false)
+P_m = nu.matter_probabilities(E, baseline,
+    p, 1.4, false)
+appearance = P[1, 2]
+appearance_matter = P_m[1, 2]

@@ -8,4 +8,4 @@ Copyright (c) 2026 Jessica Cox and FlatPPL contributors, under the same MIT term
 
 The Python fitting driver adapts the FlatPPL Python SDK's Optimistix example. The SDK sheet uses its two-input Normal quickstart. The metric exercises also draw on the FlatPPL conformance corpus. These sources use the accompanying MIT license.
 
-The [example map](../examples-map.md) links the upstream examples and module revisions.
+Upstream projects: https://github.com/flatppl/flatppl-examples, https://github.com/flatppl-community, https://github.com/flatppl/flatppl-python, and https://github.com/flatppl/flatppl-testsuite.

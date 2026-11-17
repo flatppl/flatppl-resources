@@ -24,16 +24,16 @@
     The batched call returns the middle column. The derivative is $mu-x$, so opposite displacements have equal scores and opposite slopes.
   ]),
   notes: (
-    ("Load and compile", 7, 9, [
-      `load` reads the model beside the driver. `compile()` uses its `inputs` and `outputs` declarations to build a callable. Keep this function for subsequent calls.
+    ("Compile the model string", 11, 12, [
+      `flatppl(source)` reads the five FlatPPL declarations in the Python string. `compile()` uses `inputs` and `outputs` to build the callable used below.
     ]),
-    ("Pass a point by name", 11, 12, [
+    ("Pass a point by name", 14, 15, [
       Keyword arguments use the FlatPPL input names. The equivalent positional call is `score(1.0, 0.0)`. The result is a scalar JAX array. `float` converts it for printing.
     ]),
-    ("Differentiate one argument", 14, 16, [
+    ("Differentiate one argument", 17, 19, [
       `argnums=0` selects the first positional input, `x`. The transformed call returns the log density and its derivative. At this point the derivative is −1.
     ]),
-    ("Batch over the observations", 18, 20, [
+    ("Batch over the observations", 21, 23, [
       `in_axes=(0, None)` takes successive values of `x` from the first axis of `xs` and reuses one scalar mean. Three inputs give three log densities.
     ]),
   ),
@@ -50,20 +50,20 @@
     ]),
   ),
   variants: (
-    entry("The companion file · score.flatppl", [
-      #code(read("examples/score.flatppl").trim())
+    entry("The FlatPPL interface", [
+      #code("inputs = (x, mu)\noutputs = logdensityof(Normal(mu, 1.0), x)")
       #v(3pt)
       The tuple fixes the positional argument order. Each call supplies both values to the same compiled query.
     ]),
-    entry("Work in a notebook", [
-      #py("from flatppl import flatppl\ninline = flatppl(model.source)\nf = inline.compile()")
+    entry("Save and reload a model", [
+      #py("from pathlib import Path\nfrom flatppl import load\npath = Path(\"normal.flatppl\")\npath.write_text(source, encoding=\"utf-8\")\nf = load(path).compile()")
       #v(3pt)
-      Pass a string of FlatPPL source to `flatppl`. Use `load` for files and portable model ZIPs.
+      `f` accepts the same arguments as `score`. `load` also reads portable model ZIPs.
     ]),
     entry("Run the driver", [
-      #code("python examples/python_sdk.py", lang: "bash")
+      #code("python python_sdk.py", lang: "bash")
       #v(3pt)
-      Run this command from the cheatsheets directory. The #link(install, underline[SDK installation guide]) lists the matching compiler, JAX, and Enzyme packages.
+      Save the left listing as `python_sdk.py`, or run it in a notebook. The #link(install, underline[SDK installation guide]) lists the required packages.
     ]),
   ),
   references: (
@@ -72,15 +72,21 @@
       #v(3pt)
       The SDK builds a query over the parameters the expression uses. This one takes a record with one field and returns 3.
     ]),
-    entry("Bind a data set", [
-      #py("other = path.with_name(\n    \"fitting-from-python.flatppl\")\nm = load(other).set(observed=[0.5, 1.5] * 4)\ntarget = m.logdensity(\"L\", jacobian=False)")
+    entry("Bind an observed reading", [
+      #py("extra = '''")
+      #v(2pt)
+      #code("datum = external(reals)\nK = functionof(Normal(mu, 1.0))\nL = likelihoodof(K, datum)\nprior = joint(mu = Normal(0.0, 1.0))\nposterior = bayesupdate(L, prior)")
+      #v(2pt)
+      #py("'''")
+      #v(2pt)
+      #py("m = flatppl(source + extra).set(datum=1.0)")
       #v(3pt)
-      The fitting sheet declares `observed` as an external vector of length eight. The bound module supplies a likelihood in free coordinates. `target.potential` gives its negative log likelihood for minimization.
+      Append these declarations to the model string. `set` binds the observed reading to 1.
     ]),
-    entry("Pass a posterior to a sampler", [
-      #py("rate = load(path.with_name(\n    \"zero-to-hero.flatppl\"))\npost = rate.logdensity(\"posterior\")")
+    entry("Fit or sample the mean", [
+      #py("target = m.logdensity(\"L\", jacobian=False)\npost = m.logdensity(\"posterior\")")
       #v(3pt)
-      Give the sampler `post` and its starting point `post.init`. The default includes the log-Jacobian. Apply `post.constrain` to recover rates from sampled free coordinates.
+      Minimize `target.potential` for a likelihood fit. A sampler takes `post` and `post.init`. Map draws to `mu` with `post.constrain`. Here the posterior mean is $1/2$ and its variance is $1/2$.
     ]),
     entry("Choose precision", [
       #py("with jax.enable_x64(True):\n    f64 = model.compile(dtype=\"float64\")\n    value64 = f64(1.0, 0.0)")

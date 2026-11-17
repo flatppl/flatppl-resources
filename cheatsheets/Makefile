@@ -6,9 +6,9 @@ BRANDING = ../branding/logo-rounded.svg
 SYNTAX = $(wildcard syntax/*.sublime-syntax syntax/*.tmTheme)
 MODEL_SHEETS = $(filter-out python-sdk cli,$(SHEETS))
 FIGURES = $(MODEL_SHEETS:%=figures/%.svg)
-COMMON = theme.typ sheets.txt $(BRANDING) $(SYNTAX)
+COMMON = theme.typ sheets.txt examples/LICENSE.txt examples/NOTICE.md $(BRANDING) $(SYNTAX)
 FLATPPL ?= flatppl
-IMPORT_MODELS = examples/decay-ode.flatppl examples/profile-marginal.flatppl
+IMPORT_MODELS = examples/decay-ode.flatppl examples/profile-marginal.flatppl examples/three-flavour.flatppl
 
 .PHONY: all
 all: $(PDFS)
@@ -26,7 +26,8 @@ $(SHEETS:%=%.pdf): %.pdf: %.typ $(COMMON)
 	typst compile --root .. $< $@
 
 $(MODEL_SHEETS:%=%.pdf): %.pdf: examples/%.flatppl figures/%.svg
-python-sdk.pdf cli.pdf: examples/score.flatppl
+neutrino-physics.pdf: examples/three-flavour.flatppl
+cli.pdf flatppl-cheatsheets.pdf: examples/score.flatppl examples/ws.json examples/hs.json
 python-sdk.pdf flatppl-cheatsheets.pdf: examples/python_sdk.py
 fitting-from-python.pdf flatppl-cheatsheets.pdf: examples/fit.py
 

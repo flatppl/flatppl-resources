@@ -1,16 +1,16 @@
 # FlatPPL cheatsheets
 
 The collection contains eighteen worked examples and one CLI reference. Each occupies one A4 landscape page. Letters A–D mark the annotated passages in the worked examples.
-Start with the rate model on the first page. The two tensor sheets can be read together before the detector-response example.
-The three core levels progress from complete simple models to hierarchy and explicit measure composition.
-The domain sheets assume the relevant core levels and introduce physical conventions alongside the code.
+Zero to Hero and the beginner, intermediate and advanced sheets each introduce a complete model. The specialist sheets assume the language covered in those four. Each introduces its own notation, data and model.
+
+Each PDF includes its model in the attachments pane. The fitting sheet includes both the model and its Python script. The CLI sheet includes sample pyhf and HS³ inputs. Save attachments in one folder to run them. The profiling and ODE models and the optional three-flavour example import pinned community modules.
 
 | Sheet | Main example | Additional coverage |
 | --- | --- | --- |
 | [Zero to hero](zero-to-hero.pdf) | Poisson counts with unequal exposures | Host data, positive rates, likelihoods, priors, prediction, and a conjugate check |
 | [Distributions](distributions.pdf) | Scalar and array-valued draws | Supports, parameters, correlated vectors, simplex weights |
 | [Beginner](beginner.pdf) | Complete linear regression | Parameter domains with `elementof`, optional priors, counts, binary observations, named points |
-| [Intermediate](intermediate.pdf) | Noncentered grouped logistic regression | Centered effects, eight schools, Beta–Binomial pooling, helpers, modules |
+| [Intermediate](intermediate.pdf) | Noncentered grouped logistic regression | Centered effects, group measurement errors, Beta–Binomial pooling, and reuse of an observation kernel |
 | [Advanced](advanced.pdf) | A measure-composed Normal–Gamma mixture | Products, intensities, transformations, callback parameters, Markov kernels |
 | [Einstein summation and reductions](einstein-reductions.pdf) | Two sensor calibrations over three runs | Predictions, squared residuals by run and sensor, Boolean reductions, and cross-products |
 | [Metric Einstein summation](metric-einstein.pdf) | A sensor reports the sum of two coordinates | Mahalanobis distance, covariance, lower components, directional derivatives, and invariant mass |
@@ -36,12 +36,12 @@ Run `make` in this directory with Typst 0.15.1 or later. No Typst packages are r
 Titles use Libertinus Serif. Body text uses Helvetica Neue with Arial as a fallback. Code uses DejaVu Sans Mono with Menlo as a fallback.
 
 Each sheet has its own `.typ` source. `theme.typ` holds the shared layout, logo, colors, type, and code renderer.
-The programs in `examples/` supply both the complete listings and the excerpts. The SDK and CLI sheets use the same five-line [query](examples/score.flatppl).
+The programs in `examples/` supply the listings and PDF attachments. The SDK script defines its query inline. The [CLI model](examples/score.flatppl) declares both a query and a posterior.
 Update excerpt line ranges when changing the examples. The layout checks code widths, excerpt ranges and column heights.
 
 The build loads the squircle logo from `branding/` and the finished figures from `figures/`.
 To redraw the figures after changing the examples, run `python figures/draw.py` in this directory with Matplotlib and NumPy available. Then run `make`.
-The combined PDF has a bookmark for each sheet. `sheets.txt` sets the build list, page order, and folios.
+The combined PDF has a bookmark for each title in `sheets.txt`. Each sheet credits Jessica Cox and includes her contact address.
 
 ## Syntax highlighting
 
@@ -60,10 +60,10 @@ The sheets follow FlatPPL 0.1 at specification commit `eed1724e276357d159a32f21b
 The [corpus map](examples-map.md) records the source revisions and model changes.
 Adapted examples retain their [MIT license](examples/LICENSE.txt) and [attribution](examples/NOTICE.md).
 Run `make check-examples` with the FlatPPL CLI on your path to lint all models and infer their types.
-On first use, `flatppl prepare` fetches the pinned counts and ODE modules and their dependencies. In a terminal, the CLI asks for approval before downloading new URLs.
+On first use, `flatppl prepare` fetches the pinned counts, ODE and neutrino modules and their dependencies. In a terminal, the CLI asks for approval before downloading new URLs.
 Once cached, the examples also work offline. Building the PDFs with `make` requires no downloads.
 Run `python examples/fit.py` with the FlatPPL Python SDK, JAX, NumPy, and Optimistix to reproduce the host fit.
-Run `python examples/python_sdk.py` with the FlatPPL Python SDK and JAX for the compiled score, gradient, and batch. Run the commands on the CLI reference from `examples/`.
+Run `python examples/python_sdk.py` with the FlatPPL Python SDK and JAX for the compiled score, gradient, and batch. Test the CLI reference in a fresh folder containing `score.flatppl`, `ws.json` and `hs.json` from its PDF.
 
 ## Numerical scope
 

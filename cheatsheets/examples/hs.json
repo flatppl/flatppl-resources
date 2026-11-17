@@ -1,0 +1,23 @@
+{
+  "metadata": {"hs3_version": "0.2"},
+  "distributions": [
+    {"name": "reading_pdf", "type": "gaussian_dist", "x": "x", "mean": "mu", "sigma": "sigma"}
+  ],
+  "data": [
+    {"name": "reading", "type": "unbinned", "axes": [{"name": "x"}], "entries": [[1.0]]}
+  ],
+  "likelihoods": [
+    {"name": "fit", "distributions": ["reading_pdf"], "data": ["reading"]}
+  ],
+  "domains": [
+    {"name": "range", "type": "product_domain", "axes": [{"name": "mu", "min": -10.0, "max": 10.0}]}
+  ],
+  "analyses": [
+    {"name": "measurement", "likelihood": "fit", "parameters_of_interest": ["mu"], "domains": ["range"]}
+  ],
+  "parameter_points": [
+    {"name": "default_values", "parameters": [
+      {"name": "x", "value": 1.0}, {"name": "mu", "value": 0.0}, {"name": "sigma", "value": 1.0, "const": true}
+    ]}
+  ]
+}

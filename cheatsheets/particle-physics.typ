@@ -24,9 +24,9 @@
   ),
   after-notes: (
     entry("A calibration constraint", [
-      #code("L_all = joint_likelihood(L, L_cal)")
+      #code("cal(b) = logdensityof(Normal(b, 0.1), 1.05)\ncombined = log_L + cal(point.b_scale)")
       #v(3pt)
-      Use the same `b_scale` in the count and independent calibration likelihoods. Add their log densities.
+      An independent calibration reads 1.05 with standard deviation 0.1. Add its log density at the same background scale.
     ]),
   ),
   variants: (
@@ -36,29 +36,29 @@
       For independent background scales draw a two-element vector. Replace the scalar in the prediction, prior, kernel inputs and parameter record.
     ]),
     entry("A histogram with two templates", [
-      #code("expected = ns .* s_template .+ nb .* b_template\nbins ~ Poisson.(expected)")
+      #code("means = 4 .* [0.3, 0.7] .+ 11 .* [0.4, 0.6]\nbins ~ Poisson.(means)")
       #v(3pt)
-      Each entry represents a disjoint bin. If each template sums to one, `ns` and `nb` are total yields in the histogram.
+      Each template sums to one. The signal yield 4 and background yield 11 give bin means 5.6 and 9.4.
     ]),
   ),
   references: (
     entry("Define the observation window", [
-      #code("window = interval(0, 10)\nsignal = normalize(truncate(\n    Normal(5, 0.2), window))\nbackground = Uniform(window)")
+      #code("window = interval(0, 10)\npeak = normalize(truncate(\n    Normal(5, 0.2), window))\ncontinuum = Uniform(window)")
       #v(3pt)
       Normalize the shapes on the same window when their coefficients give the expected yields there.
     ]),
     entry("Unbinned event likelihood", [
-      #code("I = superpose(weighted(ns, signal),\n    weighted(nb, background))\nevents ~ PoissonProcess(I)")
+      #code("I = superpose(weighted(4, peak),\n    weighted(11, continuum))\nevents ~ PoissonProcess(I)")
       #v(3pt)
       The total intensity gives the expected count. The event array specifies both the energies and their number. Its likelihood therefore contains the count term.
     ]),
     entry("Condition on the event count", [
-      #code("shape = normalize(I)\nenergy ~ iid(shape, n)")
+      #code("shape = normalize(I)\nenergy ~ iid(shape, 15)")
       #v(3pt)
-      Fixing `n` leaves the energy shape. To keep counts in disjoint energy bins, use `BinnedPoissonProcess(edges,I)`.
+      Fixing the count at 15 leaves the energy shape. For counts in two energy bins, use `BinnedPoissonProcess([0,5,10], I)`.
     ]),
     entry("Fixed trial totals", [
-      #code("passed ~ Binomial(trials, efficiency)")
+      #code("passed ~ Binomial(20, channels.efficiency[1])")
       #v(3pt)
       Use a Binomial law when the trial total is known. A Poisson yield describes a random count over a fixed exposure.
     ]),

@@ -51,9 +51,9 @@
       `weighted` calls `w(x,p)`. `normalize(M)` divides by total mass and requires a finite, positive integral.
     ]),
     entry("Event intensity and total yield", [
-      #code("I = superpose(weighted(ns, signal),\n    weighted(nb, background))\nevents ~ PoissonProcess(I)")
+      #code("I = superpose(weighted(6, M1),\n    weighted(4, M2))\nevents ~ PoissonProcess(I)")
       #v(3pt)
-      With unit-mass shapes, the intensity has total mass `ns + nb`, the expected event count. Normalizing `I` discards that count information.
+      The Normal and Gamma laws each have unit mass. Their weights give an expected event count of ten. Normalizing `I` gives the distribution of one event.
     ]),
     entry("Compose sequential kernels", [
       #code("step(x, p) = Normal(p.rho*x, p.sigma)\npath = markovchain(step, 0.0, 20,\n    record(rho = 0.8, sigma = 0.2))")

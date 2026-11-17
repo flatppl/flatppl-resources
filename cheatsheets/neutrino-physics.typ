@@ -1,10 +1,14 @@
 #import "theme.typ": *
+#let nu-path = "examples/three-flavour.flatppl"
+#let nu-lines = read(nu-path).trim().split("\n")
+#let nu-url = nu-lines.at(2).trim().trim("\"")
 
 #sheet(
   topic: "Neutrino physics", title: "Neutrino oscillations", accent: rgb("46654f"),
   formula: ("Two-flavour vacuum appearance", [$P = sin^2(2 theta) sin^2 Phi$]),
   reference-title: "Propagation and response",
   file: "examples/neutrino-physics.flatppl", example: "Appearance in four energy bins",
+  companions: (nu-path,),
   illustration: ("Appearance versus energy",
     "At 295 km the two-flavour probability peaks near 0.6 GeV. The four points are synthetic appearance counts divided by their trial totals.",
     [The curve uses $L=295$ km, $theta=0.15$ rad and $Delta m^2=0.0025$ eV². Each point is an observed fraction from 1000 synthetic trials.]),
@@ -33,36 +37,36 @@
     entry("Values at the stated point", [
       #code("pred = f_prob(theta = 0.15, dm2 = 0.0025)")
       #v(3pt)
-      At zero baseline or zero mixing the appearance probability vanishes. At 295 km it varies with energy.
+      At zero baseline or zero mixing, all four probabilities vanish.
       #v(4pt)
       #lookup((1.6fr, 1fr, 1fr, 1fr, 1fr), ([Energy (GeV)], [0.45], [0.6], [0.9], [1.2]), numeric: true,
         [Probability], [0.06685], [0.08732], [0.06481], [0.04308],
         [Observed fraction], [0.067], [0.087], [0.065], [0.043])
     ]),
     entry("Fold in energy response", [
-      #code("detected = response * true_expected")
+      #code("true_mean = trials .* probability\nM = rowstack([[0.9, 0.8, 0.1, 0.0],\n              [0.1, 0.2, 0.9, 1.0]])\ndetected = M * true_mean")
       #v(3pt)
-      Integrate flux, cross section, efficiency and probability together over each true-energy bin. Response rows label detected bins and columns label true bins.
+      Each column maps one true energy to two detector bins and sums to one. For broad bins, integrate the oscillated flux and cross section over energy.
     ]),
   ),
   references: (
     entry("Three-flavour transition matrix", [
-      #code("p = nu.parameters(t12, t13, t23,\n    delta, dm21, dm31)\nP = nu.vacuum_probabilities(E, L, p, false)")
+      #code(nu-lines.slice(5, 10).join("\n"))
       #v(3pt)
-      Load #module-link("flatppl-physics-neutrinos", "6c8aa0eaa169e5b2046b44e5941392e3816a3566")[`flatppl-physics-neutrinos`] as `nu`. Matrix rows label final flavour and columns initial flavour, in electron, muon, tau order. `P[1,2]` is muon-to-electron appearance.
+      Bind `nu` with `load_module` using the #link(nu-url, underline[neutrino module URL]). The attached `three-flavour.flatppl` includes the import. Rows give final flavour and columns initial flavour in electron, muon, tau order. `P[1,2]` gives muon-to-electron appearance.
     ]),
     entry("Propagate through matter", [
-      #code("P = nu.matter_probabilities(\n    E, L, p, electron_density, false)")
+      #code(nu-lines.slice(10, 12).join("\n"))
       #v(3pt)
-      Supply electron density in mol of electrons per cm³. Set the final argument to `true` for antineutrinos. For successive matter layers, compose their amplitudes before taking the absolute square.
+      Electron density is 1.4 mol/cm³. Set the final argument to `true` for antineutrinos. For successive layers, compose amplitudes before taking the absolute square.
     ]),
     entry("Set the mass ordering", [
-      `dm21` is positive. Use `dm31 > dm21` for normal ordering or `dm31 < 0` for inverted ordering. The library expects both splittings in eV².
+      The last two arguments of `nu.parameters` are `dm21` and `dm31` in eV². Use `dm21 > 0` and choose `dm31 > dm21` for normal ordering or `dm31 < 0` for inverted ordering.
     ]),
     entry("Use expected event yields", [
-      #code("expected = unoscillated_yield .* (\n    efficiency .* probability) .+ background\ny_flux ~ Poisson.(expected)")
+      #code("unosc = [800, 900, 1000, 750]\nexpected = 0.9 .* unosc .* probability .+ 2\ny_flux ~ Poisson.(expected)")
       #v(3pt)
-      Include incident flux, cross section and exposure in `unoscillated_yield`. Use this count model when the trial total is unknown.
+      `unosc` includes flux, cross section and exposure. Each bin has 90% efficiency and two expected background events. Use Poisson counts when the trial total is unknown.
     ]),
   ),
 )
