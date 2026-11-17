@@ -42,7 +42,14 @@
       Simultaneously reversing both spins preserves the energy. Hence `p_pp = p_mm` and `p_pm = p_mp`. Each individual spin still has equal probabilities of +1 and −1.
     ]),
     entry("Microstates per energy level", [
-      Each energy level has two microstates. The probability of the aligned level is their combined mass. One aligned microstate has probability $3/8$.
+      At $K=log(3)/2$, summing the two probabilities in each energy level gives its mass.
+      #v(4pt)
+      #lookup((1.1fr, 0.8fr, 1fr, 1.2fr), ([Spins], [Energy], [Per state], [Level mass]), numeric: true,
+        [Aligned], [$-J$], [$3/8$], [$3/4$],
+        [Opposed], [$+J$], [$1/8$], [$1/4$])
+    ]),
+    entry("Mean bond energy", [
+      Weight each energy by its level mass to obtain $(-J)(3/4)+J(1/4)=-J/2$. At any coupling the mean is $-J tanh K$, since $E=-J s_1 s_2$.
     ]),
     entry("External magnetic field", [
       #code("weight(s, h) = exp(K * s[1] * s[2]\n    + h * sum(s))")

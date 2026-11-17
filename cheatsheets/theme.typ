@@ -6,7 +6,7 @@
 #let mono = ("DejaVu Sans Mono", "Menlo")
 #let letters = ("A", "B", "C", "D")
 #let sheet-names = read("sheets.txt").trim().split("\n")
-#let column-height = 492pt
+#let column-height = 503pt
 
 #let label(body, fill: secondary) = text(
   font: sans, size: 7.2pt, weight: "bold", tracking: 0.85pt, fill: fill, upper(body),
@@ -17,26 +17,36 @@
 // Typst normally scales raw text down. Set the printed size on the raw element.
 #let highlighted(source, size, lang: "flatppl") = {
   show raw: set text(font: mono, size: size)
-  set par(leading: 2.0pt, spacing: 0pt)
+  set par(leading: 3pt, spacing: 0pt)
   raw(source, block: true, lang: lang,
     syntaxes: "syntax/flatppl.sublime-syntax", theme: "syntax/flatppl.tmTheme")
 }
 
-#let check-width(source, size, available) = {
-  let longest = source.split("\n").sorted(key: s => s.len()).last()
-  let needed = measure(text(font: mono, size: size, longest)).width
-  assert(needed <= available, message: "Code exceeds column width: " + longest)
+#let code-size(lines, preferred, available, minimum) = {
+  let longest = lines.sorted(key: s => s.len()).last()
+  let width = measure(text(font: mono, size: preferred, longest)).width
+  let size = if width > available { preferred * (available / width) } else { preferred }
+  assert(size >= minimum, message: "Code exceeds column width: " + longest)
+  size
 }
 
-#let code(source, size: 8pt, lang: "flatppl") = layout(region => context {
-  check-width(source, size, region.width)
-  highlighted(source, size, lang: lang)
+#let code(source, size: 9.4pt, lang: "flatppl") = layout(region => context {
+  let fitted = code-size(source.split("\n"), size, region.width, calc.min(size, 8pt))
+  highlighted(source, fitted, lang: lang)
 })
+
+#let lookup(columns, headers, numeric: false, ..cells) = block(width: 100%)[
+  #set text(size: 9pt)
+  #table(columns: columns, stroke: none, inset: (x: 3pt, y: 2.6pt),
+    align: (col, _) => if numeric and col > 0 { right } else { left },
+    table.header(..headers.map(h => text(weight: "bold", fill: secondary, h))),
+    table.hline(stroke: 0.45pt + rule), ..cells.pos())
+]
 
 #let entry(title, body) = block(width: 100%, breakable: false)[
   #hairline
   #v(4pt)
-  #subhead(title, size: 11.7pt)
+  #subhead(title, size: 12.1pt)
   #v(4.7pt)
   #body
 ]
@@ -70,14 +80,14 @@
 }
 
 // One lexical pass keeps documentation comments highlighted across lines.
-#let program(source, notes, accent, lang: "flatppl") = layout(region => context {
-  let size = 8.25pt
-  let inset = 7pt
-  let gutter = 25pt
+#let program(source, notes, accent, preferred, lang: "flatppl") = layout(region => context {
+  let inset = 6pt
+  let gutter = 21pt
   let available = region.width - inset * 2 - gutter - 3.5pt
-  let columns = calc.floor(available / measure(text(font: mono, size: size, "0")).width)
+  let columns = calc.floor(available / measure(text(font: mono, size: preferred, "0")).width)
   let printed = source.split("\n").map(line => print-line(line, columns))
-  check-width(printed.map(p => p.rows).flatten().join("\n"), size, available)
+  let size = code-size(printed.map(p => p.rows).flatten(), preferred, available, 8.25pt)
+  let row-height = size * 1.22
   block(width: 100%, inset: (x: inset, y: 8pt), radius: 5pt,
     fill: accent.lighten(95%), stroke: 0.5pt + accent.lighten(76%))[
     #set par(leading: 0pt, spacing: 0pt)
@@ -87,14 +97,14 @@
         let mark = notes.position(n => n.at(1) == ln.number)
         let selected = notes.any(n => n.at(1) <= ln.number and ln.number <= n.at(2))
         let printed-line = printed.at(ln.number - 1)
-        let height = 10.25pt * printed-line.rows.len()
+        let height = row-height * printed-line.rows.len()
         let body = if printed-line.url == none { ln.body } else {
           stack(dir: ttb, spacing: 0pt, ..printed-line.rows.map(row =>
-            block(height: 10.25pt, link(printed-line.url,
+            block(height: row-height, link(printed-line.url,
               text(font: mono, size: size, fill: rgb("895b20"), row)))))
         }
         block(width: 100%, height: height,
-          grid(columns: (9pt, 11pt, 1fr), column-gutter: 2.5pt,
+          grid(columns: (9pt, 8pt, 1fr), column-gutter: 2pt,
             align: if printed-line.rows.len() > 1 { top } else { horizon },
             if mark != none { marker(letters.at(mark), accent, size: 8.8pt) },
             align(right, text(font: mono, size: 5.6pt, fill: secondary, str(ln.number))),
@@ -115,7 +125,7 @@
       text(font: mono, size: 6.6pt, fill: secondary,
         if start == end { str(start) } else { str(start) + "–" + str(end) }))
     #v(3.8pt)
-    #block(width: 100%, inset: (left: 7pt, right: 4pt, y: 4pt),
+    #block(width: 100%, inset: (left: 7pt, right: 4pt, y: 3pt),
       stroke: (left: 1.25pt + accent), fill: accent.lighten(96%))[
       #code(lines.slice(start - 1, end).join("\n"), lang: lang)
     ]
@@ -124,10 +134,17 @@
   ]
 }
 
-#let column(title, parts, accent, gap: 6pt) = layout(region => context {
+#let column(title, parts, accent, first-options: (), gap: 4pt) = layout(region => context {
   let heading = block(width: 100%)[#label(title, fill: accent)#v(5pt)]
+  let height = column-height - measure(heading, width: region.width).height
+  let parts = if first-options.len() > 0 {
+    let rest = measure(stack(dir: ttb, spacing: gap, ..parts), width: region.width).height
+    let room = height - rest - gap
+    let first = first-options.find(part => measure(part, width: region.width).height <= room)
+    (if first == none { first-options.last() } else { first }, ..parts)
+  } else { parts }
   let natural = measure(stack(dir: ttb, spacing: gap, ..parts), width: region.width).height
-  let spare = column-height - measure(heading, width: region.width).height - natural
+  let spare = height - natural
   assert(spare >= 0pt, message: title + " needs " + repr(-spare) + " more height")
   block(width: 100%, height: column-height)[
     #heading
@@ -148,14 +165,14 @@
   set document(title: if sys.inputs.at("collection", default: "false") == "true" {
     "FlatPPL / Cheatsheets"
   } else { "FlatPPL / " + title }, author: "FlatPPL")
-  set page(paper: "a4", flipped: true, margin: (x: 20pt, top: 17pt, bottom: 17pt))
-  set text(font: sans, size: 8.65pt, fill: ink, lang: "en")
-  set par(leading: 3.4pt, spacing: 4pt, justify: false)
+  set page(paper: "a4", flipped: true, margin: (x: 18pt, top: 17pt, bottom: 17pt))
+  set text(font: sans, size: 9.6pt, fill: ink, lang: "en")
+  set par(leading: 3.7pt, spacing: 4pt, justify: false)
   set block(above: 0pt, below: 0pt)
-  show raw.where(block: false): set text(font: mono, size: 7.65pt, fill: ink)
+  show raw.where(block: false): set text(font: mono, size: 8.45pt, fill: ink)
   show heading.where(level: 1): it => text(font: serif, size: 28.5pt, weight: "regular", fill: ink, it.body)
   set math.equation(numbering: none)
-  block(width: 100%, height: 51pt)[
+  block(width: 100%, height: 46pt)[
     #grid(columns: (35pt, 1fr, 211pt, 44pt), column-gutter: 11pt, align: horizon,
       image("../branding/logo-rounded.svg", width: 35pt, alt: "FlatPPL"),
       [
@@ -184,11 +201,11 @@
   let source = read(file).trim()
   let lines = source.split("\n")
   let fig = illustration
-  sheet-page(name, title, topic, accent, formula, grid(columns: (1.14fr, 1fr, 1fr), column-gutter: 14pt,
-    column("Complete example", (
-      block(width: 100%)[#subhead(example, size: 15pt)#v(5pt)#program(source, notes, accent, lang: lang)],
-      ..variants,
-    ), accent),
+  let listings = (9.25pt, 8.85pt, 8.5pt).map(size => block(width: 100%)[
+    #subhead(example, size: 15pt)#v(5pt)#program(source, notes, accent, size, lang: lang)
+  ])
+  sheet-page(name, title, topic, accent, formula, grid(columns: (1.14fr, 1fr, 1fr), column-gutter: 12pt,
+    column("Complete example", variants, accent, first-options: listings),
     column("Annotated lines", (
       ..notes.enumerate().map(((i,n)) => annotation(lines, n, i, accent, lang: lang)),
       ..after-notes,

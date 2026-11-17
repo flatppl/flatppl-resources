@@ -19,7 +19,11 @@
       Use the three selected states as Gaussian means with common standard deviation 0.05. Declare the positive rate as the kernel input and condition on the three readings.
     ]),
     ("Likelihood at unit rate", 22, 24, [
-      At `rate = 1` the fitted means are 1.00000, 0.60653, and 0.36788. Their Gaussian log likelihood for the observed readings is 5.85410.
+      At `rate = 1` the three independent Gaussian readings give a log likelihood of 5.85410.
+      #v(3pt)
+      #lookup((1.2fr, 1fr, 1fr, 1fr), ([Time], [0], [0.5], [1]), numeric: true,
+        [Predicted], [1.00000], [0.60653], [0.36788],
+        [Observed], [1.02], [0.57], [0.38])
     ]),
   ),
   after-notes: (
@@ -49,7 +53,11 @@
     entry("Mesh refinement", [
       #code("fine_t = linspace(0.0, 1.0, 21)")
       #v(3pt)
-      On a grid of 21 equally spaced times, select rows 1, 11, and 21. Compare both solutions at the same measured times.
+      Compare the two solutions at the same measured times.
+      #v(3pt)
+      #lookup((1.9fr, 1fr, 1fr, 1fr), ([Time], [0], [0.5], [1]), numeric: true,
+        [Row on 11-point grid], [1], [6], [11],
+        [Row on 21-point grid], [1], [11], [21])
     ]),
     entry("Extend to coupled states", [
       An initial vector with several entries describes a coupled system. Return a derivative vector of the same length. Choose the observed state components from the corresponding solution columns.

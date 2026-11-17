@@ -33,10 +33,10 @@
       #v(3pt)
       Each table row supplies named constructor arguments for one component. Draw the vector of weights on the simplex.
     ]),
-    entry("Event intensity and total yield", [
-      #code("I = superpose(weighted(ns, signal),\n    weighted(nb, background))\nevents ~ PoissonProcess(I)")
+    entry("Project a joint law", [
+      #code("mu_law = pushfwd(fn(get(_, [\"mu\"])),\n    joint_model)")
       #v(3pt)
-      With unit-mass shapes, the intensity has total mass `ns + nb`, the expected event count. Normalizing `I` discards that count information.
+      Projection retains the selected field. Its density may require integration over the omitted variables.
     ]),
   ),
   references: (
@@ -50,10 +50,10 @@
       #v(3pt)
       `weighted` calls `w(x,p)`. `normalize(M)` divides by total mass and requires a finite, positive integral.
     ]),
-    entry("Project a joint law", [
-      #code("mu_law = pushfwd(fn(get(_, [\"mu\"])),\n    joint_model)")
+    entry("Event intensity and total yield", [
+      #code("I = superpose(weighted(ns, signal),\n    weighted(nb, background))\nevents ~ PoissonProcess(I)")
       #v(3pt)
-      Projection retains the selected field. Its density may require integration over the omitted variables.
+      With unit-mass shapes, the intensity has total mass `ns + nb`, the expected event count. Normalizing `I` discards that count information.
     ]),
     entry("Compose sequential kernels", [
       #code("step(x, p) = Normal(p.rho*x, p.sigma)\npath = markovchain(step, 0.0, 20,\n    record(rho = 0.8, sigma = 0.2))")

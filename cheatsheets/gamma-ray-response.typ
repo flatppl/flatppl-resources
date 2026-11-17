@@ -32,6 +32,10 @@
       #code("kept = aggregate(sum, [.j], M[.r, .j])\nlost = 1 .- kept")
       #v(3pt)
       Before migration the three energies contribute 37.0253 expected counts. The two reconstructed bins retain 29.1175. The expected loss is 7.9078.
+      #v(4pt)
+      #lookup((1.65fr, 1fr, 1fr, 1fr), ([True energy (TeV)], [0.5], [1], [2]), numeric: true,
+        [Retained fraction], [0.8], [0.8], [0.7],
+        [Lost fraction], [0.2], [0.2], [0.3])
     ]),
     entry("Interpret the spectral scale", [
       `a` is the unattenuated differential flux at 1 TeV. `tau` gives optical depth. The factor `exp.(-0.8 .* tau)` attenuates each energy before migration.
@@ -43,8 +47,12 @@
       #v(3pt)
       `truth` contains the three expected counts before migration. Sum over true energy `.j` and retain reconstructed bin `.r`. The #module-link("flatppl-astro-gamma", "4ef7f6a001d6bf2701741653fa34a6a56019fe18")[gamma-ray module] implements the fold as `fold_spectrum`.
     ]),
-    entry("Check one detector bin", [
-      The first bin receives 13.4511 counts from 0.5 TeV, 2.5564 from 1 TeV, and zero from 2 TeV. Add the background after summing the source contributions.
+    entry("Check each detector bin", [
+      Sum each row for the expected source count. Then add the background for that detector bin.
+      #v(3pt)
+      #lookup((1.2fr, 1fr, 1fr, 1fr), ([True energy], [0.5 TeV], [1 TeV], [2 TeV]), numeric: true,
+        [Bin 1], [13.4511], [2.5564], [0],
+        [Bin 2], [1.9216], [7.6693], [3.5192])
     ]),
     entry("Detection losses", [
       A column deficit is the probability of an event falling outside the selected bins. Renormalizing that column assigns the lost events to the measured bins.

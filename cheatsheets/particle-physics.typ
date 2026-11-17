@@ -13,7 +13,7 @@
       Store one channel per row. Field access such as `channels.exposure` returns a column. Multiply production by exposure and efficiency to obtain the expected count.
     ]),
     ("Broadcast the yield equation", 14, 18, [
-      Both detected background rates share the scale `b_scale`. Efficiency acts on produced signal `S`. Conditional on these parameters, the dotted Poisson constructor gives independent counts in the two channels.
+      Both background rates share `b_scale`. Efficiency acts on the produced signal `S`. Given these parameters, `Poisson.` draws the two channel counts independently.
     ]),
     ("Observed counts and parameter names", 21, 26, [
       Name both `S` and `b_scale` in the prior and the kernel inputs. The observation record needs one field, `counts`, containing the vector of channel counts.

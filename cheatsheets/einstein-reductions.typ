@@ -11,6 +11,8 @@
   notes: (
     ("One prediction per run and sensor", 9, 10, [
       Write the output indices first. `.t` labels the run and `.s` the sensor. Both factors use `.k` to select the same coefficient. Run 3 at sensor 1 gives $1 times 1 + 2 times 2 = 5$.
+      #v(3pt)
+      $ hat(Y) = mat(1,2; 3,1; 5,0), quad Y-hat(Y) = mat(2,1; 0,2; 1,-1). $
     ]),
     ("One sum of squares per run", 12, 13, [
       `by_run` retains `.t`. FlatPPL sums over `.s` even though it occurs only once. The first residual is `[2, 1]`, so the first run contributes 5. Empty brackets sum all three contributions.
@@ -29,7 +31,13 @@
   ),
   variants: (
     entry("Design and coefficient matrices", [
-      A row of `X` is `[1, time]` at times 0, 1, and 2. A row of `B` is `[intercept, slope]` for one sensor. The two lines are $1+2t$ and $2-t$. The columns of `y` follow this sensor order.
+      A row of `X` is `[1, time]` at times 0, 1, and 2. The rows of `B` specify the sensor lines $1+2t$ and $2-t$. The columns of `y` follow this order.
+      #v(4pt)
+      #lookup((auto, 1fr, auto), ([Array], [Axes in order], [Shape]),
+        [`X`], [run, coefficient], [$3 times 2$],
+        [`B`], [sensor, coefficient], [$2 times 2$],
+        [`pred`, `r`], [run, sensor], [$3 times 2$],
+        [`gram`], [sensor, sensor], [$2 times 2$])
     ]),
     entry("The explicit reduction", [
       #code("fitted = aggregate(sum, [.t, .s],\n    X[.t, .k] * B[.s, .k])")
@@ -49,7 +57,12 @@
       `diagonal` sums two entries and gives 11. `all_cells` sums four entries and gives 13. A repeated name selects the same coordinate wherever it appears.
     ]),
     entry("Reduction operators", [
-      Use `sum` or `prod` for totals and products, `minimum` or `maximum` for extrema, and `mean` or `median` for location. `var` and `std` use the sample denominator. `lany` and `lall` reduce Boolean values.
+      Reducing `r[.t, .s]^2` over `.t` gives one result per sensor. `var` and `std` use the sample denominator.
+      #v(3pt)
+      #lookup((1.15fr, 1fr, 1fr), ([Reducer], [Sensor 1], [Sensor 2]), numeric: true,
+        [`sum`], [5], [6], [`mean`], [$5/3$], [2], [`var`], [$13/3$], [3])
+      #v(3pt)
+      `prod` multiplies, `minimum` and `maximum` select extrema, and `median` gives the middle value. `lany` and `lall` reduce Booleans.
     ]),
     entry("Index lengths", [
       Every occurrence of a name spans the same number of entries. A numeric subscript fixes one position. For example, `r[1, .s]` selects both sensors in run 1.

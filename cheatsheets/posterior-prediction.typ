@@ -29,7 +29,11 @@
   ),
   variants: (
     entry("Intervals at a fixed predictor", [
-      At $x=1.5$ both means are 2.498. The 90% intervals are $[2.087, 2.909]$ for the fitted mean and $[1.579, 3.417]$ for a new reading.
+      At $x=1.5$, both distributions have mean 2.498.
+      #v(4pt)
+      #lookup((1.25fr, 1fr, 1fr), ([Quantity], [5% quantile], [95% quantile]), numeric: true,
+        [Fitted mean], [2.087], [2.909],
+        [New reading], [1.579], [3.417])
     ]),
     entry("Predict a whole curve", [
       #code("line_grid = beta[1] .+ beta[2] .* x\nreplica ~ Normal.(line_grid, sigma)")
@@ -43,6 +47,9 @@
     ]),
     entry("Intercept–slope covariance", [
       The fitted mean has variance $V_(11) + 2 x V_(12) + x^2 V_(22)$. The middle term accounts for posterior covariance between the intercept and slope.
+    ]),
+    entry("Two points on one fitted line", [
+      For design rows $h_a$ and $h_b$, shared coefficients give covariance $h_a^T V h_b$. Independent measurement errors add $sigma^2$ to each observation variance and leave this cross-covariance unchanged.
     ]),
     entry("An unknown noise scale", [
       In the beginner model, `sigma` also has a prior. Use the same joint posterior draw of intercept, slope, and noise scale for each replicated data set.

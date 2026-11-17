@@ -10,13 +10,13 @@
     [Exchanging $s_(12)$ and $s_(13)$ reflects the resonance band across the diagonal. Colour shows $abs(A)^2$ at `p0`. The constant reference amplitude alone gives one.]),
   notes: (
     ("Pair mass and helicity angle", 9, 13, [
-      Use the mass `m` of the two negative pions and the cosine `c` of their helicity angle. In the pair rest frame, `q` and `k` are the bachelor and daughter momenta. The opposite-sign squared masses are `s12(m,c)` and `s12(m,-c)`.
+      Let `m` be the negative-pion pair mass and `c` its helicity-angle cosine. In that frame, `q` and `k` are the bachelor and daughter momenta. The opposite-sign masses squared are `s12(m,c)` and `s12(m,-c)`.
     ]),
     ("Bose-symmetric amplitude", 18, 22, [
-      The Breit–Wigner denominator is $m_R^2-s-i m_R Gamma$. Give both pairings the same complex coupling `p.r*cis(p.phi)`. Sum their amplitudes and the constant phase reference `1` before applying `abs2`.
+      The Breit–Wigner denominator is $m_R^2-s-i m_R Gamma$. Both pairings have coupling `p.r*cis(p.phi)`. Add both amplitudes to the phase reference `1` before applying `abs2`.
     ]),
     ("Declare coordinates and couplings", 25, 29, [
-      Define the `[m,c]` rectangle with `cartprod`. Express the masses in GeV and `phi` in radians. Pass both fit parameters to the density callback in one record.
+      Use `cartprod` for the `[m,c]` rectangle. Masses are in GeV and `phi` in radians. The density callback takes both fit parameters in one record.
     ]),
     ("Construct the event likelihood", 30, 34, [
       On the Lebesgue base, `weighted` evaluates `weight(x, parameters)`. Normalize by the integral over the rectangle. `functionof(pdf)` takes `r` and `phi`. Bind one observed `[m,c]` to obtain the event likelihood.
@@ -24,7 +24,7 @@
   ),
   after-notes: (
     entry("Change of variables", [
-      The Jacobian from $(m,c)$ to $(s_(23),s_(12))$ is $4 m q k$. Its constant factor cancels from the normalized shape. In squared-mass coordinates the Dalitz density is proportional to $abs(A)^2$ across the physical region.
+      The Jacobian from $(m,c)$ to $(s_(23),s_(12))$ is $4 m q k$. The factor 4 cancels on normalization. In squared-mass coordinates the density is proportional to $abs(A)^2$ on the physical region.
     ]),
   ),
   variants: (

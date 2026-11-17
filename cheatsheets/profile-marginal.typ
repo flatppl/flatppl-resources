@@ -41,6 +41,9 @@
     entry("Locations of the maxima", [
       The profile peaks at 4.60 and the marginal near 4.73 for this prior. Measure changes in log likelihood relative to each curve’s own maximum.
     ]),
+    entry("Background fit at zero signal", [
+      At `s = 0` the two regions have means $b$ and $5b$. The total of 19 counts across six exposure units gives $hat(b)(0)=19/6$. This fixes the first point on the profile ridge.
+    ]),
     entry("Interpret the exposure ratio", [
       `ratio` is the control exposure divided by the signal-region exposure. Since `b` denotes the expected signal-region background count, multiplying it by `ratio` gives the expected control count.
     ]),

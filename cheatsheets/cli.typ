@@ -2,14 +2,17 @@
 
 #let accent = rgb("695638")
 #let command(title, source, body) = entry(title, [
-  #code(source, lang: "bash")
+  #block(width: 100%, inset: (x: 5pt, y: 4pt),
+    fill: accent.lighten(96%), stroke: (left: 1pt + accent))[
+    #code(source, lang: "bash")
+  ]
   #v(4pt)
   #body
 ])
 
 #sheet-page("cli", "The FlatPPL CLI", "Command-line reference", accent,
   ("Command help", text(font: mono, size: 9.5pt, "flatppl <command> --help")),
-  grid(columns: (1fr, 1fr, 1fr), column-gutter: 14pt,
+  grid(columns: (1fr, 1fr, 1fr), column-gutter: 12pt,
     column("Write and check", (
       entry("The input file · score.flatppl", [
         #code(read("examples/score.flatppl").trim())
@@ -18,7 +21,10 @@
       ]),
       command("Check or apply formatting",
         "flatppl fmt --check score.flatppl\nflatppl fmt score.flatppl", [
-        The check exits 1 if the file needs formatting. The second command writes the canonical source in place. With no path, `fmt` reads stdin and writes stdout.
+        #lookup((auto, 1fr), ([Arguments to `fmt`], [Result]),
+          [`--check FILE`], [Exit 1 if the file needs formatting.],
+          [`FILE`], [Format the file in place.],
+          [`-` or no path], [Format stdin to stdout.])
       ]),
       command("Check diagnostics",
         "flatppl lint --deny-warnings score.flatppl", [
@@ -39,7 +45,14 @@
     column("Inspect and convert", (
       command("Infer types and shapes",
         "flatppl infer score.flatppl typed.flatpir", [
-        The output annotates bindings with types and phases. Shape inference is the default. Use `--level phase` to inspect only the phase, or `--level valueset` for value sets.
+        Each `--level` includes the preceding levels.
+        #v(3pt)
+        #lookup((auto, 1fr), ([Level], [Information added to FlatPIR]),
+          [`phase`], [Binding phases],
+          [`type`], [Structural types and literal dimensions],
+          [`valueset`], [Strongest known value set],
+          [`normalization`], [Mass classes for measures and kernels],
+          [`shape` (default)], [Resolved fixed-phase dimensions])
       ]),
       command("Trace parameter dependence",
         "flatppl analyze --data-input x score.flatppl", [
@@ -65,7 +78,12 @@
       ]),
       command("Emit StableHLO",
         "flatppl stablehlo --dtype f64 \\\n  score.flatppl -o score.mlir", [
-        This writes a textual StableHLO module for the query. The default dtype is `f32`. `--mode sample` selects sample emission for models with a sampling signature.
+        The output is textual StableHLO. Sample mode requires a model with a sampling signature.
+        #v(3pt)
+        #lookup((auto, auto, 1fr), ([Option], [Default], [Alternative]),
+          [`--mode`], [`logdensity`], [`sample`],
+          [`--dtype`], [`f32`], [`f64`],
+          [`--target`], [`cpu`], [`gpu`])
       ]),
       command("Export a Stan posterior",
         "flatppl stan --target posterior \\\n  zero-to-hero.flatppl -o rate.stan \\\n  --data rate.json", [

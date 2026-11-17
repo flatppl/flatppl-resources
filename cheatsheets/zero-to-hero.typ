@@ -37,7 +37,12 @@
       For a likelihood fit, retain the observation law, `K`, and `L`. Declare the free rate with `elementof`. Add the `prior` and `posterior` bindings for Bayesian inference.
     ]),
     entry("Check the log likelihood", [
-      At `rate = 1.5` the three Poisson log probabilities sum to $-3.97267$. Compare this value with `log_L` to check the ordering of counts and exposures and the exposure scale.
+      At `rate = 1.5` the three log probabilities sum to `log_L` $approx -3.97267$. Each column pairs one count with its own exposure.
+      #v(4pt)
+      #lookup((1.5fr, 1fr, 1fr, 1fr), ([Exposure], [1], [2], [1]), numeric: true,
+        [Observed count], [2], [3], [1],
+        [Poisson mean], [1.5], [3], [1.5],
+        [Log probability], [−1.38222], [−1.49592], [−1.09453])
     ]),
   ),
   references: (

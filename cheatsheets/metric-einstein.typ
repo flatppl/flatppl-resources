@@ -29,7 +29,14 @@
   ),
   variants: (
     entry("The metric argument", [
-      FlatPPL takes the upper components $g^(i j)$. For a Gaussian residual these are the covariance entries. Pass `G`. Lowering then applies the precision matrix $G^(-1)$.
+      Pass the covariance `G` as the upper metric $g^(i j)$. Within a `G:` contraction, the marks on each index determine which components FlatPPL reads.
+      #v(4pt)
+      #lookup((auto, 1fr), ([Indexed expression], [Components here]),
+        [`q[.i^]`], [Stored residual $(3, 1)$],
+        [`q[.i_]`], [Lowered residual $(2, -1)$],
+        [`G[.i^, .j^]`], [Covariance $G$],
+        [`G[.i_, .j_]`], [Precision $G^(-1)$],
+        [`G[.i^, .j_]`], [Identity $I_2$])
     ]),
     entry("The explicit contraction", [
       #code("d = metricsum(G, [], q[.i^] * q[.i_])")
@@ -40,6 +47,11 @@
   references: (
     entry("The Gaussian score", [
       The two-dimensional log density is $-frac(1,2)(d^2+log det G+2 log(2 pi))$. Here $det G=1$, so `log_L` is −4.33788. For a general change of scale the determinant also contributes.
+    ]),
+    entry("Change the units of both coordinates", [
+      #code("q2 = 2 .* q\nG2 = 4 .* G\nG2: d2[] := q2[.i^] * q2[.i_]")
+      #v(3pt)
+      The squared distance stays 5. Doubling both coordinates multiplies area by four. The log density therefore falls by $log 4$.
     ]),
     entry("An index left free", [
       #code("G: T[.i^, .j^] := q[.i^] * q[.j^]\nG: w[.i^] := T[.i^, .j^] * q[.j_]")

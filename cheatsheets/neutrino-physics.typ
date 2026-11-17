@@ -33,7 +33,11 @@
     entry("Values at the stated point", [
       #code("pred = f_prob(theta = 0.15, dm2 = 0.0025)")
       #v(3pt)
-      In increasing energy order, `pred` gives approximately `[0.06685, 0.08732, 0.06481, 0.04308]`. At zero baseline or zero mixing the appearance probabilities vanish.
+      At zero baseline or zero mixing the appearance probability vanishes. At 295 km it varies with energy.
+      #v(4pt)
+      #lookup((1.6fr, 1fr, 1fr, 1fr, 1fr), ([Energy (GeV)], [0.45], [0.6], [0.9], [1.2]), numeric: true,
+        [Probability], [0.06685], [0.08732], [0.06481], [0.04308],
+        [Observed fraction], [0.067], [0.087], [0.065], [0.043])
     ]),
     entry("Fold in energy response", [
       #code("detected = response * true_expected")

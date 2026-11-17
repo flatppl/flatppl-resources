@@ -26,7 +26,18 @@
   ),
   after-notes: (
     entry("Analytic maximum", [
-      The sample mean is 1.15 and the squared deviations sum to 2.68. The maximum-likelihood precision is therefore $8/2.68=2.98507$. The fitted log likelihood is $log L=-6.97701$.
+      The eight observations have mean 1.15 and sum of squared deviations 2.68. At the maximum, $log L=-6.97701$.
+      #v(4pt)
+      #lookup((1.1fr, 1fr, 1.15fr), ([Parameter], [Fit coordinate], [Model estimate]), numeric: true,
+        [Mean `mu`], [$mu$], [$1.15$],
+        [Precision `tau`], [$log tau$], [$8/2.68 approx 2.98507$])
+    ]),
+    entry("Why the variance uses eight", [
+      At $mu=overline(y)$, the likelihood equation for $tau$ is
+      #v(3pt)
+      $ (partial ell)/(partial tau) = n/(2 tau) - frac(1,2) sum_i (y_i-overline(y))^2 = 0. $
+      #v(3pt)
+      Solving for $tau$ gives the likelihood estimate with divisor $n$ in the variance.
     ]),
   ),
   variants: (

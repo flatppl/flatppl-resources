@@ -66,9 +66,12 @@
       #dist("Uniform(interval(a, b))", [$[a,b]$], [The argument is an interval with $a < b$.])
     ]),
     entry("Counts and trials", [
-      `Bernoulli(p)` gives one binary outcome. `Binomial(n,p)` counts successes in `n` trials. `Geometric(p)` counts failures before the first success.
-
-      `Poisson(rate)` has mean `rate`. `NegativeBinomial2(mu,psi)` has mean `mu` and variance $mu + mu^2/psi$.
+      #lookup((auto, 1fr), ([Law], [Count]),
+        [`Bernoulli(p)`], [One binary outcome],
+        [`Binomial(n,p)`], [Successes in `n` trials],
+        [`Geometric(p)`], [Failures before the first success])
+      #v(4pt)
+      `Poisson(rate)` has mean and variance `rate`. For `NegativeBinomial2(mu,psi)` the mean is `mu` and the variance is $mu + mu^2/psi$.
     ]),
   ),
 )

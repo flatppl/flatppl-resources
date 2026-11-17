@@ -43,6 +43,11 @@
       #v(3pt)
       Here `names` is `("x", "mu")`. The binding for `x` records its real domain. The model text is available as `model.source`.
     ]),
+    entry("Differentiate each observation", [
+      #py("dx = jax.grad(score, argnums=0)\nslopes = jax.vmap(dx, in_axes=(0, None))(\n    xs, 0.0)")
+      #v(3pt)
+      Differentiate the scalar query before batching it. At the three values in `xs` the slopes are $[1, 0, -1]$.
+    ]),
   ),
   variants: (
     entry("The companion file · score.flatppl", [
