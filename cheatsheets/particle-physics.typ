@@ -1,54 +1,66 @@
 #import "theme.typ": *
+
 #sheet(
-  number: "05", title: "Particle counting and spectra", topic: "Physics",
-  subtitle: "Expected yields, shared detector nuisances, histogram templates, and extended unbinned observations.",
-  accent: rgb("3f5d6c"), file: "examples/particle-physics.flatppl",
-  model_title: "Two channels with a shared nuisance",
-  model_note: [`S` is produced signal per exposure. Background rates are detected counts per exposure. The illustrative data are not an experimental analysis.],
-  model_refs: (
-    ref("Shared or separate nuisances", [
-      #code("b_scale ~ LogNormal(0,0.2)\nb_scales ~ iid(LogNormal(0,0.2), 2)")
-      A scalar nuisance is shared. An IID array assigns separate nuisance values to the channels.
-    ]),
-  ),
+  number: "05", topic: "Particle physics", title: "Counting experiments", accent: rgb("355b76"),
+  formula: ("Expected yield in channel j", [$lambda_j = T_j (b rho_j + epsilon_j S)$]),
+  reference-title: "Counts and spectra",
+  file: "examples/particle-physics.flatppl", example: "Two channels, one background scale",
+  illustration: ("Expected and observed counts",
+    "Channel one has 3 background and 1.6 signal events expected, with 5 observed. Channel two has 8 and 2.8 expected, with 10 observed.",
+    [For `S = 2` and `b_scale = 1` the means are 4.6 and 10.8. The diamonds mark the synthetic counts supplied in `channels.counts`.]),
   notes: (
-    (1, "A table of channel inputs", 5, 9, [
-      Columns share a row count. Field access extracts whole arrays. Exposure, efficiency, background rate and observed count refer to the same channel in each row. Their units determine the yield calculation.
+    ("Keep the channel inputs together", 5, 9, [
+      Each row describes one channel. `channels.exposure` and the other field selections return whole columns. Exposure and efficiency multiply production to give a count.
     ]),
-    (2, "Yield construction and broadcasting", 14, 18, [
-      Multiply signal production by efficiency and exposure. The scalar nuisance rescales both background rates. `Poisson.(expected)` forms independent channel counts conditional on the shared parameters.
+    ("Broadcast the yield equation", 14, 18, [
+      `b_scale` rescales both detected background rates. Efficiency acts on produced signal `S`. The dotted Poisson constructor makes an array of conditionally independent channel counts.
     ]),
-    (3, "Combined channel likelihood", 21, 26, [
-      The observation is one record containing the count array. Its product law already combines the channels. The prior retains the signal and shared nuisance. All channels update both parameters together.
+    ("Bind the full count vector", 21, 26, [
+      The prior has two fields, `S` and `b_scale`. The kernel exposes both. Its observation record has one field, `counts`, whose array already contains both channels.
     ]),
-    (4, "A numerical check point", 29, 32, [
-      The parameter record gives expected counts `[4.6,10.8]`. `expected_fn(point)` uses record auto-splatting. `log_L` equals the sum of the two Poisson log densities, approximately $-3.86616$.
+    ("Check the rate calculation", 29, 32, [
+      `functionof` extracts the expected counts for the same point used in `logdensityof`. Summing the two Poisson log masses gives `log_L` $approx -3.86616$.
     ]),
   ),
-  refs: (
-    ref("Binned signal and background templates", [
-      #code("expected = ns .* s_template .+\n    nb .* b_template\nbins ~ Poisson.(expected)")
-      Unit-sum templates make `ns` and `nb` total yields. Otherwise include template normalization explicitly. Each entry denotes one disjoint bin.
+  after-notes: (
+    entry("A calibration constraint", [
+      #code("L_all = joint_likelihood(L, L_cal)")
+      #v(3pt)
+      An independent calibration can constrain the same `b_scale`. Share its name between the two likelihoods. Their log densities add.
     ]),
-    ref("A common observation window", [
-      #code("window = interval(0,10)\nsignal = normalize(truncate(\n    Normal(5,0.2), window))\nbackground = Uniform(window)")
-      Normalize each component within the same selection window when its coefficient denotes the expected yield there.
+  ),
+  variants: (
+    entry("Independent channel uncertainties", [
+      #code("b_scales ~ iid(LogNormal(0, 0.2), 2)")
+      #v(3pt)
+      A two-element draw gives each channel a separate background scale. For this variant replace the shared scalar in the prediction, prior, kernel boundary and score point.
     ]),
-    ref("Extended unbinned model", [
-      #code("I = superpose(weighted(ns,signal),\n    weighted(nb,background))\nevents ~ PoissonProcess(I)")
-      The intensity mass is the expected count. The event array contains both count and position information. An additional Poisson count term for the same events would count that information twice.
+    entry("A histogram with two templates", [
+      #code("expected = ns .* s_template .+ nb .* b_template\nbins ~ Poisson.(expected)")
+      #v(3pt)
+      Each entry represents a disjoint bin. If each template sums to one, `ns` and `nb` are total yields in the histogram.
     ]),
-    ref("Conditional event spectrum", [
+  ),
+  references: (
+    entry("Define the observation window", [
+      #code("window = interval(0, 10)\nsignal = normalize(truncate(\n    Normal(5, 0.2), window))\nbackground = Uniform(window)")
+      #v(3pt)
+      Normalize the shapes on the same window when their coefficients give the expected yields there.
+    ]),
+    entry("Retain event energies and count", [
+      #code("I = superpose(weighted(ns, signal),\n    weighted(nb, background))\nevents ~ PoissonProcess(I)")
+      #v(3pt)
+      The intensity mass gives the expected count. The event array carries both its length and its positions, so its likelihood already includes the count term.
+    ]),
+    entry("Condition on the event count", [
       #code("shape = normalize(I)\nenergy ~ iid(shape, n)")
-      This conditions on a fixed event count. If count information is required, combine this shape term with the count model exactly once. `BinnedPoissonProcess(edges,I)` gives bin counts directly.
+      #v(3pt)
+      Fixing `n` leaves the energy shape. To keep counts in disjoint energy bins, use `BinnedPoissonProcess(edges,I)`.
     ]),
-    ref("Calibration and multiple likelihoods", [
-      #code("L_all = joint_likelihood(L_count, L_cal)")
-      Construct the calibration kernel with the same nuisance input name. Combining likelihoods multiplies densities, or adds log densities. Independent data terms may share parameters.
-    ]),
-    ref("Count-model choice", [
-      Use Binomial counts for successes from a fixed trial total. Use Poisson counts for an expected event yield. Keep rate, exposure, acceptance and efficiency distinct. Zero expected yield assigns mass only to zero counts.
+    entry("Count successes in fixed trials", [
+      #code("passed ~ Binomial(trials, efficiency)")
+      #v(3pt)
+      Use the trial total when it is known. A Poisson yield instead describes a random total over an exposure.
     ]),
   ),
-  takeaway: [After this sheet: construct multichannel counts, binned templates and extended event models with explicit nuisance dependence.],
 )

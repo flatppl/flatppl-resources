@@ -1,5 +1,5 @@
 %%%
-Regression with parameter domains and optional priors.
+Linear regression with an optional prior.
 %%%
 flatppl_compat = "0.1"
 x_data = [0.0, 1.0, 2.0, 3.0]

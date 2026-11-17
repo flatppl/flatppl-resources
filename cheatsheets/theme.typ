@@ -1,139 +1,165 @@
-#let ink = rgb("202a30")
-#let muted = rgb("647078")
-#let paper = white
-#let model-color = rgb("3f5d6c")
-#let graph-color = rgb("236d62")
-#let reference-color = rgb("9a6936")
+#let ink = rgb("23342d")
+#let secondary = rgb("4e5a54")
+#let rule = rgb("c4cec5")
+#let serif = ("Libertinus Serif", "STIX Two Text")
+#let sans = ("Helvetica Neue", "Arial")
 #let mono = ("DejaVu Sans Mono", "Menlo")
+#let letters = ("A", "B", "C", "D")
+#let column-height = 492pt
 
-#let label(body, color: muted) = text(size: 7pt, weight: "bold", tracking: 0.45pt, fill: color, upper(body))
+#let label(body, fill: secondary) = text(
+  font: sans, size: 7.2pt, weight: "bold", tracking: 0.85pt, fill: fill, upper(body),
+)
+#let subhead(body, size: 12pt) = text(font: serif, size: size, weight: "bold", fill: ink, body)
+#let hairline = line(length: 100%, stroke: 0.5pt + rule)
 
-#let code(source, size: 7.0pt) = {
-  set text(font: mono, size: size, fill: ink)
-  set par(leading: 1.7pt, spacing: 0pt)
+// Typst normally scales raw text down. Set the printed size on the raw element.
+#let highlighted(source, size) = {
+  show raw: set text(font: mono, size: size)
+  set par(leading: 2.0pt, spacing: 0pt)
   raw(source, block: true, lang: "flatppl",
     syntaxes: "syntax/flatppl.sublime-syntax", theme: "syntax/flatppl.tmTheme")
 }
 
-#let card(body, color: graph-color) = block(
-  width: 100%, breakable: false, inset: 5pt,
-  radius: 5pt, fill: color.lighten(93%), body,
-)
+#let check-width(source, size, available) = {
+  let longest = source.split("\n").sorted(key: s => s.len()).last()
+  let needed = measure(text(font: mono, size: size, longest)).width
+  assert(needed <= available, message: "Code exceeds column width: " + longest)
+}
 
-#let frame(title, color, body) = layout(size => context {
-  let content = [
-    #text(size: 11.5pt, weight: "bold", fill: color, title)
-    #v(6pt)
-    #body
-  ]
-  let used = measure(content, width: size.width - 14pt).height
-  assert(used <= 436pt, message: title + " exceeds column height: " + repr(used))
-  block(width: 100%, height: 450pt, inset: 7pt,
-    radius: 9pt, stroke: 1.7pt + color, content)
+#let code(source, size: 8pt) = layout(region => context {
+  check-width(source, size, region.width)
+  highlighted(source, size)
 })
 
-#let excerpt(lines, start, end, accent) = block(width: 100%, inset: (y: 4pt))[
-  #code(lines.slice(start - 1, end).join("\n"), size: 6.6pt)
-]
-
-#let note(lines, accent, number, title, start, end, body) = card(color: graph-color)[
-  #grid(columns: (12pt, 1fr, 30pt), gutter: 4pt, align: horizon,
-    box(width: 12pt, height: 12pt, fill: graph-color, radius: 6pt,
-      align(center + horizon, text(fill: white, size: 7pt, weight: "bold", str(number)))),
-    text(size: 8.2pt, weight: "bold", fill: graph-color, title),
-    text(size: 6pt, fill: graph-color, "L" + str(start) + "-" + str(end)),
-  )
-  #excerpt(lines, start, end, accent)
-  #text(fill: graph-color.darken(25%), body)
-]
-
-#let ref(title, body, color: reference-color) = card(color: color)[
-  #label(color: color, title)
+#let entry(title, body) = block(width: 100%, breakable: false)[
+  #hairline
   #v(4pt)
+  #subhead(title, size: 11.7pt)
+  #v(4.7pt)
   #body
 ]
 
+#let marker(letter, accent, size: 12pt) = box(width: size, height: size,
+  radius: size/2, fill: accent, align(center + horizon,
+    text(font: sans, size: size * 0.66, weight: "bold", fill: white, letter)))
+
+// One lexical pass keeps documentation comments highlighted across lines.
+#let program(source, notes, accent) = layout(region => context {
+  let size = 8.25pt
+  let inset = 7pt
+  let gutter = 25pt
+  check-width(source, size, region.width - inset * 2 - gutter - 3.5pt)
+  block(width: 100%, inset: (x: inset, y: 8pt), radius: 5pt,
+    fill: accent.lighten(95%), stroke: 0.5pt + accent.lighten(76%))[
+    #set par(leading: 0pt, spacing: 0pt)
+    #show raw.where(block: true): it => stack(dir: ttb, spacing: 0pt,
+      ..it.lines.map(ln => {
+        if ln.text == "" { return block(height: 4.8pt) }
+        let mark = notes.position(n => n.at(1) == ln.number)
+        let selected = notes.any(n => n.at(1) <= ln.number and ln.number <= n.at(2))
+        block(width: 100%, height: 10.25pt,
+          grid(columns: (9pt, 11pt, 1fr), column-gutter: 2.5pt, align: horizon,
+            if mark != none { marker(letters.at(mark), accent, size: 8.8pt) },
+            align(right, text(font: mono, size: 5.6pt, fill: secondary, str(ln.number))),
+            block(width: 100%, height: 10.25pt, inset: (left: 3.5pt), stroke: (
+              left: if selected { 1.15pt + accent } else { none }), ln.body),
+          ))
+      }))
+    #highlighted(source, size)
+  ]
+})
+
+#let annotation(lines, note, index, accent) = {
+  let (title, start, end, body) = note
+  assert(1 <= start and start <= end and end <= lines.len(), message: title + ": invalid excerpt")
+  block(width: 100%, breakable: false)[
+    #grid(columns: (12pt, 1fr, auto), column-gutter: 4.5pt, align: horizon,
+      marker(letters.at(index), accent), subhead(title),
+      text(font: mono, size: 6.6pt, fill: secondary, str(start) + "–" + str(end)))
+    #v(3.8pt)
+    #block(width: 100%, inset: (left: 7pt, right: 4pt, y: 4pt),
+      stroke: (left: 1.25pt + accent), fill: accent.lighten(96%))[
+      #code(lines.slice(start - 1, end).join("\n"))
+    ]
+    #v(3.5pt)
+    #body
+  ]
+}
+
+#let column(title, parts, accent, gap: 6pt) = layout(region => context {
+  let heading = block(width: 100%)[#label(title, fill: accent)#v(5pt)]
+  let natural = measure(stack(dir: ttb, spacing: gap, ..parts), width: region.width).height
+  let spare = column-height - measure(heading, width: region.width).height - natural
+  assert(spare >= 0pt, message: title + " needs " + repr(-spare) + " more height")
+  block(width: 100%, height: column-height)[
+    #heading
+    #stack(dir: ttb, spacing: gap + spare / (parts.len() - 1), ..parts)
+  ]
+})
+
 #let dist(name, support, detail) = block(width: 100%, breakable: false)[
-  #text(font: mono, size: 6.4pt, weight: "bold", name)
-  #h(1fr)#text(size: 6.5pt, fill: muted, support)
-  #linebreak()
-  #text(size: 7.0pt, detail)
+  #grid(columns: (1fr, auto), column-gutter: 2pt, align: bottom,
+    text(font: mono, size: 7.9pt, weight: "bold", name),
+    text(size: 8pt, fill: secondary, support))
+  #v(2.2pt)
+  #detail
 ]
 
-#let sheet(number: "01", title: "", subtitle: "", topic: "", accent: model-color,
-  file: "", model_title: "", model_note: [], model_refs: (), notes: (), notes_refs: (), refs: (), takeaway: []) = {
-  let lines = read(file).trim().split("\n")
+#let sheet(number: "", title: "", topic: "", accent: ink, formula: (), file: "",
+  example: "", illustration: (), notes: (), variants: (), reference-title: "Reference",
+  references: (), after-notes: ()) = {
+  let source = read(file).trim()
+  let lines = source.split("\n")
+  let fig = illustration
   set document(title: if sys.inputs.at("collection", default: "false") == "true" {
     "FlatPPL / Cheatsheets"
-  } else { "FlatPPL / " + title }, author: "")
-  set page(paper: "a4", flipped: true, margin: (x: 8mm, top: 8mm, bottom: 10mm), fill: paper)
-  set text(font: ("Helvetica Neue", "Arial"), size: 7.5pt, fill: ink)
-  set par(leading: 2.5pt, spacing: 4pt)
-  show raw.where(block: false): it => text(font: mono, size: 0.9em, fill: ink, it)
-
-  grid(columns: (34pt, auto, 1fr, auto), gutter: 9pt, align: horizon,
-    image("../branding/logo-rounded.svg", width: 34pt, height: 34pt),
-    text(size: 21pt, weight: "bold")[FlatPPL],
-    [
-      #text(size: 14pt, weight: "bold", fill: accent, title)
-      #linebreak()
-      #label(color: muted)[#topic]
-    ],
-    label(color: accent)[#number / 07],
-  )
-  v(5pt)
-  text(size: 8.0pt, fill: muted, subtitle)
-  v(8pt)
-
-  grid(columns: (1.1fr, 1fr, 1fr), column-gutter: 10pt,
-    frame("Example", model-color)[
-      #card(color: model-color)[
-        #label(color: model-color, model_title)
-        #v(5pt)
-        #set par(leading: 0pt, spacing: 0pt)
-        #show raw.line: ln => {
-          let active = notes.filter(n => ln.number >= n.at(2) and ln.number <= n.at(3))
-          let starts = notes.filter(n => ln.number == n.at(2))
-          block(width: 100%, fill: if active.len() > 0 { model-color.lighten(86%) } else { none },
-            grid(columns: (9pt, 11pt, 1fr), gutter: 3pt, align: horizon,
-              if starts.len() > 0 {
-                box(width: 9pt, height: 9pt, fill: graph-color, radius: 4.5pt,
-                  align(center + horizon, text(size: 5.5pt, weight: "bold", fill: white, str(starts.first().at(0)))))
-              } else { [] },
-              align(right, text(font: mono, size: 5.5pt, fill: muted, str(ln.number))),
-              if ln.text == "" { [#h(1pt)] } else { ln.body },
-            ),
-          )
-          v(0.8pt)
-        }
-        #code(lines.join("\n"), size: 6.6pt)
-      ]
-      #v(7pt)
-      #text(size: 7.1pt, fill: muted, model_note)
-      #for r in model_refs {
-        v(4pt)
-        r
-      }
-    ],
-    frame("Language constructs", graph-color)[
-      #for n in notes {
-        note(lines, accent, ..n)
-        v(4pt)
-      }
-      #for r in notes_refs {
-        r
-        v(4pt)
-      }
-    ],
-    frame("Reference", reference-color)[
-      #for r in refs {
-        r
-        v(4pt)
-      }
-    ],
-  )
-  v(7pt)
-  block(width: 100%, inset: (x: 7pt, y: 5pt), fill: accent.lighten(93%), radius: 5pt)[
-    #text(size: 7.3pt, fill: accent.darken(20%), takeaway)
+  } else { "FlatPPL / " + title }, author: "FlatPPL")
+  set page(paper: "a4", flipped: true, margin: (x: 20pt, top: 17pt, bottom: 17pt))
+  set text(font: sans, size: 8.65pt, fill: ink, lang: "en")
+  set par(leading: 3.4pt, spacing: 4pt, justify: false)
+  set block(above: 0pt, below: 0pt)
+  show raw.where(block: false): set text(font: mono, size: 7.65pt, fill: ink)
+  show heading.where(level: 1): it => text(font: serif, size: 28.5pt, weight: "regular", fill: ink, it.body)
+  set math.equation(numbering: none)
+  block(width: 100%, height: 51pt)[
+    #grid(columns: (35pt, 1fr, 211pt, 44pt), column-gutter: 11pt, align: horizon,
+      image("../branding/logo-rounded.svg", width: 35pt, alt: "FlatPPL"),
+      [
+        #text(font: sans, size: 8.3pt, weight: "bold", fill: ink)[FlatPPL 0.1]
+        #h(4pt)#text(fill: secondary)[/]#h(4pt)#label(topic, fill: accent)
+        #v(3.7pt)
+        #heading(level: 1, title)
+      ],
+      block(inset: (left: 9pt), stroke: (left: 1pt + accent))[
+        #label(formula.at(0), fill: accent)
+        #v(4pt)
+        #text(size: 12.2pt, formula.at(1))
+      ],
+      align(right)[#text(font: serif, size: 19pt, fill: accent, number)#h(1.5pt)#text(size: 7.5pt, fill: secondary, "/ 07")],
+    )
   ]
+  line(length: 100%, stroke: 0.85pt + accent)
+  v(8pt)
+  grid(columns: (1.14fr, 1fr, 1fr), column-gutter: 14pt,
+    column("Complete example", (
+      block(width: 100%)[#subhead(example, size: 15pt)#v(5pt)#program(source, notes, accent)],
+      ..variants,
+    ), accent),
+    column("Annotated lines", (
+      ..notes.enumerate().map(((i,n)) => annotation(lines, n, i, accent)),
+      ..after-notes,
+    ), accent),
+    column(reference-title, (
+      block(width: 100%)[
+        #subhead(fig.at(0), size: 15pt)
+        #v(4pt)
+        #image(file.replace("examples/", "figures/").replace(".flatppl", ".svg"),
+          width: 100%, alt: fig.at(1))
+        #v(3pt)
+        #text(fill: secondary, fig.at(2))
+      ],
+      ..references,
+    ), accent),
+  )
 }

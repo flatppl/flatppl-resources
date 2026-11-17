@@ -1,6 +1,6 @@
 # FlatPPL cheatsheets
 
-Seven A4 landscape sheets combine a complete vertical example, four annotated excerpts, and related patterns.
+Seven A4 landscape sheets pair a complete program with four passages marked A–D. Each sheet includes a figure drawn from its example.
 The three core levels progress from complete simple models to hierarchy and explicit measure composition.
 The domain sheets assume the relevant core levels and introduce physical conventions alongside the code.
 
@@ -20,15 +20,15 @@ The [example map](examples-map.md) covers all 29 curated corpus modules, their l
 ## Build and edit
 
 Run `make` in this directory with Typst 0.15.1 or later. No Typst packages are required.
-The fonts are Helvetica Neue with Arial fallback, DejaVu Sans Mono with Menlo fallback, and Typst's math fonts.
+Titles use Libertinus Serif. Body text uses Helvetica Neue with Arial as a fallback. Code uses DejaVu Sans Mono with Menlo as a fallback.
 
 Each sheet has its own `.typ` source. `theme.typ` holds the shared layout, logo, colors, type, and code renderer.
 The `.flatppl` files in `examples/` supply both the complete examples and the excerpts.
-Update excerpt line ranges when changing the examples. The layout rejects columns that exceed the available height.
+Update excerpt line ranges when changing the examples. The layout checks code widths, excerpt ranges and column heights.
 
-The layout follows the supplied Wren reference, with a separate slate, teal, ochre, and copper palette.
-The build uses the repository root to load `branding/logo-rounded.svg`.
-Printed sheets omit provenance lines. Source links and adaptation notes remain in the example map.
+The build loads the squircle logo from `branding/` and the finished figures from `figures/`.
+To redraw the figures after changing the examples, run `python figures/draw.py` in this directory with Matplotlib and NumPy available. Then run `make`.
+The seven-page PDF has a bookmark for each sheet. Source links and adaptation notes are in the example map.
 
 ## Syntax highlighting
 

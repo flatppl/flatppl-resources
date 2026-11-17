@@ -1,59 +1,64 @@
 #import "theme.typ": *
+
 #sheet(
-  number: "07", title: "Neutrino oscillations", topic: "Physics",
-  subtitle: "Two-flavour vacuum appearance with synthetic Binomial counts, followed by interfaces for three-flavour propagation.",
-  accent: rgb("236d62"), file: "examples/neutrino-physics.flatppl",
-  model_title: "Angle and mass-splitting inference",
-  model_note: [An illustrative two-flavour vacuum model. It omits matter effects, other flavours, flux and detector response. The illustrative counts do not represent an experimental likelihood.],
-  model_refs: (
-    ref("Prediction at the stated point", [
-      #code("pred = f_prob(theta=0.15, dm2=0.0025)")
-      The four probabilities are approximately `[0.06685,0.08732,0.06481,0.04308]`. They come from the oscillation formula, independently of a sampling algorithm.
-    ]),
-  ),
+  number: "07", topic: "Neutrino physics", title: "Neutrino oscillations", accent: rgb("46654f"),
+  formula: ("Two-flavour vacuum appearance", [$P = sin^2(2 theta) sin^2 Phi$]),
+  reference-title: "Propagation and response",
+  file: "examples/neutrino-physics.flatppl", example: "Appearance in four energy bins",
+  illustration: ("Appearance versus energy",
+    "At 295 km the two-flavour probability peaks near 0.6 GeV. The four points are synthetic appearance counts divided by their trial totals.",
+    [The curve uses $L=295$ km, $theta=0.15$ rad and $Delta m^2=0.0025$ eV². Each point is an observed fraction from 1000 synthetic trials.]),
   notes: (
-    (1, "Units in a reusable function", 11, 13, [
-      The probability is $sin(2 theta)^2 sin(1.266932679039099 Delta m^2 L/E)^2$. Energy uses GeV, baseline km, mass-squared splitting eV², and angle radians. The phase coefficient converts those units.
+    ("Make the units explicit", 11, 13, [
+      The phase takes energy `E` in GeV, splitting `d` in eV² and baseline `L` in km. The factor in `phase` converts these units. The mixing angle goes into `sin` in radians.
     ]),
-    (2, "Broadcast over the energy bins", 15, 19, [
-      The energy array varies by bin. The angle, splitting and baseline remain scalar. Broadcasting creates one probability per trial count. The Binomial model conditions on the trial totals.
+    ("Broadcast a physics function", 15, 19, [
+      The dotted call to `appearance` applies the same angle, splitting and baseline at each energy. The result has one probability for each entry of `trials`. The Binomial product conditions on those four trial totals.
     ]),
-    (3, "A complete inference interface", 22, 25, [
-      Both uncertain physical parameters enter the prior and kernel. The observation record contains only the appearance counts. Fixed energies, baseline and trial totals remain closed over in the kernel.
+    ("Condition on appearance counts", 22, 25, [
+      `theta` and `dm2` appear in both the prior and the explicit kernel boundary. The kernel closes over the energies, baseline and trial totals. Supply the measured counts in its single output field `y`.
     ]),
-    (4, "Separate model predictions from scores", 27, 30, [
-      `f_prob` reifies the deterministic probability array. Its two inputs accept a matching record through auto-splatting. `log_L` scores the observed counts at the same physical parameter point.
+    ("Evaluate a physical prediction", 27, 30, [
+      `f_prob` returns the probability array at the two inputs. Its record argument supplies both fields by name. `logdensityof(L, point)` scores the four counts at the same parameter values.
     ]),
   ),
-  notes_refs: (
-    ref("Survival instead of appearance", color: graph-color, [
+  after-notes: (
+    entry("Predict survival", [
       #code("survival = 1 .- probability\nsurvived ~ Binomial.(trials, survival)")
-      Choose appearance or survival counts from the same trials. Complementary counts are not independent data terms.
+      #v(3pt)
+      For the same trials, each survival count is the trial total minus the appearance count. Use one of these complementary observations per bin.
     ]),
   ),
-  refs: (
-    ref("Three-flavour library interface", [
-      #code("p = nu.parameters(t12,t13,t23,\n    delta,dm21,dm31)\nP = nu.vacuum_probabilities(E,L,p,false)")
-      Load `flatppl-physics-neutrinos` as `nu`. Probability rows are final flavour and columns are initial flavour. Flavour order is electron, muon, tau. `P[1,2]` means muon to electron.
+  variants: (
+    entry("Values at the stated point", [
+      #code("pred = f_prob(theta = 0.15, dm2 = 0.0025)")
+      #v(3pt)
+      In increasing energy order, `pred` gives approximately `[0.06685, 0.08732, 0.06481, 0.04308]`. At zero baseline or zero mixing the appearance probabilities vanish.
     ]),
-    ref("Matter and antineutrinos", [
-      #code("P = nu.matter_probabilities(\n    E,L,p,electron_density,false)")
-      Electron density uses mol of electrons per cm³, not bulk mass density. The final Boolean selects antineutrinos when true. The library keeps coherent amplitudes before taking their absolute square.
-    ]),
-    ref("Mass-ordering conventions", [
-      `dm21` is positive. For normal ordering, require `dm31 > dm21`. For inverted ordering, `dm31 < 0`. Both splittings use eV². Angles and the CP phase use radians. These domains are caller preconditions.
-    ]),
-    ref("Counts from an incident flux", [
-      #code("expected = unoscillated_yield .* (\n    efficiency .* probability) .+ background\ny_flux ~ Poisson.(expected)")
-      The unoscillated yield includes flux, cross section and exposure. This replaces fixed-trial counts with expected event yields. Efficiency and background can carry nuisance parameters.
-    ]),
-    ref("Energy response and averaging", [
+    entry("Fold in energy response", [
       #code("detected = response * true_expected")
-      Rows denote detected bins and columns true bins. Integrate flux × cross section × efficiency × oscillation probability over each true-energy bin, then apply the response matrix.
-    ]),
-    ref("Physical limits and coherence", [
-      Zero baseline or zero mixing gives zero appearance in the two-flavour model. Maximal mixing at phase $pi/2$ gives probability one. A full probability matrix has unit column sums. Compose layer amplitudes before squaring, not layer probabilities.
+      #v(3pt)
+      Integrate flux, cross section, efficiency and probability together over each true-energy bin. Response rows label detected bins and columns label true bins.
     ]),
   ),
-  takeaway: [Replace the two-flavour prediction function with a validated three-flavour and detector model when the application requires it.],
+  references: (
+    entry("Call the three-flavour library", [
+      #code("p = nu.parameters(t12, t13, t23,\n    delta, dm21, dm31)\nP = nu.vacuum_probabilities(E, L, p, false)")
+      #v(3pt)
+      Load `flatppl-physics-neutrinos` as `nu`. Matrix rows label final flavour and columns initial flavour, in electron, muon, tau order. `P[1,2]` is muon-to-electron appearance.
+    ]),
+    entry("Propagate through matter", [
+      #code("P = nu.matter_probabilities(\n    E, L, p, electron_density, false)")
+      #v(3pt)
+      Electron density is in mol of electrons per cm³. Set the final argument to `true` for antineutrinos. Compose amplitudes through successive layers before taking their absolute square.
+    ]),
+    entry("Set the mass ordering", [
+      `dm21` is positive. Use `dm31 > dm21` for normal ordering or `dm31 < 0` for inverted ordering. The library expects both splittings in eV².
+    ]),
+    entry("Use expected event yields", [
+      #code("expected = unoscillated_yield .* (\n    efficiency .* probability) .+ background\ny_flux ~ Poisson.(expected)")
+      #v(3pt)
+      `unoscillated_yield` includes incident flux, cross section and exposure. This formulation describes event yields when the trial total is unknown.
+    ]),
+  ),
 )

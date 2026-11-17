@@ -18,7 +18,7 @@ Cheatsheets and brand assets for FlatPPL.
 | [Hadron amplitudes and Dalitz plots](cheatsheets/hadron-physics.pdf) | Construct a Bose-symmetric amplitude and phase-space measure |
 | [Neutrino oscillations](cheatsheets/neutrino-physics.pdf) | Connect propagation functions to observed counts |
 
-Each A4 landscape sheet pairs a complete example with annotated excerpts and related modelling patterns.
+Each A4 landscape sheet pairs a complete program with four annotated passages and a figure drawn from the example.
 All code blocks use FlatPPL syntax highlighting.
 The [corpus map](cheatsheets/examples-map.md) links every curated example to the relevant level or domain.
 [Sources and build instructions](cheatsheets/README.md) accompany the PDFs.

@@ -4,12 +4,14 @@ SOURCES = $(SHEETS:%=%.typ)
 MODELS = $(wildcard examples/*.flatppl)
 BRANDING = ../branding/logo-rounded.svg
 SYNTAX = $(wildcard syntax/*.sublime-syntax syntax/*.tmTheme)
+FIGURES = $(SHEETS:%=figures/%.svg)
+COMMON = theme.typ $(BRANDING) $(SYNTAX)
 
 .PHONY: all
 all: $(PDFS)
 
-%.pdf: %.typ theme.typ $(MODELS) $(BRANDING) $(SYNTAX) $(SOURCES)
+%.pdf: %.typ examples/%.flatppl figures/%.svg $(COMMON)
 	typst compile --root .. $< $@
 
-flatppl-cheatsheets.pdf: flatppl-cheatsheets.typ theme.typ $(MODELS) $(BRANDING) $(SYNTAX) $(SOURCES)
+flatppl-cheatsheets.pdf: flatppl-cheatsheets.typ $(COMMON) $(MODELS) $(SOURCES) $(FIGURES)
 	typst compile --root .. --input collection=true $< $@

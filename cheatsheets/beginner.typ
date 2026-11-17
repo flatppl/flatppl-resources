@@ -1,61 +1,68 @@
 #import "theme.typ": *
-#sheet(
-  number: "02", title: "Simple models", topic: "Beginner",
-  subtitle: "Define parameters, vectorize observations, construct a likelihood and posterior, and evaluate a named point.",
-  accent: rgb("236d62"), file: "examples/beginner.flatppl",
-  model_title: "Complete regression model",
-  model_note: [Parameter domains and priors are separate bindings.],
-  model_refs: (
-    ref("Stochastic parameter bindings", [
-      #code("alpha ~ Normal(0,5)\nbeta ~ Normal(0,2)\nsigma ~ LogNormal(0,0.5)\nK = kernelof(record(y = y),\n    alpha, beta, sigma)")
-      Use `lawof` on these prior variates.
-    ]),
-  ),
-  notes: (
-    (1, "Parameters and domains", 9, 11, [
-      `elementof(S)` declares a parameter in set `S`. It assigns no prior. Here `alpha` and `beta` are real and `sigma` is positive. Values can vary between likelihood evaluations.
-    ]),
-    (2, "Observations and the likelihood", 14, 17, [
-      Dots apply operations elementwise. `~` creates a variate. `kernelof` exposes the three `elementof` inputs and closes over fixed data. Observation fields and array shapes must match.
-    ]),
-    (3, "An optional prior and posterior", 20, 25, [
-      The record names fields `alpha`, `beta`, and `sigma` to match the likelihood inputs. `bayesupdate` returns an unnormalized posterior. Omit this block for likelihood-only inference.
-    ]),
-    (4, "Scores and reusable predictions", 27, 29, [
-      A likelihood point is a record, including for a single parameter. `logdensityof(L, point)` returns a log-likelihood. Lines 31–32 extract the fixed-data predictor as a function of the two coefficients.
-    ]),
-  ),
-  notes_refs: (
-    ref("A point and a parameter domain", color: graph-color, [
-      #code("domain = cartprod(alpha = interval(-5,5),\n    beta = interval(-3,3),\n    sigma = interval(0.1,2))")
-      A point supplies values. A domain describes a parameter set. Neither assigns prior mass or replaces observed data.
-    ]),
-  ),
-  refs: (
-    ref("Bindings and collections", [
-      #code("v = [1, 2, 3]\nr = record(a = 1, b = 2)\nt = (1, 2)\nx = v[1]\nz = r.a")
-      Indices start at 1. Records name fields. Tuples bundle objects. Module names have one binding and dependencies form an acyclic graph.
-    ]),
-    ref("Changing the observation family", [
-      #code("rate = exp.(mu)\ny_count ~ Poisson.(rate)\np = invlogit.(mu)\ny_binary ~ Bernoulli.(p)")
-      Use a predictor whose transformed values lie in the distribution's parameter domain. Bind the corresponding count or binary data in `likelihoodof`.
-    ]),
-    ref("IID and broadcast observations", [
-      #code("ys ~ iid(Normal(alpha,sigma),\n    lengthof(y_data))\nzs ~ Normal.(mu,sigma)")
-      The first repeats one distribution. The second varies its mean per observation. Independence is conditional on shared parameters.
-    ]),
-    ref("Priors and parameter domains", [
-      #code("tau ~ normalize(truncate(\n    Cauchy(0, 2), interval(0, inf)))")
-      `elementof(S)` specifies a domain, not a prior. A truncated prior needs normalization before a draw. Distribution parameters must remain valid throughout their domains.
-    ]),
-    ref("Documentation and fixed data", [
-      `#` starts a discarded comment. `%` attaches documentation to one binding. `%%%` delimits block documentation. `_data` is a convention, not observation syntax.
 
-      Literal data and `external` inputs are fixed. A caller supplies an `external` input at module load time.
+#sheet(
+  number: "02", topic: "Beginner", title: "Parameters and likelihoods", accent: rgb("285c48"),
+  formula: ("Conditional mean", [$mu_i = alpha + beta x_i$]),
+  reference-title: "Predictions and variants",
+  file: "examples/beginner.flatppl", example: "Linear regression",
+  illustration: ("Prediction at a named point",
+    "The mean follows y = 1 + x. Four observations lie just above or below the line.",
+    [At `point`, `fitted` gives `[1, 2, 3, 4]`. The four residuals give `log_L` $approx -1.10317$ for $sigma = 0.5$.]),
+  notes: (
+    ("Declare the parameter domains", 9, 11, [
+      `elementof(S)` introduces a free input with values in `S`. The scale must be positive. A caller can already vary these inputs without specifying a prior.
     ]),
-    ref("Authoring sequence", [
-      Declare data and priors. Define predictors and observation variates. Retain all inferred parameters. Match kernel inputs and observation fields. Score a named point before inference.
+    ("Bind the observations", 14, 17, [
+      The dots apply the predictor and the Normal constructor across `x_data`. `kernelof` exposes the three free inputs. `likelihoodof` fixes the kernel's field `y` to the four observed responses.
+    ]),
+    ("Attach a prior", 20, 25, [
+      The draws `a`, `b` and `s` acquire the likelihood's input names in the record. `lawof` takes their joint law. `bayesupdate` weights that law by `L`, giving an unnormalized posterior.
+    ]),
+    ("Score a point and predict", 27, 32, [
+      `logdensityof` takes the full parameter record. `functionof` exposes only the two coefficients used by `mu`. Its result is a length-four vector on the original predictor values.
     ]),
   ),
-  takeaway: [After this sheet: author a complete simple Bayesian or likelihood-only model with explicit parameter domains.],
+  variants: (
+    entry("Starting from prior draws", [
+      #code("alpha ~ Normal(0, 5)\nbeta ~ Normal(0, 2)\nsigma ~ LogNormal(0, 0.5)\nprior = lawof(record(alpha = alpha,\n    beta = beta, sigma = sigma))\nK = kernelof(record(y = y), alpha, beta, sigma)")
+      #v(3pt)
+      These draws replace the `elementof` bindings. Keep lines 14–15 and expose the three variates in `kernelof`.
+    ]),
+    entry("Bound the scale during a search", [
+      #code("domain = cartprod(alpha = reals, beta = reals,\n    sigma = interval(0.1, 2))")
+      #v(3pt)
+      The named product describes allowed points for a search. A prior assigns mass to parameter values.
+    ]),
+  ),
+  after-notes: (
+    entry("Predict at a new input", [
+      #code("mean_at(x, a, b) = a + b*x\npred = mean_at(5, point.alpha, point.beta)")
+      #v(3pt)
+      `f_mean` uses the four fixed `x_data` values. This helper also takes `x` as an argument and gives a mean of 6 at `x = 5`.
+    ]),
+  ),
+  references: (
+    entry("Change the observation family", [
+      #code("rate = exp.(mu)\ny_count ~ Poisson.(rate)\np = invlogit.(mu)\ny_binary ~ Bernoulli.(p)")
+      #v(3pt)
+      Bind integer counts or binary responses under the corresponding field name in `likelihoodof`.
+    ]),
+    entry("Repeat a law or vary its mean", [
+      #code("ys ~ iid(Normal(alpha, sigma), 4)\nzs ~ Normal.(mu, sigma)")
+      #v(3pt)
+      `ys` shares one mean across observations. `zs` takes one mean per entry of `mu`. Both are independent conditional on their parameters.
+    ]),
+    entry("Read records and arrays", [
+      #code("r = record(a = 1, b = 2)\nu = r.a\nv = [1, 2, 3]\nw = v[1]")
+      #v(3pt)
+      Record fields have names. Array indices start at one. Each binding has a single definition within a module.
+    ]),
+    entry("Supply fixed inputs", [
+      #code("n = external(posintegers)")
+      #v(3pt)
+      The caller supplies `n` at module load time. The suffix `_data` is a convention. `likelihoodof` fixes the observed values.
+
+      Use `#` for a comment, `%` for documentation on a binding, and paired `%%%` lines for a documentation block.
+    ]),
+  ),
 )

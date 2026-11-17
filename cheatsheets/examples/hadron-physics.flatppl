@@ -1,5 +1,5 @@
 %%%
-Bose-symmetric, constant-width S-wave Dalitz model.
+Constant-width S-wave Dalitz model.
 %%%
 flatppl_compat = "0.1"
 mpi = 0.13957039
@@ -33,5 +33,5 @@ pdf = normalize(raw)
 K = functionof(pdf)
 L = likelihoodof(K, [1.0, 0.35])
 
-# A fixed weight for a numerical check.
-check = weight([1.0,0.35], record(r=0.6,phi=0.7))
+p0 = record(r = 0.6, phi = 0.7)
+check = weight([1.0, 0.35], p0)
