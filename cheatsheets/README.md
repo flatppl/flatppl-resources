@@ -7,34 +7,36 @@ Each PDF includes its model in the attachments pane. The fitting sheet includes 
 
 | Sheet | Main example | Additional coverage |
 | --- | --- | --- |
-| [Zero to hero](zero-to-hero.pdf) | Poisson counts with unequal exposures | Host data, positive rates, likelihoods, priors, prediction, and a conjugate check |
-| [Distributions](distributions.pdf) | Scalar and array-valued draws | Supports, parameters, correlated vectors, simplex weights |
-| [Beginner](beginner.pdf) | Linear regression in core FlatPPL | Parameter domains, dotted arithmetic and Normal draws, optional priors and named evaluation points |
-| [Intermediate](intermediate.pdf) | Noncentered grouped logistic regression | Centered effects, group measurement errors, Beta–Binomial pooling, and reuse of an observation kernel |
-| [Advanced](advanced.pdf) | A measure-composed Normal–Gamma mixture | Products, intensities, transformations, callback parameters, Markov kernels |
-| [The regression module](regression-module.pdf) | Pulse counts at two gain settings | A two-column design, Poisson rate ratios and all ten response constructors |
-| [Einstein summation and reductions](einstein-reductions.pdf) | Two sensor calibrations over three runs | Predictions, squared residuals by run and sensor, Boolean reductions, and cross-products |
-| [Metric Einstein summation](metric-einstein.pdf) | A sensor reports the sum of two coordinates | Mahalanobis distance, covariance, lower components, directional derivatives, and invariant mass |
-| [Posterior prediction](posterior-prediction.pdf) | The beginner regression with known noise | Coefficient draws, predictive variance, pointwise intervals, and replicated data |
-| [From a model to a fit](fitting-from-python.pdf) | Gaussian mean and precision from eight readings | External data, free coordinates, BFGS, and a closed-form estimate |
-| [Rounded readings and detection flags](measurement.pdf) | A rounding cell and an independent threshold flag | CDF differences, Gaussian tails, conditional independence, and censoring |
-| [Profiling and marginalization](profile-marginal.pdf) | One signal count and one control count | Joint likelihood, conditional background maximum, and a Gamma marginal |
-| [Particle physics](particle-physics.pdf) | Two count channels with a shared nuisance | Templates, selection windows, point processes, calibration likelihoods |
-| [Hadron physics](hadron-physics.pdf) | A 37-line Bose-symmetric Dalitz amplitude | Phase-space Jacobian, interference, efficiency, normalization |
-| [Neutrino physics](neutrino-physics.pdf) | Two-flavour vacuum appearance | Three-flavour API, units, matter, response, physical limits |
-| [Forward-folding a photon spectrum](gamma-ray-response.pdf) | Three true energies and two reconstructed bins | Quadrature, attenuation, exposure, migration, and losses |
-| [From a decay law to a likelihood](decay-ode.pdf) | An exponential decay with three readings | Derivative callbacks, fixed-step integration, and measurement noise |
-| [Two spins and a partition function](two-spins.pdf) | Four states of an Ising pair | Point masses, Boltzmann weights, degeneracy, and correlation |
-| [FlatPPL for Python](python-sdk.pdf) | A two-input Normal log density | Raw-string models, formulas, portable ZIPs, gradients, batching and inference targets |
-| [The FlatPPL CLI](cli.pdf) | Commands grouped by task | Diagnostics, type inference, conversion, code generation, module preparation, and ZIP bundles |
+| [Zero to hero](https://github.com/flatppl/flatppl-resources/releases/latest/download/zero-to-hero.pdf) | Poisson counts with unequal exposures | Host data, positive rates, likelihoods, priors, prediction, and a conjugate check |
+| [Distributions](https://github.com/flatppl/flatppl-resources/releases/latest/download/distributions.pdf) | Scalar and array-valued draws | Supports, parameters, correlated vectors, simplex weights |
+| [Beginner](https://github.com/flatppl/flatppl-resources/releases/latest/download/beginner.pdf) | Linear regression in core FlatPPL | Parameter domains, dotted arithmetic and Normal draws, optional priors and named evaluation points |
+| [Intermediate](https://github.com/flatppl/flatppl-resources/releases/latest/download/intermediate.pdf) | Noncentered grouped logistic regression | Centered effects, group measurement errors, Beta–Binomial pooling, and reuse of an observation kernel |
+| [Advanced](https://github.com/flatppl/flatppl-resources/releases/latest/download/advanced.pdf) | A measure-composed Normal–Gamma mixture | Products, intensities, transformations, callback parameters, Markov kernels |
+| [The regression module](https://github.com/flatppl/flatppl-resources/releases/latest/download/regression-module.pdf) | Pulse counts at two gain settings | A two-column design, Poisson rate ratios and all ten response constructors |
+| [Einstein summation and reductions](https://github.com/flatppl/flatppl-resources/releases/latest/download/einstein-reductions.pdf) | Two sensor calibrations over three runs | Predictions, squared residuals by run and sensor, Boolean reductions, and cross-products |
+| [Metric Einstein summation](https://github.com/flatppl/flatppl-resources/releases/latest/download/metric-einstein.pdf) | A sensor reports the sum of two coordinates | Mahalanobis distance, covariance, lower components, directional derivatives, and invariant mass |
+| [Posterior prediction](https://github.com/flatppl/flatppl-resources/releases/latest/download/posterior-prediction.pdf) | The beginner regression with known noise | Coefficient draws, predictive variance, pointwise intervals, and replicated data |
+| [From a model to a fit](https://github.com/flatppl/flatppl-resources/releases/latest/download/fitting-from-python.pdf) | Gaussian mean and precision from eight readings | External data, free coordinates, BFGS, and a closed-form estimate |
+| [Rounded readings and detection flags](https://github.com/flatppl/flatppl-resources/releases/latest/download/measurement.pdf) | A rounding cell and an independent threshold flag | CDF differences, Gaussian tails, conditional independence, and censoring |
+| [Profiling and marginalization](https://github.com/flatppl/flatppl-resources/releases/latest/download/profile-marginal.pdf) | One signal count and one control count | Joint likelihood, conditional background maximum, and a Gamma marginal |
+| [Particle physics](https://github.com/flatppl/flatppl-resources/releases/latest/download/particle-physics.pdf) | Two count channels with a shared nuisance | Templates, selection windows, point processes, calibration likelihoods |
+| [Hadron physics](https://github.com/flatppl/flatppl-resources/releases/latest/download/hadron-physics.pdf) | A 37-line Bose-symmetric Dalitz amplitude | Phase-space Jacobian, interference, efficiency, normalization |
+| [Neutrino physics](https://github.com/flatppl/flatppl-resources/releases/latest/download/neutrino-physics.pdf) | Two-flavour vacuum appearance | Three-flavour API, units, matter, response, physical limits |
+| [Forward-folding a photon spectrum](https://github.com/flatppl/flatppl-resources/releases/latest/download/gamma-ray-response.pdf) | Three true energies and two reconstructed bins | Quadrature, attenuation, exposure, migration, and losses |
+| [From a decay law to a likelihood](https://github.com/flatppl/flatppl-resources/releases/latest/download/decay-ode.pdf) | An exponential decay with three readings | Derivative callbacks, fixed-step integration, and measurement noise |
+| [Two spins and a partition function](https://github.com/flatppl/flatppl-resources/releases/latest/download/two-spins.pdf) | Four states of an Ising pair | Point masses, Boltzmann weights, degeneracy, and correlation |
+| [FlatPPL for Python](https://github.com/flatppl/flatppl-resources/releases/latest/download/python-sdk.pdf) | A two-input Normal log density | Raw-string models, formulas, portable ZIPs, gradients, batching and inference targets |
+| [The FlatPPL CLI](https://github.com/flatppl/flatppl-resources/releases/latest/download/cli.pdf) | Commands grouped by task | Diagnostics, type inference, conversion, code generation, module preparation, and ZIP bundles |
 
-[Read the full set](flatppl-cheatsheets.pdf).
+Each title links to its PDF in the [latest release](https://github.com/flatppl/flatppl-resources/releases/latest).
 The [example map](examples-map.md) covers all 29 curated corpus modules, their learning roles, and the reductions used here.
 
 ## Build and edit
 
-Run `make` in this directory with Typst 0.15.1 or later. No Typst packages are required.
-Titles use Libertinus Serif. Body text uses Helvetica Neue with Arial as a fallback. Code uses DejaVu Sans Mono with Menlo as a fallback.
+Run `make` in this directory with Typst 0.15.1 to build the PDFs in `../build/cheatsheets/`.
+Run `make check-pdfs` with Poppler installed to verify that each sheet fits on one page.
+Body text uses [Liberation Sans 2.1.5](https://github.com/liberationfonts/liberation-fonts), included under the [SIL Open Font License](fonts/LICENSE.txt).
+Typst supplies Libertinus Serif for titles, DejaVu Sans Mono for code and New Computer Modern Math for equations.
 
 Each sheet has its own `.typ` source. `theme.typ` holds the shared layout, logo, colors, type, and code renderer.
 The programs in `examples/` supply the listings and PDF attachments. The SDK script defines its query inline. The [CLI model](examples/score.flatppl) declares both a query and a posterior.
@@ -42,7 +44,7 @@ Update excerpt line ranges when changing the examples. The layout checks code wi
 
 The build loads the squircle logo from `branding/` and the finished figures from `figures/`.
 To redraw the figures after changing the examples, run `python figures/draw.py` in this directory with Matplotlib and NumPy available. Then run `make`.
-The combined PDF has a bookmark for each title in `sheets.txt`. Each sheet credits Jessica Cox and includes her contact address.
+List each sheet in `sheets.txt` for the Linux build and release. Each sheet credits Jessica Cox in its lower-right margin.
 
 ## Syntax highlighting
 

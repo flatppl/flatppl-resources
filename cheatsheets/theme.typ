@@ -1,11 +1,10 @@
 #let ink = rgb("23342d")
 #let secondary = rgb("4e5a54")
 #let rule = rgb("c4cec5")
-#let serif = ("Libertinus Serif", "STIX Two Text")
-#let sans = ("Helvetica Neue", "Arial")
-#let mono = ("DejaVu Sans Mono", "Menlo")
+#let serif = "Libertinus Serif"
+#let sans = "Liberation Sans"
+#let mono = "DejaVu Sans Mono"
 #let letters = ("A", "B", "C", "D")
-#let sheet-names = read("sheets.txt").trim().split("\n")
 #let column-height = 503pt
 
 #let label(body, fill: secondary) = text(
@@ -179,9 +178,7 @@
 ]
 
 #let sheet-page(title, topic, accent, formula, body) = {
-  set document(title: if sys.inputs.at("collection", default: "false") == "true" {
-    "FlatPPL / Cheatsheets"
-  } else { "FlatPPL / " + title }, author: "Jessica Cox")
+  set document(title: "FlatPPL / " + title, author: "Jessica Cox")
   set page(paper: "a4", flipped: true, margin: (x: 18pt, top: 17pt, bottom: 17pt),
     footer-descent: 5pt, footer: align(right, text(font: sans, size: 6.6pt, fill: secondary)[
       Jessica Cox#h(3pt)·#h(3pt)#link("mailto:bcox@mpp.mpg.de", "bcox@mpp.mpg.de")
@@ -192,10 +189,8 @@
   show raw.where(block: false): set text(font: mono, size: 8.45pt, fill: ink)
   show heading.where(level: 1): it => text(font: serif, size: 28.5pt, weight: "regular", fill: ink, it.body)
   set math.equation(numbering: none)
-  context if here().page() == 1 {
-    pdf.attach("/EXAMPLE-LICENSE.txt", bytes(read("examples/LICENSE.txt") + "\n" + read("examples/NOTICE.md")),
-      mime-type: "text/plain", description: "License and attribution for the example code")
-  }
+  pdf.attach("/EXAMPLE-LICENSE.txt", bytes(read("examples/LICENSE.txt") + "\n" + read("examples/NOTICE.md")),
+    mime-type: "text/plain", description: "License and attribution for the example code")
   block(width: 100%, height: 46pt)[
     #grid(columns: (35pt, 2fr, 1fr), column-gutter: 11pt, align: horizon,
       image("../branding/logo-rounded.svg", width: 35pt, alt: "FlatPPL"),

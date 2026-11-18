@@ -1,17 +1,24 @@
 SHEETS := $(shell cat sheets.txt)
-PDFS = $(SHEETS:%=%.pdf) flatppl-cheatsheets.pdf
-SOURCES = $(SHEETS:%=%.typ)
+BUILD := ../build/cheatsheets
+PDFS := $(SHEETS:%=$(BUILD)/%.pdf)
 MODELS = $(wildcard examples/*.flatppl)
 BRANDING = ../branding/logo-rounded.svg
 SYNTAX = $(wildcard syntax/*.sublime-syntax syntax/*.tmTheme)
 MODEL_SHEETS = $(filter-out python-sdk cli,$(SHEETS))
-FIGURES = $(MODEL_SHEETS:%=figures/%.svg)
-COMMON = theme.typ examples/LICENSE.txt examples/NOTICE.md $(BRANDING) $(SYNTAX)
+COMMON = theme.typ examples/LICENSE.txt examples/NOTICE.md $(BRANDING) $(SYNTAX) $(wildcard fonts/*.ttf)
 FLATPPL ?= flatppl
 IMPORT_MODELS = examples/decay-ode.flatppl examples/measurement.flatppl examples/profile-marginal.flatppl examples/three-flavour.flatppl
 
 .PHONY: all
 all: $(PDFS)
+
+.PHONY: check-pdfs
+check-pdfs: $(PDFS)
+	@set -e; for pdf in $(PDFS); do \
+		pages=$$(LC_ALL=C pdfinfo "$$pdf" | awk '/^Pages:/ {print $$2}'); \
+		if [ "$$pages" != 1 ]; then echo "$$pdf: expected one page, found '$$pages'" >&2; exit 1; fi; \
+	done
+	@echo "Verified $(words $(PDFS)) one-page PDFs."
 
 .PHONY: check-examples
 check-examples:
@@ -22,14 +29,14 @@ check-examples:
 	@set -e; scratch=$$(mktemp -d); trap 'rm -f "$$scratch/check.flatpir"; rmdir "$$scratch"' EXIT; \
 	for model in $(MODELS); do $(FLATPPL) infer --no-header "$$model" "$$scratch/check.flatpir"; done
 
-$(SHEETS:%=%.pdf): %.pdf: %.typ $(COMMON)
-	typst compile --root .. $< $@
+$(BUILD):
+	mkdir -p $@
 
-$(MODEL_SHEETS:%=%.pdf): %.pdf: examples/%.flatppl figures/%.svg
-neutrino-physics.pdf: examples/three-flavour.flatppl
-cli.pdf flatppl-cheatsheets.pdf: examples/score.flatppl examples/ws.json examples/hs.json examples/r.formula.json
-python-sdk.pdf flatppl-cheatsheets.pdf: examples/python_sdk.py
-fitting-from-python.pdf flatppl-cheatsheets.pdf: examples/fit.py
+$(PDFS): $(BUILD)/%.pdf: %.typ $(COMMON) | $(BUILD)
+	typst compile --root .. --ignore-system-fonts --font-path fonts $< $@
 
-flatppl-cheatsheets.pdf: flatppl-cheatsheets.typ sheets.txt $(COMMON) $(MODELS) $(SOURCES) $(FIGURES)
-	typst compile --root .. --input collection=true $< $@
+$(MODEL_SHEETS:%=$(BUILD)/%.pdf): $(BUILD)/%.pdf: examples/%.flatppl figures/%.svg
+$(BUILD)/neutrino-physics.pdf: examples/three-flavour.flatppl
+$(BUILD)/cli.pdf: examples/score.flatppl examples/ws.json examples/hs.json examples/r.formula.json
+$(BUILD)/python-sdk.pdf: examples/python_sdk.py
+$(BUILD)/fitting-from-python.pdf: examples/fit.py
