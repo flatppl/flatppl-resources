@@ -19,7 +19,7 @@ eta = a[group_data] .+ beta .* x_data
 probability = invlogit.(eta)
 y ~ Bernoulli.(probability)
 
-# The prior retains z, not its transform a.
+# Prior and likelihood in the latent coordinates.
 prior = lawof(record(mu_a = mu_a,
     tau = tau, z = z, beta = beta))
 K = kernelof(record(y = y),
@@ -27,7 +27,10 @@ K = kernelof(record(y = y),
 L = likelihoodof(K, record(y = y_data))
 posterior = bayesupdate(L, prior)
 
-# Evaluate the observation model at a point.
+# Raise the intercept for group 2.
 point = record(mu_a = 0.0, tau = 1.0,
-    z = [0.0, 0.0, 0.0], beta = 1.0)
+    z = [0.0, 1.0, 0.0], beta = 1.0)
 log_L = logdensityof(L, point)
+predict = functionof(probability,
+    mu_a, tau, z, beta)
+fitted = predict(point)

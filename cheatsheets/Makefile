@@ -5,6 +5,7 @@ MODELS = $(wildcard examples/*.flatppl)
 BRANDING = ../branding/logo-rounded.svg
 SYNTAX = $(wildcard syntax/*.sublime-syntax syntax/*.tmTheme)
 MODEL_SHEETS = $(filter-out python-sdk cli,$(SHEETS))
+FIGURE_SHEETS = $(filter-out advanced,$(MODEL_SHEETS))
 COMMON = theme.typ examples/LICENSE.txt examples/NOTICE.md $(BRANDING) $(SYNTAX) $(wildcard fonts/*.ttf)
 FLATPPL ?= flatppl
 IMPORT_MODELS = examples/decay-ode.flatppl examples/measurement.flatppl examples/profile-marginal.flatppl examples/three-flavour.flatppl
@@ -35,7 +36,8 @@ $(BUILD):
 $(PDFS): $(BUILD)/%.pdf: %.typ $(COMMON) | $(BUILD)
 	typst compile --root .. --ignore-system-fonts --font-path fonts $< $@
 
-$(MODEL_SHEETS:%=$(BUILD)/%.pdf): $(BUILD)/%.pdf: examples/%.flatppl figures/%.svg
+$(MODEL_SHEETS:%=$(BUILD)/%.pdf): $(BUILD)/%.pdf: examples/%.flatppl
+$(FIGURE_SHEETS:%=$(BUILD)/%.pdf): $(BUILD)/%.pdf: figures/%.svg
 $(BUILD)/neutrino-physics.pdf: examples/three-flavour.flatppl
 $(BUILD)/cli.pdf: examples/score.flatppl examples/ws.json examples/hs.json examples/r.formula.json
 $(BUILD)/python-sdk.pdf: examples/python_sdk.py

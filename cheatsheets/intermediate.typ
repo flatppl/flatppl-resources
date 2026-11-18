@@ -5,40 +5,37 @@
   formula: ("Group intercept", [$a_g = mu_a + tau z_g, quad z_g tilde.op cal(N)(0,1)$]),
   reference-title: "Indexing and pooling",
   file: "examples/intermediate.flatppl", example: "Grouped logistic regression",
-  illustration: ("Group membership by observation",
-    "Three intercepts a1, a2, a3 each feed two observations. In row order the result is a1, a2, a3, a1, a2, a3.",
-    [`a[group_data]` repeats the existing group values. Rows 1 and 4 use the same `a[1]` each time the model is evaluated.]),
+  illustration: ("Which rows use the new intercept?",
+    "Group intercepts 0, 1 and 0 feed six observation rows. The highlighted branches connect group 2 to rows 2 and 5.",
+    [At `point`, `a[group_data]` gives `[0, 1, 0, 0, 1, 0]`. Rows 2 and 5 share the intercept of 1. Their predictors differ.]),
   notes: (
     ("Noncentered intercepts", 11, 15, [
       Draw `G` independent standard Normals for `z`. Multiply each entry by `tau` and add `mu_a`. Conditional on these population parameters, each intercept has mean `mu_a` and standard deviation `tau`.
     ]),
-    ("Index the intercept by group", 18, 20, [
-      Use the integer labels in `group_data` to select an intercept for each row of `x_data`. The dotted link gives one Bernoulli probability per row. The rows share a slope and the intercepts of their respective groups.
+    ("Index the intercept by group", 18, 18, [
+      Change `z[2]` from 0 to 1 with $mu_a=0$ and $tau=beta=1$. Two rows gain one unit of log odds. Applying `invlogit` gives their success probabilities.
+      #v(3pt)
+      #lookup((auto, auto, 1fr, 1fr), ([Row], [$x_i$], [$z_2=0$], [$z_2=1$]), numeric: true,
+        [2], [0.4], [0.599], [0.802],
+        [5], [0.8], [0.690], [0.858])
     ]),
     ("The hierarchical likelihood", 23, 28, [
       The prior has fields `mu_a`, `tau`, `z` and `beta`. Make all four variates inputs to `kernelof` to cut their prior dependencies. Then bind the observed outcomes with `likelihoodof`.
     ]),
-    ("Supply the latent vector", 31, 33, [
-      Supply all four fields, including the length-`G` latent vector. Setting `z` to zero sets every intercept to `mu_a`. The posterior log density includes the prior contribution.
-    ]),
-  ),
-  after-notes: (
-    entry("From latent coordinates to intercepts", [
-      #code("f_a = functionof(a, mu_a, tau, z)\nintercepts = f_a(1, 2, [-1, 0, 1])")
-      #v(3pt)
-      The argument list in `functionof` sets the positional order. These values give the intercepts `[-1, 1, 3]`.
+    ("Evaluate all six rows", 31, 36, [
+      `predict(point)` returns the six probabilities in observation order. Set `z` to `[0, 0, 0]` on line 32 and evaluate again. Only entries 2 and 5 change. `log_L` scores the six observed outcomes at the same point.
     ]),
   ),
   variants: (
     entry("Use centered coordinates", [
       #code("a ~ iid(Normal(mu_a, tau), G)")
       #v(3pt)
-      Draw `a` directly and remove the affine transform of `z`. Substitute `a` for `z` in the prior record, kernel inputs and evaluation point. The conditional law of the intercepts is the same in both parameterizations.
+      Replace the draw and transform of `z` with this draw of `a`. Use `a` in the prior, kernel and evaluation point. Its conditional law stays the same.
     ]),
     entry("Reuse the observation kernel", [
       #code("new_y = [0, 1, 0, 1, 1, 0]\nL_new = likelihoodof(K, record(y = new_y))")
       #v(3pt)
-      Bind six new outcomes in the same row order. The kernel retains the original groups and predictors.
+      Bind six new outcomes. `K` keeps the original groups, predictors and row order.
     ]),
   ),
   references: (
@@ -52,10 +49,10 @@
       #v(3pt)
       `phi` sets the population mean. At fixed `phi`, increasing `kappa` concentrates the group rates around that mean. Supply a trial total and a success count for each group.
     ]),
-    entry("Call a named function", [
-      #code("f(a, b) = a + b\nu = f(1, 2)\nv = f(record(b = 2, a = 1))")
+    entry("Recover the group intercepts", [
+      #code("f_a = functionof(a, mu_a, tau, z)\nintercepts = f_a(1, 2, [-1, 0, 1])")
       #v(3pt)
-      An explicit boundary accepts positional inputs. A matching record supplies named inputs when the callable cannot accept one positional argument.
+      At $mu_a=1$ and $tau=2$, these latent values give the intercepts `[-1, 1, 3]`. Gather from this vector with `group_data` to obtain one intercept per row.
     ]),
     entry("Shared and group intercepts", [
       The regression module’s `BernoulliLogitGLM` takes one shared intercept. Here `a[group_data]` supplies a separate intercept for each group. The dotted Bernoulli law uses the probability for each row.

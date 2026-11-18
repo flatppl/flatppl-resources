@@ -9,10 +9,12 @@ y = rowstack([[3, 3], [3, 3], [6, -1]])
 pred[.t, .s] := X[.t, .k] * B[.s, .k]
 r = y .- pred
 
-by_run[.t] := r[.t, .s]^2
-total[] := by_run[.t]
+sq[.t, .s] := r[.t, .s]^2
+by_run[.t] := sq[.t, .s]
+by_sensor[.s] := sq[.t, .s]
+total[] := sq[.t, .s]
 
-mse = aggregate(mean, [.s], r[.t, .s]^2)
+mse = aggregate(mean, [.s], sq[.t, .s])
 within = aggregate(lall, [.t],
     abs(r[.t, .s]) <= 1)
 
@@ -21,5 +23,6 @@ diag_sum[] := gram[.s, .s]
 
 log_L = logdensityof(Normal.(pred, 1.0), y)
 outputs = record(pred = pred, cost = by_run,
-    mse = mse, within = within, gram = gram,
+    by_sensor = by_sensor, mse = mse,
+    within = within, gram = gram,
     total = total, log_L = log_L)

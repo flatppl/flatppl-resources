@@ -1,5 +1,5 @@
 %%%
-A mixture built directly from measures.
+A two-component mixture for five readings.
 %%%
 flatppl_compat = "0.1"
 y_data = [-1.1, -0.7, 0.2, 1.4, 3.0]
@@ -7,26 +7,25 @@ n = lengthof(y_data)
 p = elementof(unitinterval)
 mu = elementof(reals)
 
-# Components share the scalar event space.
 M1 = Normal(mu, 0.7)
 M2 = Gamma(shape = 2, rate = 1)
-mixture = superpose(
-    weighted(p, M1), weighted(1 - p, M2))
+mix = superpose(weighted(p, M1),
+    weighted(1 - p, M2))
+readings = iid(mix, n)
 
-# Reify a measure-valued expression.
-K = functionof(joint(y = iid(mixture, n)))
+batch = superpose(weighted(p, iid(M1, n)),
+    weighted(1 - p, iid(M2, n)))
+
+K = functionof(joint(y = readings))
+K_batch = functionof(joint(y = batch))
+obs = record(y = y_data)
+L = likelihoodof(K, obs)
+L_batch = likelihoodof(K_batch, obs)
+
 prior = joint(p = Beta(2, 2),
     mu = Normal(0, 2))
-L = likelihoodof(K, record(y = y_data))
 posterior = bayesupdate(L, prior)
 
-# Retain or marginalize the parameters.
-joint_model = jointchain(prior, K)
-prior_predictive = kchain(prior, K)
-K_alt, prior_alt = disintegrate(
-    ["y"], joint_model)
-conditioned = restrict(joint_model,
-    record(y = y_data))
-
 point = record(p = 0.4, mu = -1.0)
-log_L = logdensityof(L, point)
+log_readings = logdensityof(L, point)
+log_batch = logdensityof(L_batch, point)

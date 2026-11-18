@@ -1,5 +1,15 @@
 #import "theme.typ": *
 
+// Align the component vectors with the two operands in the highlighted line.
+#let components = context {
+  let token(s) = text(font: mono, size: 9.4pt, s)
+  block(inset: (left: 7pt), grid(
+    columns: (measure(token("G: dist2[] := ")).width, measure(token("q[.i^] * ")).width, auto),
+    align: left + horizon, column-gutter: 0pt,
+    text(size: 8pt, fill: secondary, [Components]), token("[3, 1]"), token("[2, −1]"),
+  ))
+}
+
 #sheet(
   topic: "Tensor coordinates", title: "Metric Einstein summation", accent: rgb("70516f"),
   formula: ("Squared Mahalanobis distance", [$d^2 = q^T G^(-1) q$]),
@@ -9,14 +19,18 @@
     "The circle through (2,1) becomes an ellipse through (3,1) after the shear. Both points have squared Mahalanobis distance 5.",
     [The same residual lies on the contour $d^2=5$ in both panels. The shear maps the circle to an ellipse. At fixed $q_1$, increasing $q_2$ increases $y$ and decreases $x$ by the same amount.]),
   notes: (
-    ("Transform the covariance with the data", 9, 10, [
+    ("Transform the covariance", 9, 10, [
       The original residual is `r = [2, 1]` with identity noise covariance. The instrument reports `q = [x + y, y]`. Its covariance is $G=J J^T$, with rows `[2, 1]` and `[1, 1]`.
     ]),
-    ("Contract one upper and one lower index", 12, 14, [
-      `.i^` reads the stored vector. `.i_` applies the inverse of the supplied metric. The metric contraction gives 5 in both systems. Summing the squares of the reported components gives $3^2+1^2=10$.
+    ("Contract the two factors", 13, 13, [
+      #components
+      #v(2pt)
+      #align(center, $3 times 2 + 1 times (-1) = 6 - 1 = 5$)
+      #v(2pt)
+      `.i^` reads the stored vector $q$. `.i_` reads $G^(-1)q$. The repeated index pairs the components. Their sum of products gives the original squared distance. Line 14 squares the stored entries and gives 10.
     ]),
-    ("Recover the component products", 16, 17, [
-      Solve $G u=q$ with `linsolve` to obtain the lower components `[2, −1]`. Multiplying each by its upper component gives 6 and −1. Their sum is 5.
+    ("Check the lower components", 16, 17, [
+      `linsolve` solves $2u_1+u_2=3$ and $u_1+u_2=1$. Subtract the equations to obtain $u_1=2$, then $u_2=-1$. Line 17 leaves `.i` free, so `parts` keeps both products `[6, -1]`.
     ]),
     ("Differentiate the squared distance", 19, 21, [
       In lower components the derivative is $2 G^(-1) q$, or `[4, −2]`. FlatPPL raises the lower output for storage as `[6, 2]`. Reading `grad[.i_]` recovers the derivative. A step along the second axis has slope −2.
@@ -31,12 +45,10 @@
     entry("The metric argument", [
       Pass the covariance `G` as the upper metric $g^(i j)$. Within a `G:` contraction, the marks on each index determine which components FlatPPL reads.
       #v(4pt)
-      #lookup((auto, 1fr), ([Indexed expression], [Components here]),
-        [`q[.i^]`], [Stored residual $(3, 1)$],
-        [`q[.i_]`], [Lowered residual $(2, -1)$],
-        [`G[.i^, .j^]`], [Covariance $G$],
-        [`G[.i_, .j_]`], [Precision $G^(-1)$],
-        [`G[.i^, .j_]`], [Identity $I_2$])
+      #lookup((auto, 1fr), ([Indexed expression], [Matrix rows]),
+        [`G[.i^, .j^]`], [`[2, 1]`, `[1, 1]`],
+        [`G[.i_, .j_]`], [`[1, -1]`, `[-1, 2]`],
+        [`G[.i^, .j_]`], [`[1, 0]`, `[0, 1]`])
     ]),
     entry("The explicit contraction", [
       #code("d = metricsum(G, [], q[.i^] * q[.i_])")

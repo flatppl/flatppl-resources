@@ -12,12 +12,13 @@ q(m) = (mD/m)*hep.breakup_momentum(mD, m, mpi)
 k(m) = hep.breakup_momentum(m, mpi, mpi)
 s12(m,c) = 2*mpi^2+m*E(m)+2*q(m)*k(m)*c
 
-# Constant width in the S-wave lineshape.
 b = mR * width
 bw(s) = b * hep.resonance_breitwigner(
     s, mR, width, 0.0, 0.0, 0, 1.0)
-amp(m,c,p) = 1+p.r*cis(p.phi)*(
-    bw(s12(m,c))+bw(s12(m,-c)))
+wave(s,p) = p.r*cis(p.phi)*bw(s)
+amp(m,c,p) = 1 + (wave(s12(m,c),p)
+    + wave(s12(m,-c),p))
+separate(u,v) = 1 + abs2(u) + abs2(v)
 weight(x,p) = x[1]*q(x[1])*k(x[1]) * (
     abs2(amp(x[1],x[2],p)))
 
@@ -31,7 +32,8 @@ raw = weighted(weight, Lebesgue(support),
     parameters)
 pdf = normalize(raw)
 K = functionof(pdf)
-L = likelihoodof(K, [1.0, 0.35])
+event = [1.0, 0.35]
+L = likelihoodof(K, event)
 
 p0 = record(r = 0.6, phi = 0.7)
-check = weight([1.0, 0.35], p0)
+check = weight(event, p0)

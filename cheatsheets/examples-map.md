@@ -39,18 +39,18 @@ The map uses [flatppl-examples at b13481b](https://github.com/flatppl/flatppl-ex
 
 - **Beginner:** declare parameters and domains with `elementof`, define fixed data, vectorize an observation model, construct a likelihood, optionally assign a prior and posterior, and score a named point.
 - **Intermediate:** define population and latent group variables, gather by group, choose centered or noncentered coordinates, and preserve the complete hierarchical interface.
-- **Advanced:** construct a model from measures, combine components through products or superposition, compose kernels, transform or project a law, and condition or normalize the resulting measure.
+- **Advanced** models combine measures by product and superposition, use a kernel to construct a joint or predictive law, and condition on observations.
 
 ## Reductions used in the sheets
 
 | Sheet | Adaptation |
 | --- | --- |
 | [Simple models](beginner.typ) | Dotted arithmetic gives the four means. `Normal.(mu, sigma)` assigns an independent reading to each. The likelihood uses three free parameters with independent coefficient and LogNormal scale priors for the optional Bayesian update. |
-| [Hierarchical models](intermediate.typ) | The grouped logistic predictor remains. Standard-Normal latent coordinates produce noncentered intercepts, with simpler scale and slope priors. |
-| [Measure composition](advanced.typ) | The Normal–Gamma mixture retains unknown weight and location. Component scale and Gamma parameters are fixed. Measures replace prior and observation draws. |
+| [Hierarchical models](intermediate.typ) | The grouped logistic predictor uses noncentered intercepts. Changing the second latent coordinate shifts the success probabilities in two of the six rows. |
+| [Measure composition](advanced.typ) | The Normal–Gamma mixture retains free weight and location. Changing the order of product and superposition gives a component choice per reading or one shared by the batch. |
 | [The regression module](regression-module.typ) | The two-column design follows the table-regression example. Six synthetic pulse counts give a worked Poisson log-linear model. The other nine constructors use the same matrix. The [regression specification](https://github.com/flatppl/flatppl-design/blob/d0444087c73209be5feb5ed27e41133281752b5d/docs/09-standard-modules.md#module-regression) defines their argument order and response laws. |
 | [Particle counting](particle-physics.typ) | Five-channel counts and event spectra reduce to two count channels and one shared background-scale nuisance. Spectral and point-process extensions occupy the reference column. |
-| [Hadron physics](hadron-physics.typ) | The 211-line Dalitz example reduces to 37 lines. The particle-physics module supplies `breakup_momentum` and the constant-width limit of `resonance_breitwigner`. Scalar invariants retain both pion pairings and their interference with the reference amplitude. |
+| [Hadron physics](hadron-physics.typ) | The reduced Dalitz model uses one resonance and a unit reference amplitude. The particle-physics module supplies `breakup_momentum` and the constant-width limit of `resonance_breitwigner`. The two pion pairings enter coherently. Subtracting the sum of all three component intensities isolates their interference. |
 | [Neutrino physics](neutrino-physics.typ) | The three-flavour matter model reduces to a two-flavour vacuum formula. The example fits an angle and mass splitting to synthetic fixed-trial counts. Full propagation and detector conventions remain in the references. |
 
 The intermediate parameterization also follows [the noncentered radon example](https://github.com/flatppl/flatppl-examples/blob/b13481bd590796f07080101528e376ae09e27346/posteriordb/radon_variable_intercept_slope_noncentered.flatppl).
@@ -60,7 +60,7 @@ The intermediate parameterization also follows [the noncentered radon example](h
 | Sheet | Source and adaptation |
 | --- | --- |
 | [Zero to hero](zero-to-hero.typ) | The rate example adds unequal exposures, a named likelihood, a conjugate update and a predictive count to the [corpus Poisson model](https://github.com/flatppl/flatppl-examples/blob/b13481bd590796f07080101528e376ae09e27346/examples/poisson-model.flatppl). |
-| [Einstein reductions](einstein-reductions.typ) | The calibration example applies the corpus contraction to two sensors. Different output axes yield residual sums by run, means by sensor, and the matrix of sensor cross-products. [Multi-axis aggregation](https://github.com/flatppl/flatppl-design/blob/42242456ad06657b3348919402740df3db9788c1/docs/04-design.md#sec:aggregate) |
+| [Einstein reductions](einstein-reductions.typ) | The calibration example applies the corpus contraction to two sensors. The same squared residuals yield sums by run, by sensor, or over both. The example also computes means and sensor cross-products. [Multi-axis aggregation](https://github.com/flatppl/flatppl-design/blob/42242456ad06657b3348919402740df3db9788c1/docs/04-design.md#sec:aggregate) |
 | [Metric Einstein summation](metric-einstein.typ) | A shear transforms the first calibration residual and its covariance. The Mahalanobis distance and its directional derivative provide checks on lowering and storage. The lower-output calculation follows the [metric tensor fixture](https://github.com/flatppl/flatppl-testsuite/blob/7015a6007a4e0199496d6ae1ef5874f03e2c26ae/corpora/coverage/metric_tensor/model.flatppl) and [metric-aware summation rules](https://github.com/flatppl/flatppl-design/blob/42242456ad06657b3348919402740df3db9788c1/docs/04-design.md#sec:metricsum). |
 | [Posterior prediction](posterior-prediction.typ) | The four data pairs and coefficient priors come from the [beginner listing](examples/beginner.flatppl). Fixing the noise at 0.5 gives exact posterior and predictive intervals. |
 | [From a model to a fit](fitting-from-python.typ) | The eight readings and BFGS fit come from the [SDK Optimistix example](https://github.com/flatppl/flatppl-python/blob/6c4240e6a47ded7c96043d37bfa32fe139551109/examples/optimistix_fit.py). Free parameters suffice for the likelihood fit. The [Python driver](examples/fit.py) checks the estimates against the sample moments. |

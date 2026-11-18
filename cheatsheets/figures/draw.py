@@ -119,36 +119,27 @@ def regression_module():
 
 
 def intermediate():
-    groups, = literals("intermediate", "group_data")
+    sheet = "intermediate"
+    groups, = literals(sheet, "group_data")
+    mu_a, tau, z = literals(sheet, "mu_a", "tau", "z", record="point")
+    intercepts = mu_a + tau * np.array(z)
     fig, ax = plt.subplots(figsize=(3.45, 1.38))
-    fig.subplots_adjust(left=0.01, right=0.99, bottom=0.02, top=0.99)
-    ax.set(xlim=(0.3, len(groups) + 0.7), ylim=(-0.02, 1.20))
+    fig.subplots_adjust(left=0.03, right=0.97, bottom=0.02, top=0.98)
+    ax.set(xlim=(0.45, len(groups) + 0.55), ylim=(-0.08, 1.12))
     ax.axis("off")
-    top = dict(zip(sorted(set(groups)), [1.5, 3.5, 5.5], strict=True))
-    styles = ["-", "--", ":"]
-    for i, g in enumerate(groups, start=1):
-        ax.plot([top[g], i], [0.84, 0.34], color=BLUE, lw=1.15, ls=styles[g - 1])
-        ax.text(i, 0.19, f"$a_{g}$", ha="center", va="center", color=INK, fontsize=10)
-    for g, x in top.items():
-        ax.text(x, 0.97, f"$a_{g}$", ha="center", va="center", color=BLUE, fontsize=12)
-    ax.text(0.44, 1.12, "group intercepts", color=MUTED, fontsize=7)
-    ax.text(0.44, 0.01, "observation order", color=MUTED, fontsize=7)
-    save(fig, "intermediate")
-
-
-def advanced():
-    p, mu = literals("advanced", "p", "mu", record="point")
-    fig, ax = axes()
-    x = np.linspace(-3.5, 5.0, 501)
-    m1 = p * normal(x, mu, 0.7)
-    m2 = (1 - p) * np.maximum(x, 0) * np.exp(-np.maximum(x, 0))
-    ax.plot(x, m1, color=BLUE, ls="--", lw=1.25, label=f"{p:g} Normal")
-    ax.plot(x, m2, color=GOLD, ls=":", lw=1.6, label=f"{1-p:g} Gamma")
-    ax.plot(x, m1 + m2, color=PLUM, label="sum")
-    ax.set(xlim=(-3.5, 5), ylim=(0, 0.285), xticks=[-3, -1, 0, 2, 4], yticks=[0, 0.1, 0.2],
-           xlabel="Observation  y", ylabel="Density")
-    ax.legend(loc="upper right", borderaxespad=0, labelspacing=0.13)
-    save(fig, "advanced")
+    for group, intercept in enumerate(intercepts, start=1):
+        top = 0.5 + (group - 0.5) * len(groups) / len(intercepts)
+        changed = z[group - 1] != 0
+        colour = BLUE if changed else MUTED
+        ax.text(top, 0.93, f"$a_{group}={intercept:g}$", ha="center", va="center",
+                color=colour, fontsize=10)
+        for row in np.flatnonzero(np.asarray(groups) == group) + 1:
+            ax.plot([top, row], [0.78, 0.32], color=colour, ls="-" if changed else ":",
+                    lw=1.8 if changed else 0.8, zorder=2 if changed else 1)
+            ax.text(row, 0.21, str(row), ha="center", va="center", color=colour,
+                    weight="bold" if changed else "normal")
+    ax.text((len(groups) + 1) / 2, 0, "Observation row", ha="center", color=MUTED)
+    save(fig, sheet)
 
 
 def particle():
@@ -176,40 +167,72 @@ def particle():
 
 
 def hadron():
-    mpi, mD, mR, width = literals("hadron-physics", "mpi", "mD", "mR", "width")
-    r, phi = literals("hadron-physics", "r", "phi", record="p0")
-    low, high = (2 * mpi) ** 2, (mD - mpi) ** 2
-    s = np.linspace(low, high, 501)
-    s12, s13 = np.meshgrid(s, s)
-    # In the (12) rest frame the opening angle ranges from 0 to pi.
-    mid = (mD ** 2 + 3 * mpi ** 2 - s) / 2
-    q1 = np.sqrt(np.maximum(0, s / 4 - mpi ** 2))
-    q3 = np.sqrt(np.maximum(0, (mD ** 2 - s - mpi ** 2) ** 2 / (4 * s) - mpi ** 2))
-    span = 2 * q1 * q3
-    allowed = np.abs(s13 - mid) <= span
+    sheet = "hadron-physics"
+    mpi, mD, mR, width = literals(sheet, "mpi", "mD", "mR", "width")
+    r, phi = literals(sheet, "r", "phi", record="p0")
+    event, = literals(sheet, "event")
+
+    def band(pair_mass_sq):
+        # The other two pair invariants span midpoint ± half-width.
+        mid = (mD ** 2 + 3 * mpi ** 2 - pair_mass_sq) / 2
+        q1 = np.sqrt(np.maximum(0, pair_mass_sq / 4 - mpi ** 2))
+        energy_sq = (mD ** 2 - pair_mass_sq - mpi ** 2) ** 2 / (4 * pair_mass_sq)
+        q3 = np.sqrt(np.maximum(0, energy_sq - mpi ** 2))
+        return mid, 2 * q1 * q3
 
     def bw(si):
         return mR * width / (mR ** 2 - si - 1j * mR * width)
 
-    intensity = np.abs(1 + r * np.exp(1j * phi) * (bw(s12) + bw(s13))) ** 2
-    fig = plt.figure(figsize=(3.45, 2.10))
-    ax = fig.add_axes((0.12, 0.20, 0.50, 0.76), aspect="equal")
+    low, high = (2 * mpi) ** 2, (mD - mpi) ** 2
+    s = np.linspace(low, high, 501)
+    s12, s13 = np.meshgrid(s, s)
+    mid, span = band(s)
+    allowed = np.abs(s13 - mid) <= span
+    mass, cosine = event
+    centre, half_width = band(mass ** 2)
+    mark = (centre + cosine * half_width, centre - cosine * half_width)
+
+    coupling = r * np.exp(1j * phi)
+    a12, a13 = coupling * bw(s12), coupling * bw(s13)
+    coherent = np.abs(1 + a12 + a13) ** 2
+    separate = 1 + np.abs(a12) ** 2 + np.abs(a13) ** 2
+    delta = coherent - separate
+    upper = np.ceil(max(coherent[allowed].max(), separate[allowed].max()) * 2) / 2
+    limit = np.ceil(np.abs(delta[allowed]).max() * 2) / 2
+    intensity_scale = mpl.colors.Normalize(0, upper)
+    signed_scale = TwoSlopeNorm(vmin=-limit, vcenter=0, vmax=limit)
+    intensity_map = LinearSegmentedColormap.from_list(
+        "intensity", ["#fcf7e9", "#e1b983", "#ae6540", "#5c3031"])
+    signed_map = LinearSegmentedColormap.from_list(
+        "interference", ["#315766", "#f7f2e6", "#974029"])
     half_cell = (s[1] - s[0]) / 2
-    palette = LinearSegmentedColormap.from_list("interference", ["#315766", "#f7f2e6", "#974029"])
-    upper = np.ceil(intensity[allowed].max() * 2) / 2
-    im = ax.imshow(np.ma.masked_where(~allowed, intensity), origin="lower",
-                   extent=(low - half_cell, high + half_cell, low - half_cell, high + half_cell),
-                   cmap=palette, norm=TwoSlopeNorm(vmin=0, vcenter=1, vmax=upper),
-                   interpolation="nearest")
-    ax.plot(s, mid + span, color=MUTED, lw=0.45)
-    ax.plot(s, mid - span, color=MUTED, lw=0.45)
-    ax.set(xlim=(0, 3.05), ylim=(0, 3.05), xticks=[0, 1, 2, 3], yticks=[0, 1, 2, 3],
-           xlabel=r"$s_{12}$  [GeV²]", ylabel=r"$s_{13}$  [GeV²]")
-    cax = fig.add_axes((0.71, 0.32, 0.033, 0.50))
-    fig.colorbar(im, cax=cax, ticks=[0, 1, upper])
-    cax.spines["outline"].set_visible(False)
-    fig.text(0.69, 0.88, r"Intensity  $|A|^2$", fontsize=8)
-    save(fig, "hadron-physics")
+    extent = (low - half_cell, high + half_cell) * 2
+
+    fig, panels = plt.subplots(1, 3, figsize=(3.45, 1.78), sharex=True, sharey=True)
+    fig.subplots_adjust(left=0.113, right=0.975, top=0.86, bottom=0.35, wspace=0.18)
+    maps = (("Coherent", coherent, intensity_map, intensity_scale),
+            ("Separate", separate, intensity_map, intensity_scale),
+            ("Difference", delta, signed_map, signed_scale))
+    for ax, (title, values, cmap, scale) in zip(panels, maps, strict=True):
+        ax.imshow(np.ma.masked_where(~allowed, values), origin="lower", extent=extent,
+                  cmap=cmap, norm=scale, interpolation="nearest")
+        ax.plot(s, mid + span, color=MUTED, lw=0.45)
+        ax.plot(s, mid - span, color=MUTED, lw=0.45)
+        ax.plot(*mark, "o", ms=3, mfc="white", mec=INK, mew=0.65)
+        ax.set(xlim=(0, 3.05), ylim=(0, 3.05), xticks=[0, 1.5, 3], yticks=[0, 1.5, 3])
+        ax.tick_params(labelsize=6.8, pad=1.2)
+        ax.set_title(title, fontsize=8, pad=3)
+    panels[0].set_ylabel(r"$s_{13}$ [GeV²]", labelpad=1)
+    panels[1].set_xlabel(r"$s_{12}$ [GeV²]", labelpad=1)
+    panels[0].xaxis.set_major_formatter("{x:g}")
+    panels[0].yaxis.set_major_formatter("{x:g}")
+    for left, length, ax, ticks in ((0.13, 0.48, panels[0], [0, upper / 2, upper]),
+                                   (0.72, 0.24, panels[2], [-limit, 0, limit])):
+        cax = fig.add_axes((left, 0.15, length, 0.045))
+        bar = fig.colorbar(ax.images[0], cax=cax, orientation="horizontal", ticks=ticks)
+        bar.outline.set_visible(False)
+        bar.ax.tick_params(labelsize=6.8, pad=1.5)
+    save(fig, sheet)
 
 
 def neutrino():
@@ -470,7 +493,7 @@ def two_spins():
 
 
 if __name__ == "__main__":
-    for draw in (zero_to_hero, distributions, beginner, intermediate, advanced, regression_module,
+    for draw in (zero_to_hero, distributions, beginner, intermediate, regression_module,
                  einstein_reductions, metric_einstein, posterior_prediction, fitting_from_python, measurement,
                  profile_marginal, particle, hadron, neutrino, gamma_ray_response, decay_ode, two_spins):
         draw()

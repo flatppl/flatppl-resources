@@ -5,36 +5,35 @@
   formula: ("Density in mass and helicity angle", [$dif P prop m q(m) k(m) abs(A)^2 dif m dif c$]),
   reference-title: "Phase space and intensity",
   file: "examples/hadron-physics.flatppl", example: "The decay D⁻ → π⁺π⁻π⁻",
-  illustration: ("Dalitz intensity",
-    "Intensity within the physical Dalitz boundary. Resonance bands at s12 and s13 near 0.96 GeV squared are mirror images about the diagonal.",
-    [Exchanging $s_(12)$ and $s_(13)$ reflects the resonance band across the diagonal. Colour shows $abs(A)^2$ at `p0`. The constant reference amplitude alone gives one.]),
+  illustration: ("Interference on the Dalitz plot",
+    "Three maps use the same pair-mass axes. The coherent intensity and the sum of separate intensities share a colour scale. Their signed difference has blue destructive and red constructive bands. The open circle marks the same event in each map.",
+    [At `p0`, the first two maps share an intensity scale. The third shows coherent minus separate. Red marks constructive interference and blue marks destructive interference. The circles mark `event`.]),
   notes: (
     ("Pair mass and helicity angle", 9, 13, [
       Multiply the bachelor momentum by $m_D/m$ to reach the pair rest frame. There `k` is the daughter momentum. The two pairings use helicity cosines $c$ and $-c$.
     ]),
-    ("Bose-symmetric amplitude", 17, 22, [
-      Zero daughter masses and $ell=0$ keep `bw` at constant width. `q` and `k` use the pion mass. Add both pairings to `1`, then take `abs2`.
+    ("Add amplitudes before squaring", 18, 21, [
+      `amp` adds the two pion pairings to the unit reference amplitude. Line 23 then takes `abs2`. Squaring each term first gives `separate`. The difference includes interference with the reference and between the pairings.
     ]),
-    ("Declare coordinates and couplings", 25, 29, [
-      Use `cartprod` for the `[m,c]` rectangle. Masses are in GeV and `phi` in radians. The density callback takes both fit parameters in one record.
+    ("Declare the two couplings", 28, 30, [
+      `r` sets the common magnitude and `phi` the phase in radians. Pass both to `weight` in one record. The event coordinates on lines 26–27 are the pair mass in GeV and the helicity cosine.
     ]),
-    ("Construct the event likelihood", 30, 34, [
-      On `Lebesgue(support)`, `weighted` gives density `weight`. Divide by its integral. `functionof(pdf)` takes `r` and `phi`. Bind one observed `[m,c]`.
+    ("Construct the event likelihood", 33, 36, [
+      The Jacobian to squared-mass coordinates is $4 m q k$. `weight` uses $m q k abs(A)^2$ on `Lebesgue(support)`. The factor 4 cancels under `normalize`. Bind the observed `[m,c]` to the kernel in `r` and `phi`.
     ]),
   ),
   after-notes: (
-    entry("Change of variables", [
-      The Jacobian from $(m,c)$ to $(s_(23),s_(12))$ is $4 m q k$. The factor 4 cancels on normalization. In squared-mass coordinates the density is proportional to $abs(A)^2$ on the physical region.
+    entry("Read the marked event", [
+      #code("sp = s12(event[1], event[2])\nsm = s12(event[1], -event[2])\nu = wave(sp, p0)\nv = wave(sm, p0)")
+      #v(3pt)
+      `abs2(1+u+v)` gives 1.1763. `separate(u,v)` gives 1.1235. Their difference, $+0.0528$, is the interference at this event.
     ]),
   ),
   variants: (
-    entry("Pion exchange", [
+    entry("Exchange the two negative pions", [
       #code("mirror = weight([1.0, -0.35], p0)")
       #v(3pt)
-      Exchanging the negative pions takes $c$ to $-c$. Both weights round to $0.69474017$.
-    ]),
-    entry("Kinematic identity", [
-      $s_(12) + s_(13) + m^2 = m_D^2 + 3 m_pi^2$. Pions 2 and 3 form the same-sign pair.
+      Exchanging pions 2 and 3 takes $c$ to $-c$ and swaps $s_(12)$ with $s_(13)$. Both weights round to $0.69474017$. The invariants obey $s_(12)+s_(13)+m^2=m_D^2+3m_pi^2$.
     ]),
   ),
   references: (
@@ -54,7 +53,7 @@
       The uniform background contributes 20% of the events.
     ]),
     entry("Amplitude and resolution assumptions", [
-      `bw` has denominator $m_R^2-s-i m_R Gamma$. The model assumes ideal resolution. The #module-link("flatppl-amplitudes", "a522f9ef883239faf81658c763f1f4bd180b5206")[amplitudes module] gives other lineshapes and angular factors. Absolute rates require phase-space constants and a symmetry factor of $1/2$.
+      Zero daughter masses and $ell=0$ in `bw` give a constant width. The momenta use the pion mass. The model assumes ideal resolution. The #module-link("flatppl-amplitudes", "a522f9ef883239faf81658c763f1f4bd180b5206")[amplitudes module] gives other lineshapes and angular factors. Absolute rates require phase-space constants and a symmetry factor of $1/2$.
     ]),
   ),
 )

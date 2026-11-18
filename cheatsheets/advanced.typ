@@ -1,64 +1,92 @@
 #import "theme.typ": *
 
+#let accent = rgb("70516f")
+#let pair-table(title, values) = block(width: 100%)[
+  #align(center, text(font: serif, size: 11pt, weight: "bold", title))
+  #v(4pt)
+  #set text(size: 9pt)
+  #table(columns: (auto, 1fr, 1fr), align: center + horizon,
+    stroke: none, inset: (x: 2.2pt, y: 4pt),
+    fill: (x, y) => if x > 0 and y > 0 {
+      let p = float(values.at((y - 1) * 2 + x - 1))
+      if p > 0 { accent.lighten(100% - p * 68%) }
+    },
+    table.header([], [Normal], [Gamma]),
+    table.hline(stroke: 0.5pt + rule),
+    [Normal], values.at(0), values.at(1),
+    [Gamma], values.at(2), values.at(3))
+]
+
+#let pairs = [
+  Rows give the component of the first reading. Columns give the component of the second.
+  #v(6pt)
+  #grid(columns: (1fr, 1fr), column-gutter: 9pt,
+    pair-table("Per reading", ("0.16", "0.24", "0.24", "0.36")),
+    pair-table("Per batch", ("0.40", "0", "0", "0.60")))
+]
+
 #sheet(
-  topic: "Advanced", title: "Measure composition", accent: rgb("70516f"),
-  formula: ("Mixture measure", [$M = p M_1 + (1-p) M_2$]),
-  reference-title: "Measure operators",
-  file: "examples/advanced.flatppl", example: "A mixture of Normal and Gamma laws",
-  illustration: ("A weighted sum of two densities",
-    "At p = 0.4 and mu = −1, the density sums a weighted Normal and a weighted Gamma. Only the Normal contributes below zero.",
-    [At `p = 0.4` and `mu = -1` the Normal carries 40% of the mass. Below zero the Gamma density vanishes and the sum follows the Normal contribution.]),
+  topic: "Advanced", title: "Measure composition", accent: accent,
+  formula: ("Density of a single reading", [$m(y) = p f(y) + (1-p) g(y)$]),
+  file: "examples/advanced.flatppl",
+  example: "Two laws for five readings",
+  reference-title: "Consequences of the component choice",
+  illustration: ("Component pairs for two readings", pairs, [
+    At $p = 0.4$, either reading has a 0.4 probability of a Normal origin before observation. With a fresh choice per reading, the components differ with probability $0.24 + 0.24 = 0.48$. A shared choice rules out both off-diagonal pairs.
+  ]),
   notes: (
-    ("Bind component measures", 11, 12, [
-      `M1` and `M2` denote measures on the real line. The Normal location `mu` is free. The Gamma shape and rate are fixed. A constructor alone introduces no variate.
+    ("Choose a component for each reading", 10, 14, [
+      `mix` describes one observation. At fixed `p` and `mu`, `iid(mix, n)` repeats that law independently. Two readings in the same batch may come from different components.
     ]),
-    ("Mixture weights", 13, 14, [
-      Scale the component masses with `weighted` and add them on their common event space with `superpose`. The weights sum to one for every admissible `p`.
+    ("Choose one component for the batch", 16, 17, [
+      Each `iid` now describes five observations from a single component. `superpose` mixes the two five-dimensional laws. The readings share the component choice.
     ]),
-    ("Build a kernel from a measure", 17, 21, [
-      `iid` forms the product over observations. Name the resulting array `y` with `joint`. The kernel returned by `functionof` takes `p` and `mu`. The independent prior uses the same field names.
+    ("Bind the same five observations", 19, 23, [
+      Both kernels take `p` and `mu` and return a law for the record field `y`. Binding the same `obs` to each kernel gives two likelihoods on the same parameter space.
     ]),
-    ("Marginal and conditional laws", 24, 29, [
-      `jointchain` retains both the parameters and `y`. `kchain` integrates out the parameters. `disintegrate` recovers a prior and a kernel for `y`. Fixing `y` with `restrict` gives the unnormalized posterior.
-    ]),
-  ),
-  after-notes: (
-    entry("Mixture log likelihood", [
-      At `point` the five observations give $sum_i log(p f_1(y_i)+(1-p) f_2(y_i)) approx -8.93513$. Sum the component densities within each observation before taking its logarithm.
+    ("Assign the common prior", 25, 27, [
+      `joint` gives independent priors to `p` and `mu`. The field names match both likelihoods. Substitute `L_batch` for `L` to obtain the posterior under a shared component.
     ]),
   ),
   variants: (
-    entry("Build a mixture from a table", [
-      #code("components = table(mu = [-2, 2],\n    sigma = [0.7, 0.9])\nweights ~ Dirichlet([2, 2])\nM = ksuperpose(Normal, weights, components)")
+    entry("Keep parameters and predicted readings", [
+      #code("model = jointchain(prior, K)")
       #v(3pt)
-      Each table row supplies named constructor arguments for one component. Draw the vector of weights on the simplex.
+      A draw contains `p`, `mu` and `y`. All five readings use that draw of the parameters. Under `K`, each reading still has its own component choice.
     ]),
-    entry("Project a joint law", [
-      #code("mu_law = pushfwd(fn(get(_, [\"mu\"])),\n    joint_model)")
+    entry("Keep only the predicted readings", [
+      #code("predictive = kchain(prior, K)")
       #v(3pt)
-      Projection retains the selected field. Its density may require integration over the omitted variables.
+      A draw contains `y`. Its law integrates over `p` and `mu`. Use `K_batch` here to predict a batch with one shared component.
+    ]),
+  ),
+  after-notes: (
+    entry("Condition the joint model", [
+      #code("given_y = restrict(model, obs)")
+      #v(3pt)
+      Fix the `y` field of `model` at the observed readings. This gives the same unnormalized measure on `p` and `mu` as `bayesupdate(L, prior)`.
     ]),
   ),
   references: (
-    entry("Transform a measure", [
-      #code("f = bijection(exp, log, identity)\npositive = pushfwd(f, Normal(0, 1))")
-      #v(3pt)
-      Supply the forward map, inverse and forward log-volume. At $y>0$, the new log density is the old one at $log y$ minus $log y$.
+    entry("The five-reading likelihoods", [
+      Let $f_i$ and $g_i$ be the Normal and Gamma densities at reading $y_i$. In both models $p$ is the Normal weight.
+      #v(4pt)
+      $ L_"reading" &= product_i (p f_i + (1-p) g_i) \
+        L_"batch" &= p product_i f_i + (1-p) product_i g_i $
     ]),
-    entry("Weight a continuous base", [
-      #code("dx = Lebesgue(interval(-2, 2))\nw(x, p) = exp(-p.a * x^2)\nM = weighted(w, dx, record(a = 2))")
+    entry("What one negative reading establishes", [
+      The first reading is $-1.1$. Its Gamma density is zero, so this reading must come from the Normal. At fixed $p=0.4$, what is the probability that the next reading comes from the Gamma?
       #v(3pt)
-      `weighted` calls `w(x,p)`. `normalize(M)` divides by total mass and requires a finite, positive integral.
+      #lookup((1.4fr, 1fr), ([Choice], [Probability]), numeric: true,
+        [Per reading], [$1-p=0.60$],
+        [Per batch], [$0$])
     ]),
-    entry("Event intensity and total yield", [
-      #code("I = superpose(weighted(6, M1),\n    weighted(4, M2))\nevents ~ PoissonProcess(I)")
+    entry("Score the two laws at the same point", [
+      #lookup((1.4fr, 1fr), ([Component choice], [Log likelihood]), numeric: true,
+        [Per reading], [$-8.93513$],
+        [Per batch], [$-27.50312$])
       #v(3pt)
-      The Normal and Gamma laws each have unit mass. Their weights give an expected event count of ten. Normalizing `I` gives the distribution of one event.
-    ]),
-    entry("Compose sequential kernels", [
-      #code("step(x, p) = Normal(p.rho*x, p.sigma)\npath = markovchain(step, 0.0, 20,\n    record(rho = 0.8, sigma = 0.2))")
-      #v(3pt)
-      The draw contains the 20 successive states after the initial value. Use `kscan` for a transition with an exogenous input at each step.
+      These scores use `p = 0.4` and `mu = -1`. Set `y_data = [-1.1]` on line 5. With one reading, both log likelihoods become −1.48876.
     ]),
   ),
 )

@@ -14,19 +14,24 @@
       #v(3pt)
       $ hat(Y) = mat(1,2; 3,1; 5,0), quad Y-hat(Y) = mat(2,1; 0,2; 1,-1). $
     ]),
-    ("One sum of squares per run", 12, 13, [
-      `by_run` retains `.t`. FlatPPL sums over `.s` even though it occurs only once. The first residual is `[2, 1]`, so the first run contributes 5. Empty brackets sum all three contributions.
+    ("Choose which indices to keep", 12, 12, [
+      Line 12 retains both indices and squares each residual. Lines 13–15 all read `sq[.t, .s]`. Only the indices on the left change.
+      #v(3pt)
+      #lookup((auto, 1fr, auto), ([Output indices], [Sum over], [Result]),
+        [`[.t]`], [Sensors], [`[5, 4, 2]`],
+        [`[.s]`], [Runs], [`[5, 6]`],
+        [`[]`], [Runs and sensors], [`11`])
     ]),
-    ("Means and logical reductions", 15, 17, [
+    ("Means and logical reductions", 17, 19, [
       `mean` retains one result per sensor, $[5/3, 2]$. `lall` retains one result per run. Only run 3 has both readings within one unit of their predictions.
     ]),
-    ("Pairs of sensor residuals", 19, 20, [
+    ("Pairs of sensor residuals", 21, 22, [
       Two free names, `.a` and `.b`, select sensors independently. The off-diagonal entry is $2 times 1 + 0 times 2 + 1 times (-1) = 1$. Reusing `.s` in the trace selects the diagonal entries 5 and 6.
     ]),
   ),
   after-notes: (
     entry("Gaussian likelihood", [
-      Each reading has independent unit Normal error. The six readings give $log L = -3 log(2 pi) - 11/2 approx -11.01363$. The sum of squares in line 13 supplies the entire data-dependent term.
+      Each reading has independent unit Normal error. With `total = 11`, the six readings give $log L = -3 log(2 pi) - 11/2 approx -11.01363$.
     ]),
   ),
   variants: (
@@ -57,7 +62,7 @@
       `diagonal` sums two entries and gives 11. `all_cells` sums four entries and gives 13. A repeated name selects the same coordinate wherever it appears.
     ]),
     entry("Reduction operators", [
-      Reducing `r[.t, .s]^2` over `.t` gives one result per sensor. `var` and `std` use the sample denominator.
+      Reducing `sq[.t, .s]` over `.t` gives one result per sensor. `var` and `std` use the sample denominator.
       #v(3pt)
       #lookup((1.15fr, 1fr, 1fr), ([Reducer], [Sensor 1], [Sensor 2]), numeric: true,
         [`sum`], [5], [6], [`mean`], [$5/3$], [2], [`var`], [$13/3$], [3])
