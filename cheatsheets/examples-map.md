@@ -55,7 +55,7 @@ The map uses [flatppl-examples at b13481b](https://github.com/flatppl/flatppl-ex
 
 The intermediate parameterization also follows [the noncentered radon example](https://github.com/flatppl/flatppl-examples/blob/b13481bd590796f07080101528e376ae09e27346/posteriordb/radon_variable_intercept_slope_noncentered.flatppl).
 
-## Further worked examples
+## Further sheets
 
 | Sheet | Source and adaptation |
 | --- | --- |
@@ -70,6 +70,7 @@ The intermediate parameterization also follows [the noncentered radon example](h
 | [Decay ODE](decay-ode.typ) | The sheet takes its three readings and time grid from the [decay playground](https://github.com/flatppl-community/flatppl-numerics-ode/blob/a56b4977b3ca4fced2e986bcbbdb6930b9d8c04a/examples/playground.flatppl). It imports the `vern7` solver from the [ODE module](https://github.com/flatppl-community/flatppl-numerics-ode/tree/a56b4977b3ca4fced2e986bcbbdb6930b9d8c04a). |
 | [Two spins](two-spins.typ) | An original four-atom Ising measure illustrates the [measure algebra](https://github.com/flatppl/flatppl-design/blob/42242456ad06657b3348919402740df3db9788c1/docs/06-measure-algebra.md#superpose). Direct enumeration checks both the partition function and each atom’s mass. |
 | [FlatPPL for Python](python-sdk.typ) | The [driver](examples/python_sdk.py) defines its Normal query inline, following the [Python SDK quickstart](https://github.com/flatppl/flatppl-python/blob/6c4240e6a47ded7c96043d37bfa32fe139551109/docs/quickstart.md). The value and derivative follow from the unit Normal density. |
+| [The formula API](formula-api.typ) | Each equation corresponds to an independent call in the attached Python file. The [SDK formula reference](https://github.com/flatppl/flatppl-python/blob/69a079e0b5ba641ae6bc0f26e7338c9dd85a387c/docs/formula.md) specifies the syntax, family links, and observation terms. |
 | [The FlatPPL CLI](cli.typ) | The [Rust driver](https://github.com/flatppl/flatppl-rust/tree/952cfff5e9083c40f1092dd897ed626c52879602/crates/cli) supplies the commands. One [Normal model](examples/score.flatppl) provides the score, Stan posterior and portable bundle. The attached JSON inputs describe a pyhf count, an HS³ Gaussian measurement and a formula regression. |
 
 ## Physics library references

@@ -4,7 +4,7 @@ PDFS := $(SHEETS:%=$(BUILD)/%.pdf)
 MODELS = $(wildcard examples/*.flatppl)
 BRANDING = ../branding/logo-rounded.svg
 SYNTAX = $(wildcard syntax/*.sublime-syntax syntax/*.tmTheme)
-MODEL_SHEETS = $(filter-out python-sdk cli,$(SHEETS))
+MODEL_SHEETS = $(filter-out python-sdk cli formula-api,$(SHEETS))
 FIGURE_SHEETS = $(filter-out advanced,$(MODEL_SHEETS))
 COMMON = theme.typ examples/LICENSE.txt examples/NOTICE.md $(BRANDING) $(SYNTAX) $(wildcard fonts/*.ttf)
 FLATPPL ?= flatppl

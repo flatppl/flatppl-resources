@@ -16,6 +16,7 @@ Select a title to download its one-page PDF. Start with *Zero to hero* to write 
 | [Intermediate: hierarchical models](https://github.com/flatppl/flatppl-resources/releases/latest/download/intermediate.pdf) | Author grouped and multilevel models |
 | [Advanced: measure composition](https://github.com/flatppl/flatppl-resources/releases/latest/download/advanced.pdf) | Build models from measures and kernels |
 | [The regression module](https://github.com/flatppl/flatppl-resources/releases/latest/download/regression-module.pdf) | Build a design matrix and choose a response law for continuous readings, counts or classes |
+| [The formula API](https://github.com/flatppl/flatppl-resources/releases/latest/download/formula-api.pdf) | Translate equations into regression formulas for population terms, group effects, curves, and observation laws |
 | [Einstein summation and reductions](https://github.com/flatppl/flatppl-resources/releases/latest/download/einstein-reductions.pdf) | Compute calibration residuals by run, sensor, or sensor pair |
 | [Metric Einstein summation](https://github.com/flatppl/flatppl-resources/releases/latest/download/metric-einstein.pdf) | Recover the same squared distance after a change of sensor coordinates |
 | [Posterior prediction](https://github.com/flatppl/flatppl-resources/releases/latest/download/posterior-prediction.pdf) | Distinguish uncertainty in a mean from a new reading |
@@ -31,7 +32,7 @@ Select a title to download its one-page PDF. Start with *Zero to hero* to write 
 | [FlatPPL for Python](https://github.com/flatppl/flatppl-resources/releases/latest/download/python-sdk.pdf) | Compile a query, differentiate it, and evaluate a batch with JAX |
 | [The FlatPPL CLI](https://github.com/flatppl/flatppl-resources/releases/latest/download/cli.pdf) | Find commands for checking, converting, compiling, and packaging a model |
 
-Each worked example occupies one A4 landscape page, with its complete program beside four annotated excerpts. The CLI reference groups commands by task.
+Each worked example occupies one A4 landscape page, with its complete program beside four annotated excerpts. The formula reference pairs equations with formula strings. The CLI reference groups commands by task.
 Each PDF contains its example files as attachments. Specialist sheets assume the core language and can be read in any order.
 The [authoring guide](cheatsheets/README.md) describes the layout. The [example map](cheatsheets/examples-map.md) traces the worked models to their sources.
 

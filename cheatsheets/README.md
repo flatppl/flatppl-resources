@@ -1,9 +1,9 @@
 # FlatPPL cheatsheets
 
-The collection contains nineteen worked examples and one CLI reference. Each occupies one A4 landscape page. Letters A–D mark the annotated passages in the worked examples.
-Zero to Hero and the beginner, intermediate and advanced sheets each introduce a complete model. The specialist sheets assume the language covered in those four. Each introduces its own notation, data and model.
+The collection contains nineteen worked examples and two quick references. Each occupies one A4 landscape page. Letters A–D mark the annotated passages in the worked examples.
+Zero to Hero and the beginner, intermediate and advanced sheets each introduce a complete model. The specialist sheets assume the language covered in those four. Each worked example introduces its own notation, data and model.
 
-Each PDF includes its model in the attachments pane. The fitting sheet includes both the model and its Python script. The CLI sheet includes pyhf, HS³ and formula inputs. Save attachments in one folder to run them. The measurement, profiling and ODE models and the optional three-flavour example import pinned community modules.
+Each worked example includes its program in the PDF attachments. The fitting sheet includes both the model and its Python script. The formula reference includes independent Python calls and sample data. The CLI sheet includes pyhf, HS³ and formula inputs. Save attachments in one folder to run them. The measurement, profiling and ODE models and the optional three-flavour example import pinned community modules.
 
 | Sheet | Main example | Additional coverage |
 | --- | --- | --- |
@@ -13,6 +13,7 @@ Each PDF includes its model in the attachments pane. The fitting sheet includes 
 | [Intermediate](https://github.com/flatppl/flatppl-resources/releases/latest/download/intermediate.pdf) | Noncentered grouped logistic regression | Changing one group effect, centered effects, group errors, and Beta–Binomial pooling |
 | [Advanced](https://github.com/flatppl/flatppl-resources/releases/latest/download/advanced.pdf) | Normal and Gamma mixtures per reading or per batch | Product and superposition, shared components, prediction, and conditioning |
 | [The regression module](https://github.com/flatppl/flatppl-resources/releases/latest/download/regression-module.pdf) | Pulse counts at two gain settings | A two-column design, Poisson rate ratios and all ten response constructors |
+| [The formula API](https://github.com/flatppl/flatppl-resources/releases/latest/download/formula-api.pdf) | Equations and their `from_formula` inputs | Interactions, factor coding, group effects, smooth and nonlinear terms, family parameters, and observation likelihoods |
 | [Einstein summation and reductions](https://github.com/flatppl/flatppl-resources/releases/latest/download/einstein-reductions.pdf) | Two sensor calibrations over three runs | Predictions, squared residuals by run and sensor, Boolean reductions, and cross-products |
 | [Metric Einstein summation](https://github.com/flatppl/flatppl-resources/releases/latest/download/metric-einstein.pdf) | A sensor reports the sum of two coordinates | Mahalanobis distance, covariance, lower components, directional derivatives, and invariant mass |
 | [Posterior prediction](https://github.com/flatppl/flatppl-resources/releases/latest/download/posterior-prediction.pdf) | The beginner regression with known noise | Coefficient draws, predictive variance, pointwise intervals, and replicated data |
@@ -62,6 +63,7 @@ The sheets follow FlatPPL 0.1 at specification commit `42242456ad06657b334891940
 - [Standard modules](https://github.com/flatppl/flatppl-design/blob/42242456ad06657b3348919402740df3db9788c1/docs/09-standard-modules.md) define the matrix regression laws and two-body kinematics used here.
 
 The [corpus map](examples-map.md) records the source revisions and model changes.
+The formula sheet follows the [Python SDK formula reference](https://flatppl.org/flatppl-python/formula.html). Extract `formula_api.py` from the PDF and run `python -i formula_api.py`. The `examples` dictionary holds the result for each heading.
 Adapted examples retain their [MIT license](examples/LICENSE.txt) and [attribution](examples/NOTICE.md).
 Run `make check-examples` with the FlatPPL CLI on your path to lint all models and infer their types.
 On first use, `flatppl prepare` fetches the pinned measurement, counts, ODE and neutrino modules and their dependencies. In a terminal, the CLI asks for approval before downloading new URLs.

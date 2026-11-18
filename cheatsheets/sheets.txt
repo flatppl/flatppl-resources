@@ -4,6 +4,7 @@ beginner
 intermediate
 advanced
 regression-module
+formula-api
 einstein-reductions
 metric-einstein
 posterior-prediction
