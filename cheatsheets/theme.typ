@@ -168,7 +168,10 @@
   set document(title: if sys.inputs.at("collection", default: "false") == "true" {
     "FlatPPL / Cheatsheets"
   } else { "FlatPPL / " + title }, author: "Jessica Cox")
-  set page(paper: "a4", flipped: true, margin: (x: 18pt, top: 17pt, bottom: 17pt))
+  set page(paper: "a4", flipped: true, margin: (x: 18pt, top: 17pt, bottom: 17pt),
+    footer-descent: 5pt, footer: align(right, text(font: sans, size: 6.6pt, fill: secondary)[
+      Jessica Cox#h(3pt)·#h(3pt)#link("mailto:bcox@mpp.mpg.de", "bcox@mpp.mpg.de")
+    ]))
   set text(font: sans, size: 9.6pt, fill: ink, lang: "en")
   set par(leading: 3.7pt, spacing: 4pt, justify: false)
   set block(above: 0pt, below: 0pt)
@@ -180,7 +183,7 @@
       mime-type: "text/plain", description: "License and attribution for the example code")
   }
   block(width: 100%, height: 46pt)[
-    #grid(columns: (35pt, 1fr, 183pt, 78pt), column-gutter: 11pt, align: horizon,
+    #grid(columns: (35pt, 2fr, 1fr), column-gutter: 11pt, align: horizon,
       image("../branding/logo-rounded.svg", width: 35pt, alt: "FlatPPL"),
       [
         #text(font: sans, size: 8.3pt, weight: "bold", fill: ink)[FlatPPL 0.1]
@@ -192,11 +195,6 @@
         #label(formula.at(0), fill: accent)
         #v(4pt)
         #text(size: 12.2pt, formula.at(1))
-      ],
-      align(right)[
-        #text(font: serif, size: 12pt, weight: "bold")[Jessica Cox]
-        #v(3pt)
-        #link("mailto:bcox@mpp.mpg.de", text(size: 8.2pt, fill: secondary, "bcox@mpp.mpg.de"))
       ],
     )
   ]
