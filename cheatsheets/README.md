@@ -1,6 +1,6 @@
 # FlatPPL cheatsheets
 
-The collection contains eighteen worked examples and one CLI reference. Each occupies one A4 landscape page. Letters A–D mark the annotated passages in the worked examples.
+The collection contains nineteen worked examples and one CLI reference. Each occupies one A4 landscape page. Letters A–D mark the annotated passages in the worked examples.
 Zero to Hero and the beginner, intermediate and advanced sheets each introduce a complete model. The specialist sheets assume the language covered in those four. Each introduces its own notation, data and model.
 
 Each PDF includes its model in the attachments pane. The fitting sheet includes both the model and its Python script. The CLI sheet includes pyhf, HS³ and formula inputs. Save attachments in one folder to run them. The measurement, profiling and ODE models and the optional three-flavour example import pinned community modules.
@@ -9,9 +9,10 @@ Each PDF includes its model in the attachments pane. The fitting sheet includes 
 | --- | --- | --- |
 | [Zero to hero](zero-to-hero.pdf) | Poisson counts with unequal exposures | Host data, positive rates, likelihoods, priors, prediction, and a conjugate check |
 | [Distributions](distributions.pdf) | Scalar and array-valued draws | Supports, parameters, correlated vectors, simplex weights |
-| [Beginner](beginner.pdf) | Complete linear regression | Parameter domains, matrix GLM constructors, optional priors and named evaluation points |
+| [Beginner](beginner.pdf) | Linear regression in core FlatPPL | Parameter domains, dotted arithmetic and Normal draws, optional priors and named evaluation points |
 | [Intermediate](intermediate.pdf) | Noncentered grouped logistic regression | Centered effects, group measurement errors, Beta–Binomial pooling, and reuse of an observation kernel |
 | [Advanced](advanced.pdf) | A measure-composed Normal–Gamma mixture | Products, intensities, transformations, callback parameters, Markov kernels |
+| [The regression module](regression-module.pdf) | Pulse counts at two gain settings | A two-column design, Poisson rate ratios and all ten response constructors |
 | [Einstein summation and reductions](einstein-reductions.pdf) | Two sensor calibrations over three runs | Predictions, squared residuals by run and sensor, Boolean reductions, and cross-products |
 | [Metric Einstein summation](metric-einstein.pdf) | A sensor reports the sum of two coordinates | Mahalanobis distance, covariance, lower components, directional derivatives, and invariant mass |
 | [Posterior prediction](posterior-prediction.pdf) | The beginner regression with known noise | Coefficient draws, predictive variance, pointwise intervals, and replicated data |

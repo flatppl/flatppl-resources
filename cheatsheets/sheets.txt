@@ -3,6 +3,7 @@ distributions
 beginner
 intermediate
 advanced
+regression-module
 einstein-reductions
 metric-einstein
 posterior-prediction

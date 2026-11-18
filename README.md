@@ -6,7 +6,7 @@ Cheatsheets and brand assets for FlatPPL.
 
 ## Cheatsheets
 
-Download the [complete 19-sheet collection](cheatsheets/flatppl-cheatsheets.pdf). [Zero to hero](cheatsheets/zero-to-hero.pdf) covers the steps for a first model.
+Download the [complete 20-sheet collection](cheatsheets/flatppl-cheatsheets.pdf). [Zero to hero](cheatsheets/zero-to-hero.pdf) covers the steps for a first model.
 
 | Sheet | Outcome |
 | --- | --- |
@@ -15,6 +15,7 @@ Download the [complete 19-sheet collection](cheatsheets/flatppl-cheatsheets.pdf)
 | [Beginner: simple models](cheatsheets/beginner.pdf) | Author a complete Bayesian or likelihood-only model |
 | [Intermediate: hierarchical models](cheatsheets/intermediate.pdf) | Author grouped and multilevel models |
 | [Advanced: measure composition](cheatsheets/advanced.pdf) | Build models from measures and kernels |
+| [The regression module](cheatsheets/regression-module.pdf) | Build a design matrix and choose a response law for continuous readings, counts or classes |
 | [Einstein summation and reductions](cheatsheets/einstein-reductions.pdf) | Compute calibration residuals by run, sensor, or sensor pair |
 | [Metric Einstein summation](cheatsheets/metric-einstein.pdf) | Recover the same squared distance after a change of sensor coordinates |
 | [Posterior prediction](cheatsheets/posterior-prediction.pdf) | Distinguish uncertainty in a mean from a new reading |

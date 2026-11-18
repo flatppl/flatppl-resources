@@ -32,7 +32,7 @@ The map uses [flatppl-examples at b13481b](https://github.com/flatppl/flatppl-ex
 | [hgf-binary-3level.flatppl](https://github.com/flatppl/flatppl-examples/blob/b13481bd590796f07080101528e376ae09e27346/examples/hgf-binary-3level.flatppl) | Advanced extension | Larger state record and explicit scan parameters |
 | [aggregates.flatppl](https://github.com/flatppl/flatppl-examples/blob/b13481bd590796f07080101528e376ae09e27346/examples/aggregates.flatppl) | Einstein summation and reductions | Retained and reduced axes, output order, means, and products |
 | [signal-background-counting.flatppl](https://github.com/flatppl/flatppl-examples/blob/b13481bd590796f07080101528e376ae09e27346/examples/signal-background-counting.flatppl) | Particle physics anchor | Channel tables, nuisances, yields, count and spectrum terms |
-| [table-regression.flatppl](https://github.com/flatppl/flatppl-examples/blob/b13481bd590796f07080101528e376ae09e27346/examples/table-regression.flatppl) | Beginner | Stack predictor columns and draw the response with the regression module’s `NormalGLM` |
+| [table-regression.flatppl](https://github.com/flatppl/flatppl-examples/blob/b13481bd590796f07080101528e376ae09e27346/examples/table-regression.flatppl) | Regression module | Stack table columns into a design matrix, draw a response vector and bind its observations |
 | [dminus-to-3pi-amplitude.flatppl](https://github.com/flatppl/flatppl-examples/blob/b13481bd590796f07080101528e376ae09e27346/examples/dminus-to-3pi-amplitude.flatppl) | Hadron physics anchor | Dalitz kinematics, spin factors, Bose symmetry, density weighting |
 
 ## Authoring outcomes
@@ -45,9 +45,10 @@ The map uses [flatppl-examples at b13481b](https://github.com/flatppl/flatppl-ex
 
 | Sheet | Adaptation |
 | --- | --- |
-| [Simple models](beginner.pdf) | `reg.NormalGLM` takes the four-row design and a one-element slope vector. `elementof` declares the parameter domains first. Separate prior variates give a law over the same named inputs for an optional Bayesian update. Independent coefficient and LogNormal scale priors replace the original conjugate scale coupling. |
+| [Simple models](beginner.pdf) | Dotted arithmetic gives the four means. `Normal.(mu, sigma)` assigns an independent reading to each. The likelihood uses three free parameters with independent coefficient and LogNormal scale priors for the optional Bayesian update. |
 | [Hierarchical models](intermediate.pdf) | The grouped logistic predictor remains. Standard-Normal latent coordinates produce noncentered intercepts, with simpler scale and slope priors. |
 | [Measure composition](advanced.pdf) | The Normal–Gamma mixture retains unknown weight and location. Component scale and Gamma parameters are fixed. Measures replace prior and observation draws. |
+| [The regression module](regression-module.pdf) | The two-column design follows the table-regression example. Six synthetic pulse counts give a worked Poisson log-linear model. The other nine constructors use the same matrix. The [regression specification](https://github.com/flatppl/flatppl-design/blob/d0444087c73209be5feb5ed27e41133281752b5d/docs/09-standard-modules.md#module-regression) defines their argument order and response laws. |
 | [Particle counting](particle-physics.pdf) | Five-channel counts and event spectra reduce to two count channels and one shared background-scale nuisance. Spectral and point-process extensions occupy the reference column. |
 | [Hadron physics](hadron-physics.pdf) | The 211-line Dalitz example reduces to 37 lines. The particle-physics module supplies `breakup_momentum` and the constant-width limit of `resonance_breitwigner`. Scalar invariants retain both pion pairings and their interference with the reference amplitude. |
 | [Neutrino physics](neutrino-physics.pdf) | The three-flavour matter model reduces to a two-flavour vacuum formula. The example fits an angle and mass splitting to synthetic fixed-trial counts. Full propagation and detector conventions remain in the references. |

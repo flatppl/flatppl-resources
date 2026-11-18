@@ -96,6 +96,28 @@ def beginner():
     save(fig, "beginner")
 
 
+def regression_module():
+    sheet = "regression-module"
+    level, high, counts, base_rate, rate_ratio = literals(
+        sheet, "level", "high", "counts", "base_rate", "rate_ratio")
+    level, high, counts = map(np.asarray, (level, high, counts))
+    grid = np.linspace(level.min(), level.max(), 151)
+    fig, ax = axes()
+    for setting, name, colour, style, marker in (
+        (0, "low gain", BLUE, "--", "o"),
+        (1, "high gain", GOLD, "-", "s"),
+    ):
+        mean = base_rate * rate_ratio[0] ** grid * rate_ratio[1] ** setting
+        ax.plot(grid, mean, color=colour, ls=style, label=name)
+        rows = high == setting
+        ax.scatter(level[rows], counts[rows], marker=marker, s=20,
+                   facecolor="white", edgecolor=colour, zorder=3)
+    ax.set(xlim=(-1.12, 1.12), ylim=(0, 26), xticks=[-1, 0, 1], yticks=[0, 8, 16, 24],
+           xlabel="Centred signal level", ylabel="Counts per run")
+    ax.legend(loc="upper left", ncol=2, columnspacing=0.9, borderaxespad=0.2)
+    save(fig, sheet)
+
+
 def intermediate():
     groups, = literals("intermediate", "group_data")
     fig, ax = plt.subplots(figsize=(3.45, 1.38))
@@ -448,7 +470,7 @@ def two_spins():
 
 
 if __name__ == "__main__":
-    for draw in (zero_to_hero, distributions, beginner, intermediate, advanced, einstein_reductions,
-                 metric_einstein, posterior_prediction, fitting_from_python, measurement,
+    for draw in (zero_to_hero, distributions, beginner, intermediate, advanced, regression_module,
+                 einstein_reductions, metric_einstein, posterior_prediction, fitting_from_python, measurement,
                  profile_marginal, particle, hadron, neutrino, gamma_ray_response, decay_ode, two_spins):
         draw()
