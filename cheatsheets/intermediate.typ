@@ -57,8 +57,8 @@
       #v(3pt)
       An explicit boundary accepts positional inputs. A matching record supplies named inputs when the callable cannot accept one positional argument.
     ]),
-    entry("Group and observation indices", [
-      Group labels range from one through `G`. The gathered intercepts, predictors and outcomes have one entry per observation. The arrays `z` and `a` have one entry per group.
+    entry("Shared and group intercepts", [
+      The regression module’s `BernoulliLogitGLM` takes one shared intercept. Here `a[group_data]` supplies a separate intercept for each group. The dotted Bernoulli law uses the probability for each row.
     ]),
   ),
 )

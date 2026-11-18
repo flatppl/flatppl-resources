@@ -10,7 +10,7 @@
     [For `S = 2` and `b_scale = 1` the means are 4.6 and 10.8. The diamonds mark the synthetic counts supplied in `channels.counts`.]),
   notes: (
     ("Channel data as a table", 5, 9, [
-      Store one channel per row. Field access such as `channels.exposure` returns a column. Multiply production by exposure and efficiency to obtain the expected count.
+      Each row describes one channel. `channels.exposure` returns its exposure column. The expected signal is production times exposure times efficiency.
     ]),
     ("Broadcast the yield equation", 14, 18, [
       Both background rates share `b_scale`. Efficiency acts on the produced signal `S`. Given these parameters, `Poisson.` draws the two channel counts independently.
@@ -24,9 +24,9 @@
   ),
   after-notes: (
     entry("A calibration constraint", [
-      #code("cal(b) = logdensityof(Normal(b, 0.1), 1.05)\ncombined = log_L + cal(point.b_scale)")
+      #code("cal(S, b_scale) = Normal(b_scale, 0.1)\nL_cal = likelihoodof(cal, 1.05)\nL_all = joint_likelihood(L, L_cal)")
       #v(3pt)
-      An independent calibration reads 1.05 with standard deviation 0.1. Add its log density at the same background scale.
+      Only `b_scale` enters the calibration. The combined log likelihood at `point` is −2.60751.
     ]),
   ),
   variants: (

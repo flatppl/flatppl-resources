@@ -2,17 +2,17 @@
 Linear regression with an optional prior.
 %%%
 flatppl_compat = "0.1"
+reg = standard_module("regression", "0.1")
 x_data = [0.0, 1.0, 2.0, 3.0]
 y_data = [0.8, 2.1, 2.9, 4.2]
 
-# Parameter declarations and domains.
 alpha = elementof(reals)
 beta = elementof(reals)
 sigma = elementof(posreals)
 
-# Observation model and likelihood.
+X = colstack([x_data])
 mu = alpha .+ beta .* x_data
-y ~ Normal.(mu, sigma)
+y ~ reg.NormalGLM(X, alpha, [beta], sigma)
 K = kernelof(record(y = y))
 L = likelihoodof(K, record(y = y_data))
 

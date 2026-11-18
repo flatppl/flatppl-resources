@@ -9,11 +9,11 @@
     "The first Gaussian shades the cell from 0.95 to 1.05. The second shades the tail above 1.20.",
     [At $mu=1$, the first instrument reports a rounded value of 1.0. The second reports that its reading exceeded 1.20. Shading shows the probability of each report.]),
   notes: (
-    ("Express both Gaussian tails", 10, 11, [
-      Standardize the reading by the instrument’s scale. `invprobit` evaluates the standard Normal CDF. By Gaussian symmetry, `invprobit((m - x) / s)` gives the upper-tail probability directly.
+    ("Set the reporting limits", 8, 11, [
+      A reading rounded to 1.0 at the nearest tenth falls between 0.95 and 1.05. The second instrument records whether a separate reading exceeds 1.20. Both instruments measure the same mean.
     ]),
-    ("Use the recorded interval", 13, 16, [
-      A report of 1.0 to the nearest tenth places the reading between 0.95 and 1.05. The second instrument has scale 0.3 and reports one threshold crossing.
+    ("Evaluate the event probabilities", 13, 16, [
+      Pass the two edges, mean and standard deviation to the interval function. The upper-tail function takes one threshold. The two instrument scales are 0.2 and 0.3.
     ]),
     ("Indicators for the two reports", 18, 21, [
       Assign one Bernoulli variable to each reported event. Conditional independence of the readings given `mu` makes their likelihood a product of two factors.
@@ -24,7 +24,7 @@
   ),
   after-notes: (
     entry("Tail subtraction", [
-      When both edges exceed the mean, the difference of upper tails avoids cancellation. The #module-link("flatppl-stats-measurement", "c296dc3b975be62fa759468881ee8fa568879a71")[measurement module] exposes this calculation as `gaussian_interval_probability`.
+      When both edges exceed the mean, the #module-link("flatppl-stats-measurement", "c296dc3b975be62fa759468881ee8fa568879a71")[measurement module] subtracts upper tails. This avoids subtracting two CDF values close to one.
     ]),
   ),
   variants: (

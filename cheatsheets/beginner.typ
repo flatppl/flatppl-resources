@@ -12,8 +12,8 @@
     ("Declare the parameter domains", 9, 11, [
       Declare a free parameter on `S` with `elementof(S)`. The regression permits real coefficients and requires a positive scale. Each can vary before a prior is specified.
     ]),
-    ("Bind the observations", 14, 17, [
-      The dotted operations apply the predictor and Normal constructor across `x_data`. Declare all three inputs in `kernelof` and bind the four observations to its `y` field with `likelihoodof`.
+    ("Bind the observations", 15, 17, [
+      `X` has four rows and one column. `reg.NormalGLM` takes one slope per column and returns a law for four responses. `kernelof` infers the three free inputs. Bind the data to its `y` field.
     ]),
     ("A prior on the named parameters", 20, 25, [
       Give the prior draws `a`, `b` and `s` the field names used by the likelihood. `lawof` returns their joint law. `bayesupdate` weights it by `L` to give an unnormalized posterior.
@@ -26,12 +26,12 @@
     entry("Starting from prior draws", [
       #code("alpha ~ Normal(0, 5)\nbeta ~ Normal(0, 2)\nsigma ~ LogNormal(0, 0.5)\nprior = lawof(record(alpha = alpha,\n    beta = beta, sigma = sigma))\nK = kernelof(record(y = y), alpha, beta, sigma)")
       #v(3pt)
-      These draws replace the `elementof` bindings. Keep lines 14–15 and expose the three variates in `kernelof`.
+      Use these draws on lines 9–11. Keep lines 13–15. Use this `prior` and `K` with the original `L` and `posterior`.
     ]),
     entry("Bounds on the noise scale", [
       #code("domain = cartprod(alpha = reals, beta = reals,\n    sigma = interval(0.1, 2))")
       #v(3pt)
-      The named product defines the search domain. Specifying a prior also assigns mass to subsets of that domain.
+      This set contains parameter records with $0.1 <= sigma <= 2$.
     ]),
   ),
   after-notes: (
@@ -43,9 +43,9 @@
   ),
   references: (
     entry("Change the observation family", [
-      #code("rate = exp.(mu)\ny_count ~ Poisson.(rate)\np = invlogit.(mu)\ny_binary ~ Bernoulli.(p)")
+      #code("y_count ~ reg.PoissonLogGLM(X, alpha, [beta])\ny_binary ~ reg.BernoulliLogitGLM(\n    X, alpha, [beta])")
       #v(3pt)
-      Bind integer counts or binary responses under the corresponding field name in `likelihoodof`.
+      The first constructor models the log mean of a count. The second models the log odds of a binary outcome. Pass the same design and slopes to either.
     ]),
     entry("Common and observation-specific means", [
       #code("ys ~ iid(Normal(alpha, sigma), 4)\nzs ~ Normal.(mu, sigma)")

@@ -10,16 +10,16 @@
     [Exchanging $s_(12)$ and $s_(13)$ reflects the resonance band across the diagonal. Colour shows $abs(A)^2$ at `p0`. The constant reference amplitude alone gives one.]),
   notes: (
     ("Pair mass and helicity angle", 9, 13, [
-      Let `m` be the negative-pion pair mass and `c` its helicity-angle cosine. In that frame, `q` and `k` are the bachelor and daughter momenta. The opposite-sign masses squared are `s12(m,c)` and `s12(m,-c)`.
+      Multiply the bachelor momentum by $m_D/m$ to reach the pair rest frame. There `k` is the daughter momentum. The two pairings use helicity cosines $c$ and $-c$.
     ]),
-    ("Bose-symmetric amplitude", 18, 22, [
-      The Breit–Wigner denominator is $m_R^2-s-i m_R Gamma$. Both pairings have coupling `p.r*cis(p.phi)`. Add both amplitudes to the phase reference `1` before applying `abs2`.
+    ("Bose-symmetric amplitude", 17, 22, [
+      Zero daughter masses and $ell=0$ keep `bw` at constant width. `q` and `k` use the pion mass. Add both pairings to `1`, then take `abs2`.
     ]),
     ("Declare coordinates and couplings", 25, 29, [
       Use `cartprod` for the `[m,c]` rectangle. Masses are in GeV and `phi` in radians. The density callback takes both fit parameters in one record.
     ]),
     ("Construct the event likelihood", 30, 34, [
-      On the Lebesgue base, `weighted` evaluates `weight(x, parameters)`. Normalize by the integral over the rectangle. `functionof(pdf)` takes `r` and `phi`. Bind one observed `[m,c]` to obtain the event likelihood.
+      On `Lebesgue(support)`, `weighted` gives density `weight`. Divide by its integral. `functionof(pdf)` takes `r` and `phi`. Bind one observed `[m,c]`.
     ]),
   ),
   after-notes: (
@@ -46,15 +46,15 @@
     entry("Bind several events", [
       #code("data = [[1.0, 0.35], [0.9, -0.2]]\nK_events = functionof(iid(pdf, 2))\nL_events = likelihoodof(K_events, data)")
       #v(3pt)
-      Each row is one event. The normalized score requires numerical integration at the chosen couplings.
+      Each row is one event. For the JS engine, compute $Z$ by external quadrature. At `p0`, $Z = 1.17878135$ gives a first-event log density of $-0.52870$.
     ]),
     entry("Add background events", [
-      #code("bg = normalize(Lebesgue(support))\nM = superpose(weighted(0.8, pdf),\n    weighted(0.2, bg))")
+      #code("bg = joint(Uniform(interval(2*mpi, mD-mpi)),\n    Uniform(interval(-1.0, 1.0)))\nM = superpose(weighted(0.8, pdf),\n    weighted(0.2, bg))")
       #v(3pt)
-      Add a 20% background uniform in $(m,c)$. Interference belongs inside the signal amplitude.
+      The uniform background contributes 20% of the events.
     ]),
     entry("Amplitude and resolution assumptions", [
-      The model assumes one constant-width S wave and ideal resolution. The #module-link("flatppl-amplitudes", "a522f9ef883239faf81658c763f1f4bd180b5206")[amplitudes module] provides additional lineshapes and angular factors. Absolute rates also require the phase-space constants and the symmetry factor of one half.
+      `bw` has denominator $m_R^2-s-i m_R Gamma$. The model assumes ideal resolution. The #module-link("flatppl-amplitudes", "a522f9ef883239faf81658c763f1f4bd180b5206")[amplitudes module] gives other lineshapes and angular factors. Absolute rates require phase-space constants and a symmetry factor of $1/2$.
     ]),
   ),
 )

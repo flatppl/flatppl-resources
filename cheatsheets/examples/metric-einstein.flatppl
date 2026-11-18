@@ -13,7 +13,7 @@ I2: old[] := r[.i^] * r[.i_]
 G: dist2[] := q[.i^] * q[.i_]
 raw[] := q[.i] * q[.i]
 
-dual = inv(G) * q
+dual = linsolve(G, q)
 parts[.i] := q[.i] * dual[.i]
 
 G: grad[.i_] := 2.0 * q[.i_]

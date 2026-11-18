@@ -84,23 +84,23 @@
 }
 
 // One lexical pass keeps documentation comments highlighted across lines.
-#let program(source, notes, accent, preferred, lang: "flatppl") = layout(region => context {
+#let program(source, notes, accent, preferred, lang: "flatppl", embedded: none) = layout(region => context {
   let inset = 6pt
   let gutter = 21pt
   let available = region.width - inset * 2 - gutter - 3.5pt
   let columns = calc.floor(available / measure(text(font: mono, size: preferred, "0")).width)
-  let printed = source.split("\n").map(line => print-line(line, columns))
+  let lines = source.split("\n")
+  let printed = lines.map(line => print-line(line, columns))
   let size = code-size(printed.map(p => p.rows).flatten(), preferred, available, 8.25pt)
   let row-height = size * 1.22
-  block(width: 100%, inset: (x: inset, y: 8pt), radius: 5pt,
-    fill: accent.lighten(95%), stroke: 0.5pt + accent.lighten(76%))[
-    #set par(leading: 0pt, spacing: 0pt)
-    #show raw.where(block: true): it => stack(dir: ttb, spacing: 0pt,
-      ..it.lines.map(ln => {
+  let section(source, lang, first, last, offset: 0) = {
+    show raw.where(block: true): it => stack(dir: ttb, spacing: 0pt,
+      ..it.lines.slice(first - 1, last).map(ln => {
         if ln.text == "" { return block(height: 4.8pt) }
-        let mark = notes.position(n => n.at(1) == ln.number)
-        let selected = notes.any(n => n.at(1) <= ln.number and ln.number <= n.at(2))
-        let printed-line = printed.at(ln.number - 1)
+        let number = ln.number + offset
+        let mark = notes.position(n => n.at(1) == number)
+        let selected = notes.any(n => n.at(1) <= number and number <= n.at(2))
+        let printed-line = printed.at(number - 1)
         let height = row-height * printed-line.rows.len()
         let body = if printed-line.url == none { ln.body } else {
           stack(dir: ttb, spacing: 0pt, ..printed-line.rows.map(row =>
@@ -111,12 +111,26 @@
           grid(columns: (9pt, 8pt, 1fr), column-gutter: 2pt,
             align: if printed-line.rows.len() > 1 { top } else { horizon },
             if mark != none { marker(letters.at(mark), accent, size: 8.8pt) },
-            align(right, text(font: mono, size: 5.6pt, fill: secondary, str(ln.number))),
+            align(right, text(font: mono, size: 5.6pt, fill: secondary, str(number))),
             block(width: 100%, height: height, inset: (left: 3.5pt), stroke: (
               left: if selected { 1.15pt + accent } else { none }), body),
           ))
       }))
-    #highlighted(source, size, lang: lang)
+    highlighted(source, size, lang: lang)
+  }
+  block(width: 100%, inset: (x: inset, y: 8pt), radius: 5pt,
+    fill: accent.lighten(95%), stroke: 0.5pt + accent.lighten(76%))[
+    #set par(leading: 0pt, spacing: 0pt)
+    #if embedded == none {
+      section(source, lang, 1, lines.len())
+    } else {
+      let (first, last) = embedded
+      let model = lines.slice(first - 1, last).join("\n")
+      stack(dir: ttb, spacing: 0pt,
+        section(source, lang, 1, first - 1),
+        section(model, "flatppl", 1, last - first + 1, offset: first - 1),
+        section(source, lang, last + 1, lines.len()))
+    }
   ]
 })
 
@@ -205,14 +219,14 @@
 
 #let sheet(title: "", topic: "", accent: ink, formula: (), file: "",
   example: "", illustration: (), notes: (), variants: (), reference-title: "Reference",
-  references: (), after-notes: (), lang: "flatppl", name: none, companions: ()) = {
+  references: (), after-notes: (), lang: "flatppl", name: none, companions: (), embedded: none) = {
   let name = if name == none { file.split("/").last().split(".").first() } else { name }
   let source = read(file).trim()
   for path in (file, ..companions) { attach-example(path) }
   let lines = source.split("\n")
   let fig = illustration
   let listings = (9.25pt, 8.85pt, 8.5pt).map(size => block(width: 100%)[
-    #subhead(example, size: 15pt)#v(5pt)#program(source, notes, accent, size, lang: lang)
+    #subhead(example, size: 15pt)#v(5pt)#program(source, notes, accent, size, lang: lang, embedded: embedded)
   ])
   sheet-page(title, topic, accent, formula, grid(columns: (1.14fr, 1fr, 1fr), column-gutter: 12pt,
     column("Complete example", variants, accent, first-options: listings),

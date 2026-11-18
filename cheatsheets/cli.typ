@@ -1,7 +1,7 @@
 #import "theme.typ": *
 
 #let accent = rgb("695638")
-#for file in ("score.flatppl", "ws.json", "hs.json") { attach-example("examples/" + file) }
+#for file in ("score.flatppl", "ws.json", "hs.json", "r.formula.json") { attach-example("examples/" + file) }
 #let command(title, source, body) = entry(title, [
   #block(width: 100%, inset: (x: 5pt, y: 4pt),
     fill: accent.lighten(96%), stroke: (left: 1pt + accent))[
@@ -38,7 +38,7 @@
       entry("Read an exit status", [
         #table(columns: (auto, 1fr), stroke: none, inset: (x: 2pt, y: 2.4pt),
           [`0`], [Command succeeded.],
-          [`1`], [Formatting check found a change.],
+          [`1`], [Input, I/O or lint error, or formatting differs.],
           [`2`], [Invalid command-line option.],
           [`3`], [The chosen compiler cannot emit the model.])
       ]),
@@ -67,9 +67,9 @@
         "flatppl prepare score.flatppl", [
         The printed model uses built-ins. For models with remote imports, `prepare` fetches and caches them after approval. Set `FLATPPL_CACHEDIR` to choose the cache for offline use.
       ]),
-      command("Import a likelihood",
-        "flatppl convert --from pyhf ws.json fit.flatppl\nflatppl convert --from hs3 hs.json h.flatppl", [
-        Save `ws.json` and `hs.json` from the PDF attachments, or supply your own pyhf workspace or HS³ document. Both importers require the `hs3` feature.
+      command("Import a model",
+        "flatppl convert --from pyhf ws.json fit.flatppl\nflatppl convert --from hs3 hs.json h.flatppl\nflatppl convert r.formula.json r.flatppl", [
+        Extract the three JSON inputs from this PDF. The pyhf and HS³ importers use the `hs3` feature. Formula specifications use `formula`.
       ]),
     ), accent),
     column("Compile and share", (
@@ -88,14 +88,14 @@
       ]),
       command("Export a Stan posterior",
         "flatppl stan --target posterior \\\n  score.flatppl -o mean.stan \\\n  --data mean.json", [
-        This exports the posterior for `mu` and the observed reading. The CLI build needs the `stan` feature.
+        The `stan` feature writes the model and its data. Stan sampling statements omit additive log-density terms independent of the parameters.
       ]),
       command("Pack a model",
-        "flatppl pack score.flatppl score.zip", [
+        "flatppl pack score.flatppl score.flatppl.zip", [
         Prepare remote imports first. The new archive includes the entry model, its imports, and referenced data.
       ]),
       command("Open a portable model",
-        "flatppl infer score.zip packed.flatpir\nflatppl unpack score.zip score-copy", [
+        "flatppl infer score.flatppl.zip packed.flatpir\nflatppl unpack score.flatppl.zip score-copy", [
         Inspect a ZIP directly, or extract it into a new directory to edit its contents. The entry file is `main.flatppl`.
       ]),
     ), accent),

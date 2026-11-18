@@ -2,18 +2,18 @@
 Two independent reports of a shared mean.
 %%%
 flatppl_compat = "0.1"
+meas = load_module(
+    "https://raw.githubusercontent.com/flatppl-community/flatppl-stats-measurement/c296dc3b975be62fa759468881ee8fa568879a71/main.flatppl"
+)
 mu = elementof(reals)
 lo = 0.95
 hi = 1.05
 cut = 1.20
 
-cdf(x, m, s) = invprobit((x - m) / s)
-tail(x, m, s) = invprobit((m - x) / s)
-
-p_cell = ifelse(lo >= mu,
-    tail(lo, mu, 0.2) - tail(hi, mu, 0.2),
-    cdf(hi, mu, 0.2) - cdf(lo, mu, 0.2))
-p_flag = tail(cut, mu, 0.3)
+p_cell = meas.gaussian_interval_probability(
+    lo, hi, mu, 0.2)
+p_flag = meas.gaussian_above_probability(
+    cut, mu, 0.3)
 
 cell ~ Bernoulli(p_cell)
 flag ~ Bernoulli(p_flag)

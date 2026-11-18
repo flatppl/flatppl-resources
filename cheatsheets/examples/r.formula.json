@@ -1,0 +1,10 @@
+{
+  "formula": "y ~ x",
+  "data": {
+    "nrows": 3,
+    "columns": [
+      {"name": "x", "values": {"kind": "real64", "values": [0.0, 1.0, 2.0]}},
+      {"name": "y", "values": {"kind": "real64", "values": [1.0, 2.0, 4.0]}}
+    ]
+  }
+}

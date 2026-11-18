@@ -10,7 +10,7 @@
     [At `rate = 1.5`, doubling the exposure doubles the expected count. The diamonds are the three observed counts.]),
   notes: (
     ("Set the data and the support", 6, 8, [
-      Entry `i` pairs a count with its exposure. The Gamma prior has shape 2 and rate 1 and restricts the event rate to positive values.
+      Entry `i` pairs a count with its exposure. The Gamma prior has shape 2 and rate 1, giving a prior mean rate of 2.
     ]),
     ("Build the observation law", 10, 11, [
       Use `=` for a calculation and `~` for a draw. Multiplication by `rate` acts elementwise. The dotted Poisson constructor gives independent counts at the resulting means.
@@ -34,7 +34,7 @@
     entry("A likelihood without a prior", [
       #code("rate = elementof(posreals)")
       #v(3pt)
-      For a likelihood fit, retain the observation law, `K`, and `L`. Declare the free rate with `elementof`. Add the `prior` and `posterior` bindings for Bayesian inference.
+      For a likelihood fit, replace the Gamma draw on line 8 with this declaration and keep `K` and `L`. For Bayesian inference, restore the Gamma draw before constructing `prior` and `posterior`.
     ]),
     entry("Check the log likelihood", [
       At `rate = 1.5` the three log probabilities sum to `log_L` $approx -3.97267$. Each column pairs one count with its own exposure.
@@ -62,7 +62,7 @@
     entry("Extend the predictor", [
       #code("beta = elementof(reals)\neta = log(rate) .+ beta .* [-1, 0, 1]\nexpected = exposure .* exp.(eta)")
       #v(3pt)
-      Replace the original `expected` binding. The log rate is the intercept and `beta` is the slope. Pass both `rate` and `beta` to the kernel.
+      Replace `expected` on line 10. The log rate is the intercept and `beta` is the slope. For a likelihood fit, put both names in `K` and `point`.
     ]),
     entry("Estimation and prediction", [
       Maximize `L` to estimate the rate, or sample `posterior` to quantify its uncertainty. For prediction, draw a rate from the exact Gamma posterior. The mean count for the next exposure is $2 times 1.6=3.2$.

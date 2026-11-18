@@ -46,7 +46,7 @@
       Supply the forward map, inverse and forward log-volume. At $y>0$, the new log density is the old one at $log y$ minus $log y$.
     ]),
     entry("Weight a continuous base", [
-      #code("base = Lebesgue(interval(-2, 2))\nw(x, p) = exp(-p.a * x^2)\nM = weighted(w, base, record(a = 2))")
+      #code("dx = Lebesgue(interval(-2, 2))\nw(x, p) = exp(-p.a * x^2)\nM = weighted(w, dx, record(a = 2))")
       #v(3pt)
       `weighted` calls `w(x,p)`. `normalize(M)` divides by total mass and requires a finite, positive integral.
     ]),

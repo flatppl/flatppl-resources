@@ -3,13 +3,13 @@
 The collection contains eighteen worked examples and one CLI reference. Each occupies one A4 landscape page. Letters A–D mark the annotated passages in the worked examples.
 Zero to Hero and the beginner, intermediate and advanced sheets each introduce a complete model. The specialist sheets assume the language covered in those four. Each introduces its own notation, data and model.
 
-Each PDF includes its model in the attachments pane. The fitting sheet includes both the model and its Python script. The CLI sheet includes sample pyhf and HS³ inputs. Save attachments in one folder to run them. The profiling and ODE models and the optional three-flavour example import pinned community modules.
+Each PDF includes its model in the attachments pane. The fitting sheet includes both the model and its Python script. The CLI sheet includes pyhf, HS³ and formula inputs. Save attachments in one folder to run them. The measurement, profiling and ODE models and the optional three-flavour example import pinned community modules.
 
 | Sheet | Main example | Additional coverage |
 | --- | --- | --- |
 | [Zero to hero](zero-to-hero.pdf) | Poisson counts with unequal exposures | Host data, positive rates, likelihoods, priors, prediction, and a conjugate check |
 | [Distributions](distributions.pdf) | Scalar and array-valued draws | Supports, parameters, correlated vectors, simplex weights |
-| [Beginner](beginner.pdf) | Complete linear regression | Parameter domains with `elementof`, optional priors, counts, binary observations, named points |
+| [Beginner](beginner.pdf) | Complete linear regression | Parameter domains, matrix GLM constructors, optional priors and named evaluation points |
 | [Intermediate](intermediate.pdf) | Noncentered grouped logistic regression | Centered effects, group measurement errors, Beta–Binomial pooling, and reuse of an observation kernel |
 | [Advanced](advanced.pdf) | A measure-composed Normal–Gamma mixture | Products, intensities, transformations, callback parameters, Markov kernels |
 | [Einstein summation and reductions](einstein-reductions.pdf) | Two sensor calibrations over three runs | Predictions, squared residuals by run and sensor, Boolean reductions, and cross-products |
@@ -24,7 +24,7 @@ Each PDF includes its model in the attachments pane. The fitting sheet includes 
 | [Forward-folding a photon spectrum](gamma-ray-response.pdf) | Three true energies and two reconstructed bins | Quadrature, attenuation, exposure, migration, and losses |
 | [From a decay law to a likelihood](decay-ode.pdf) | An exponential decay with three readings | Derivative callbacks, fixed-step integration, and measurement noise |
 | [Two spins and a partition function](two-spins.pdf) | Four states of an Ising pair | Point masses, Boltzmann weights, degeneracy, and correlation |
-| [FlatPPL for Python](python-sdk.pdf) | A two-input Normal log density | Loading, compilation, gradients, batching, external data, and free coordinates |
+| [FlatPPL for Python](python-sdk.pdf) | A two-input Normal log density | Raw-string models, formulas, portable ZIPs, gradients, batching and inference targets |
 | [The FlatPPL CLI](cli.pdf) | Commands grouped by task | Diagnostics, type inference, conversion, code generation, module preparation, and ZIP bundles |
 
 [Read the full set](flatppl-cheatsheets.pdf).
@@ -45,29 +45,30 @@ The combined PDF has a bookmark for each title in `sheets.txt`. Each sheet credi
 
 ## Syntax highlighting
 
-FlatPPL blocks use an unmodified copy of the [Sublime/syntect FlatPPL grammar at f3efb30](https://github.com/flatppl/flatppl-grammars/blob/f3efb30adf9990859b28f2c58ed505a3b0a43bea/sublime/flatppl.sublime-syntax), under its [MIT license](syntax/LICENSE.txt).
+FlatPPL blocks use an unmodified copy of the [Sublime/syntect FlatPPL grammar at 5c48c5b](https://github.com/flatppl/flatppl-grammars/blob/5c48c5b2f162bd16ec754cfd164db0bd7f815a3d/sublime/flatppl.sublime-syntax), under its [MIT license](syntax/LICENSE.txt).
 `syntax/flatppl.tmTheme` defines print colors. Typst's highlighted line elements preserve multiline lexical state while adding line numbers and excerpt markers.
 
 ## Language and model sources
 
-The sheets follow FlatPPL 0.1 at specification commit `eed1724e276357d159a32f21b2ead7c5d709298a`:
+The sheets follow FlatPPL 0.1 at specification commit `42242456ad06657b3348919402740df3db9788c1`:
 
-- [Language design](https://github.com/flatppl/flatppl-design/blob/eed1724e276357d159a32f21b2ead7c5d709298a/docs/04-design.md): variates, reification, calls, broadcasting, modules.
-- [Canonical syntax](https://github.com/flatppl/flatppl-design/blob/eed1724e276357d159a32f21b2ead7c5d709298a/docs/05-syntax.md): bindings, documentation, functions, indexing.
-- [Measure algebra](https://github.com/flatppl/flatppl-design/blob/eed1724e276357d159a32f21b2ead7c5d709298a/docs/06-measure-algebra.md): products, mixtures, weighted densities, kernels, conditioning, normalization.
-- [Distributions](https://github.com/flatppl/flatppl-design/blob/eed1724e276357d159a32f21b2ead7c5d709298a/docs/08-distributions.md): constructor signatures and parameterizations.
+- [Language design](https://github.com/flatppl/flatppl-design/blob/42242456ad06657b3348919402740df3db9788c1/docs/04-design.md): variates, reification, calls, broadcasting, modules.
+- [Canonical syntax](https://github.com/flatppl/flatppl-design/blob/42242456ad06657b3348919402740df3db9788c1/docs/05-syntax.md): bindings, documentation, functions, indexing.
+- [Measure algebra](https://github.com/flatppl/flatppl-design/blob/42242456ad06657b3348919402740df3db9788c1/docs/06-measure-algebra.md): products, mixtures, weighted densities, kernels, conditioning, normalization.
+- [Distributions](https://github.com/flatppl/flatppl-design/blob/42242456ad06657b3348919402740df3db9788c1/docs/08-distributions.md): constructor signatures and parameterizations.
+- [Standard modules](https://github.com/flatppl/flatppl-design/blob/42242456ad06657b3348919402740df3db9788c1/docs/09-standard-modules.md) define the matrix regression laws and two-body kinematics used here.
 
 The [corpus map](examples-map.md) records the source revisions and model changes.
 Adapted examples retain their [MIT license](examples/LICENSE.txt) and [attribution](examples/NOTICE.md).
 Run `make check-examples` with the FlatPPL CLI on your path to lint all models and infer their types.
-On first use, `flatppl prepare` fetches the pinned counts, ODE and neutrino modules and their dependencies. In a terminal, the CLI asks for approval before downloading new URLs.
+On first use, `flatppl prepare` fetches the pinned measurement, counts, ODE and neutrino modules and their dependencies. In a terminal, the CLI asks for approval before downloading new URLs.
 Once cached, the examples also work offline. Building the PDFs with `make` requires no downloads.
 Run `python examples/fit.py` with the FlatPPL Python SDK, JAX, NumPy, and Optimistix to reproduce the host fit.
-Run `python examples/python_sdk.py` with the FlatPPL Python SDK and JAX for the compiled score, gradient, and batch. Test the CLI reference in a fresh folder containing `score.flatppl`, `ws.json` and `hs.json` from its PDF.
+Run `python examples/python_sdk.py` with the FlatPPL Python SDK and JAX for the compiled score, gradient, and batch. Test the CLI reference in a fresh folder containing `score.flatppl`, `ws.json`, `hs.json` and `r.formula.json` from its PDF.
 
 ## Numerical scope
 
 The main examples define complete FlatPPL models. Their point predictions and tractable likelihoods have direct numerical checks.
 A model's existence does not imply that every engine supports its density, sampling, or normalization queries.
-The Dalitz example's unnormalized weight has an independent four-vector check. Its parameter-dependent normalizer needs numerical integration.
+The Dalitz example's unnormalized weight has an independent four-vector check. The JS engine requires external quadrature for this normalizer. At `p0` the integral is 1.17878135 and the first event has log density −0.52870.
 The neutrino model is an illustrative two-flavour vacuum reduction with synthetic data, not an experimental likelihood.

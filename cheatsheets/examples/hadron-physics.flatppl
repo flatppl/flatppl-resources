@@ -6,16 +6,16 @@ mpi = 0.13957039
 mD = 1.86965
 mR = 0.98
 width = 0.07
-kallen(x,y,z) = x^2+y^2+z^2-2*x*y-2*x*z-2*y*z
+hep = standard_module("particle-physics", "0.1")
 E(m) = (mD^2-m^2-mpi^2)/(2*m)
-q(m) = sqrt(kallen(mD^2,m^2,mpi^2))/(2*m)
-k(m) = sqrt(m^2/4-mpi^2)
+q(m) = (mD/m)*hep.breakup_momentum(mD, m, mpi)
+k(m) = hep.breakup_momentum(m, mpi, mpi)
 s12(m,c) = 2*mpi^2+m*E(m)+2*q(m)*k(m)*c
 
-# Dimensionless Breit-Wigner amplitude.
+# Constant width in the S-wave lineshape.
 b = mR * width
-delta(s) = mR^2 - s
-bw(s) = b*(delta(s)+im*b)/(delta(s)^2+b^2)
+bw(s) = b * hep.resonance_breitwigner(
+    s, mR, width, 0.0, 0.0, 0, 1.0)
 amp(m,c,p) = 1+p.r*cis(p.phi)*(
     bw(s12(m,c))+bw(s12(m,-c)))
 weight(x,p) = x[1]*q(x[1])*k(x[1]) * (

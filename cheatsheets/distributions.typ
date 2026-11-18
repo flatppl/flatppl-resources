@@ -38,7 +38,7 @@
     entry("A random probability vector", [
       #code("p ~ Dirichlet([2.0, 2.0, 2.0])\ncategory ~ Categorical(p)\ncounts ~ Multinomial(12, p)")
       #v(3pt)
-      Supply positive concentrations. The components of `p` sum to one. `category` ranges over `1..3` and the components of `counts` sum to 12. Use `Categorical0` for zero-based categories.
+      Supply positive concentrations. The components of `p` sum to one. The category takes values 1, 2 or 3, and the counts sum to 12. Use `Categorical0` for labels 0, 1 and 2.
     ]),
     entry("Distribution parameters by name", [
       #code("args = record(mu = 2.0, sigma = 0.5)\nM = Normal(args)")
@@ -63,7 +63,7 @@
       #v(3pt)
       #dist("Beta(alpha, beta)", [$[0,1]$], [Two positive shape parameters.])
       #v(3pt)
-      #dist("Uniform(interval(a, b))", [$[a,b]$], [The argument is an interval with $a < b$.])
+      #dist("Uniform(interval(a, b))", [$[a,b]$], [Use finite endpoints with $a<b$. Use `joint` for a product of interval laws.])
     ]),
     entry("Counts and trials", [
       #lookup((auto, 1fr), ([Law], [Count]),

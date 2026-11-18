@@ -16,7 +16,7 @@
       `.i^` reads the stored vector. `.i_` applies the inverse of the supplied metric. The metric contraction gives 5 in both systems. Summing the squares of the reported components gives $3^2+1^2=10$.
     ]),
     ("Recover the component products", 16, 17, [
-      The precision matrix has rows `[1, −1]` and `[−1, 2]`. Multiplying it by `q` gives the lower components `[2, −1]`. The two products are 6 and −1. Their sum is 5.
+      Solve $G u=q$ with `linsolve` to obtain the lower components `[2, −1]`. Multiplying each by its upper component gives 6 and −1. Their sum is 5.
     ]),
     ("Differentiate the squared distance", 19, 21, [
       In lower components the derivative is $2 G^(-1) q$, or `[4, −2]`. FlatPPL raises the lower output for storage as `[6, 2]`. Reading `grad[.i_]` recovers the derivative. A step along the second axis has slope −2.

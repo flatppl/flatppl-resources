@@ -2,13 +2,13 @@ import jax
 import jax.numpy as jnp
 from flatppl import flatppl
 
-source = '''flatppl_compat = "0.1"
+model = flatppl(r"""
+flatppl_compat = "0.1"
 x = elementof(reals)
 mu = elementof(reals)
 inputs = (x, mu)
 outputs = logdensityof(Normal(mu, 1.0), x)
-'''
-model = flatppl(source)
+""")
 score = model.compile()
 
 value = score(x=1.0, mu=0.0)
