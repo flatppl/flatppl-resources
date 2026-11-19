@@ -19,7 +19,7 @@ const topics = [
   ] },
   { id: "modelling", title: "Modelling and inference", sheets: [
     "formula-api", "regression-module", "posterior-prediction", "fitting-from-python",
-    "measurement", "profile-marginal",
+    "measurement", "profile-marginal", "hidden-markov",
   ] },
   { id: "applications", title: "Physics and applications", sheets: [
     "particle-physics", "hadron-physics", "neutrino-physics", "gamma-ray-response",

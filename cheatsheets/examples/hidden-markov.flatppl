@@ -1,0 +1,38 @@
+flatppl_compat = "0.1"
+pi0 = [0.6, 0.4]
+T = rowstack([[0.8, 0.2], [0.3, 0.7]])
+p = [0.2, 0.8]
+y = [0, 1, 1]
+E = colstack([1 .- p, p])
+emit(t) = E[:, y[t] + 1]
+e1 = emit(1)
+e2 = emit(2)
+e3 = emit(3)
+
+advance(a, H) = [
+    logsumexp(a .+ H[:, 1]),
+    logsumexp(a .+ H[:, 2])]
+H = log.(T)
+a1 = log.(pi0) .+ log.(e1)
+a2 = advance(a1, H) .+ log.(e2)
+a3 = advance(a2, H) .+ log.(e3)
+ll = logsumexp(a3)
+
+G = transpose(H)
+b2 = advance(log.(e3), G)
+b1 = advance(log.(e2) .+ b2, G)
+filt = rowstack([
+    softmax(a1), softmax(a2), softmax(a3)])
+smooth = rowstack([
+    softmax(a1 .+ b1), softmax(a2 .+ b2),
+    filt[3, :]])
+pred = transpose(T) * filt[3, :]
+next1 = sum(pred .* p)
+
+path[.i, .j, .k] := (
+    pi0[.i] * e1[.i] * T[.i, .j] *
+    e2[.j] * T[.j, .k] * e3[.k])
+exact = sum(path)
+outputs = record(ll = ll, exact = exact,
+    path = path, filt = filt, smooth = smooth,
+    pred = pred, next1 = next1)

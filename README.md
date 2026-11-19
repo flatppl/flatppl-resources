@@ -22,6 +22,7 @@ Select a title to download its one-page PDF. Start with *Zero to hero* to write 
 | [Einstein summation and reductions](https://github.com/flatppl/flatppl-resources/releases/latest/download/einstein-reductions.pdf) | Compare inputs and results for indexed products, axis permutations, and reductions |
 | [Metric Einstein summation](https://github.com/flatppl/flatppl-resources/releases/latest/download/metric-einstein.pdf) | Recover the same squared distance after a change of sensor coordinates |
 | [Posterior prediction](https://github.com/flatppl/flatppl-resources/releases/latest/download/posterior-prediction.pdf) | Distinguish uncertainty in a mean from a new reading |
+| [Hidden Markov models](https://github.com/flatppl/flatppl-resources/releases/latest/download/hidden-markov.pdf) | Score three noisy readings, smooth the hidden states, and verify the result by enumerating paths |
 | [From a model to a fit](https://github.com/flatppl/flatppl-resources/releases/latest/download/fitting-from-python.pdf) | Fit a FlatPPL likelihood from Python and verify the estimate |
 | [Rounded readings and detection flags](https://github.com/flatppl/flatppl-resources/releases/latest/download/measurement.pdf) | Score the events an instrument actually reports |
 | [Profiling and marginalization](https://github.com/flatppl/flatppl-resources/releases/latest/download/profile-marginal.pdf) | Profile or integrate a nuisance background |

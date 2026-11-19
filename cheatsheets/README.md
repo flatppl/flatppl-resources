@@ -1,6 +1,6 @@
 # FlatPPL cheatsheets
 
-The collection contains eighteen worked examples and three quick references. Each occupies one A4 landscape page. Letters A–D mark the annotated passages in the worked examples.
+The collection contains nineteen worked examples and three quick references. Each occupies one A4 landscape page. Letters A–D mark the annotated passages in the worked examples.
 Zero to Hero and the beginner, intermediate and advanced sheets each introduce a complete model. The specialist sheets assume the language covered in those four. Each worked example introduces its own notation, data and model.
 
 Each worked example includes its program in the PDF attachments. The fitting sheet includes both the model and its Python script. The formula reference includes independent Python calls and sample data. The CLI sheet includes pyhf, HS³ and formula inputs. Save attachments in one folder to run them. The measurement, profiling and ODE models and the optional three-flavour example import pinned community modules.
@@ -17,6 +17,7 @@ Each worked example includes its program in the PDF attachments. The fitting she
 | [Einstein summation and reductions](https://github.com/flatppl/flatppl-resources/releases/latest/download/einstein-reductions.pdf) | Inputs, expressions, and results for 71 array operations | Broadcasting, batched products, grouped and staged reductions, min-plus and Boolean products, and rank-four contractions |
 | [Metric Einstein summation](https://github.com/flatppl/flatppl-resources/releases/latest/download/metric-einstein.pdf) | A sensor reports the sum of two coordinates | Mahalanobis distance, covariance, lower components, directional derivatives, and invariant mass |
 | [Posterior prediction](https://github.com/flatppl/flatppl-resources/releases/latest/download/posterior-prediction.pdf) | The beginner regression with known noise | Coefficient draws, predictive variance, pointwise intervals, and replicated data |
+| [Hidden Markov models](https://github.com/flatppl/flatppl-resources/releases/latest/download/hidden-markov.pdf) | Two hidden states and three binary readings | Forward likelihood, smoothing, prediction, and exact path enumeration |
 | [From a model to a fit](https://github.com/flatppl/flatppl-resources/releases/latest/download/fitting-from-python.pdf) | Gaussian mean and precision from eight readings | External data, free coordinates, BFGS, and a closed-form estimate |
 | [Rounded readings and detection flags](https://github.com/flatppl/flatppl-resources/releases/latest/download/measurement.pdf) | A rounding cell and an independent threshold flag | CDF differences, Gaussian tails, conditional independence, and censoring |
 | [Profiling and marginalization](https://github.com/flatppl/flatppl-resources/releases/latest/download/profile-marginal.pdf) | One signal count and one control count | Joint likelihood, conditional background maximum, and a Gamma marginal |

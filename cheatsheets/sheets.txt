@@ -8,6 +8,7 @@ formula-api
 einstein-reductions
 metric-einstein
 posterior-prediction
+hidden-markov
 fitting-from-python
 measurement
 profile-marginal
