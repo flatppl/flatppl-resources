@@ -19,43 +19,39 @@
     The eight masses sum to 0.101504, so `ll` is −2.287657.
   ]),
   notes: (
-    ("Select the emission probabilities", 4, 7, [
-      The hidden state $z_t$ is 1 or 2. State $j$ emits a 1 with probability $p_j$.
-      The columns of `E` correspond to readings 0 and 1. Since array positions start at 1,
-      use `y[t] + 1` to select the column $e_t$.
+    ("Combine transitions in log space", 9, 11, [
+      State $j$ emits a 1 with probability $p_j$. The columns of `E` give the probabilities
+      of readings 0 and 1. Select column `v + 1` for reading `v`. Each column of
+      `H` gives the log transitions into one state. Combine the incoming scores with `logsumexp`.
     ]),
-    ("Sum over the previous state", 16, 19, [
-      Each `a` vector stores logs of $alpha_(t)(j)=P(y_(1:t), z_t=j)$.
-      Start with $alpha_(1)(j)=pi_(0)(j)e_(1)(j)$.
-      Row $i$ of `T` lists transitions out of state $i$.
-      `advance` adds their logs and uses `logsumexp` to sum over origins.
+    ("Scan forward over the readings", 19, 21, [
+      Seed the scan with $log alpha_(1)(j)=log(pi_(0)(j)e_(1)(j))$.
+      `rest` holds readings 2 through `n`. Each scan step updates the state vector.
+      The result excludes the seed, so prepend it with `cat`.
+      The final vector gives `ll = logsumexp(A[n])`.
     ]),
-    ("Pass information backward", 21, 23, [
-      The backward message is the log probability of future readings conditional on the current state.
-      The terminal log message is zero. Transpose `H` to sum over destinations.
-      Normalize `a + b` in log space with `softmax` to smooth the state probabilities.
+    ("Scan backward over the readings", 23, 26, [
+      Start with zero log future mass at the final time. Read `rest` in reverse.
+      The callback applies the emission before the transition. Transpose `H` to sum
+      over destinations. Restore time order in `B` and apply `softmax` to `A[t] .+ B[t]`.
     ]),
-    ("Check by enumeration", 32, 35, [
-      The named axes `.i`, `.j`, and `.k` select states at times 1, 2, and 3.
+    ("Enumerate the eight paths", 34, 38, [
+      The axes `.i`, `.j`, and `.k` select states at the first three times.
       Retain all three to get a $2×2×2$ array of joint path masses.
-      Summing its entries gives `exact = exp(ll)` up to rounding.
+      Their sum matches `exp(ll)` for the three readings shown.
     ]),
   ),
   after-notes: (
-    entry("Keep each message in log space", [
-      The forward pass needs one vector of two scores per time.
-      For $K$ states and dense transitions, the update costs $O(K^2)$ per reading.
-      Enumerating all paths costs exponential time in the sequence length.
+    entry("What the scans carry", [
+      The fourth argument passes the matrices as one record to each callback.
+      With $K$ states and dense transitions, each update costs $O(K^2)$.
+      The two scans give the full state history.
     ]),
   ),
   variants: (
-    entry("A check with uninformative readings", [
-      Set `p = [0.5, 0.5]`. The likelihood is $1/8$. Both state estimates follow the Markov prior.
-    ]),
-    entry("Add a fourth reading", [
-      Append the reading to `y` and compute the next message.
-      #v(4pt)
-      #code("a4 = advance(a3, H) .+ log.(emit(4))")
+    entry("Change the reading sequence", [
+      Append readings to `y`. The scans use every reading. The path check uses the first three.
+      With `p = [0.5, 0.5]`, any three readings have likelihood $1/8$.
     ]),
   ),
   references: (

@@ -4,34 +4,37 @@ T = rowstack([[0.8, 0.2], [0.3, 0.7]])
 p = [0.2, 0.8]
 y = [0, 1, 1]
 E = colstack([1 .- p, p])
-emit(t) = E[:, y[t] + 1]
-e1 = emit(1)
-e2 = emit(2)
-e3 = emit(3)
-
-advance(a, H) = [
-    logsumexp(a .+ H[:, 1]),
-    logsumexp(a .+ H[:, 2])]
+L = log.(E)
 H = log.(T)
-a1 = log.(pi0) .+ log.(e1)
-a2 = advance(a1, H) .+ log.(e2)
-a3 = advance(a2, H) .+ log.(e3)
-ll = logsumexp(a3)
+advance(a, M) = [
+    logsumexp(a .+ M[:, 1]),
+    logsumexp(a .+ M[:, 2])]
+forward(a, v, q) = (
+    advance(a, q.M) .+ q.L[:, v + 1])
+backward(b, v, q) = (
+    advance(b .+ q.L[:, v + 1], q.M))
 
-G = transpose(H)
-b2 = advance(log.(e3), G)
-b1 = advance(log.(e2) .+ b2, G)
-filt = rowstack([
-    softmax(a1), softmax(a2), softmax(a3)])
-smooth = rowstack([
-    softmax(a1 .+ b1), softmax(a2 .+ b2),
-    filt[3, :]])
-pred = transpose(T) * filt[3, :]
+n = lengthof(y)
+rest = y[indicesof(zeros(n - 1)) .+ 1]
+a1 = log.(pi0) .+ L[:, y[1] + 1]
+fwd = scan(forward, a1, rest, (M = H, L = L))
+A = cat([a1], fwd)
+
+bn = zeros(2)
+bwd = scan(backward, bn, reverse(rest),
+    (M = transpose(H), L = L))
+B = reverse(cat([bn], bwd))
+filt = rowstack(softmax.(A))
+smooth_at(t) = softmax(A[t] .+ B[t])
+smooth = rowstack(smooth_at.(indicesof(y)))
+ll = logsumexp(A[n])
+pred = transpose(T) * filt[n, :]
 next1 = sum(pred .* p)
 
+e = E[:, y[[1, 2, 3]] .+ 1]
 path[.i, .j, .k] := (
-    pi0[.i] * e1[.i] * T[.i, .j] *
-    e2[.j] * T[.j, .k] * e3[.k])
+    pi0[.i] * e[.i, 1] * T[.i, .j] *
+    e[.j, 2] * T[.j, .k] * e[.k, 3])
 exact = sum(path)
 outputs = record(ll = ll, exact = exact,
     path = path, filt = filt, smooth = smooth,
