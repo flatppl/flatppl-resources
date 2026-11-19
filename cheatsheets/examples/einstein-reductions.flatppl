@@ -20,7 +20,8 @@ U = addaxes(u, 0, 1)
 B = rowstack([[1, 2], [3, 1]])
 C = rowstack([[2, 0], [1, 3]])
 add_col[.i, .j] := A[.i, .j] + u[.i]
-scale_rows[.i, .j] := A[.i, .j] * U[.i, !]
+scale_rows[.i, .j] := (
+    A[.i, .j] * U[.i, !])
 dot_uv[] := u[.i] * v[.i]
 outer_uv[.i, .j] := u[.i] * v[.j]
 mv[.i] := B[.i, .j] * v[.j]
@@ -71,6 +72,61 @@ hits[.i] := ifelse(
 pair_prod = aggregate(prod, [.i, .k],
     B[.i, .j] + C[.j, .k])
 
+# Look up positions through integer arrays.
+p = [2, 1, 2]
+c = [3, 1]
+pick = u[p]
+take = A[:, c]
+along[.i] := take[.i, 1]
+subgrid = A[p, c]
+by_get[.j] := get(A, 1, .j)
+
+# Sum or select within groups.
+M = rowstack([[1, 0], [0, 1], [1, 0], [0, 1]])
+x = [3, 2, 5, 4]
+a = [1, 1, 2, 1]
+ng[.k] := M[.i, .k]
+totg[.k] := M[.i, .k] * x[.i]
+wg[.k] := M[.i, .k] * a[.i]
+atot[.k] := M[.i, .k] * a[.i] * x[.i]
+avg = totg ./ ng
+wavg = atot ./ wg
+topg = aggregate(maximum, [.k],
+    ifelse(M[.i, .k] >= 1, x[.i], -inf))
+
+# Chain aggregations by naming their intermediate arrays.
+R = rowstack([[1, 6], [3, 2]])
+mu = aggregate(mean, [.j], R[.i, .j])
+E[.i, .j] := R[.i, .j] - mu[.j]
+cov[.j, .k] := E[.i, .j] * E[.i, .k]
+peak = aggregate(maximum, [.j],
+    W[.i, .j])
+ties = aggregate(lany, [.i, .j],
+    W[.i, .j] >= peak[.j])
+
+# Change the pair operation or the reducer.
+minplus = aggregate(minimum, [.i, .k],
+    B[.i, .j] + C[.j, .k])
+maxplus = aggregate(maximum, [.i, .k],
+    B[.i, .j] + C[.j, .k])
+maxprod = aggregate(maximum, [.i, .k],
+    B[.i, .j] * C[.j, .k])
+P = rowstack([[0, 1], [1, 0]])
+Q = rowstack([[1, 0], [1, 1]])
+paths = aggregate(lany, [.i, .k],
+    P[.i, .j] * Q[.j, .k] >= 1)
+triple[.i, .l] := (
+    B[.i, .j] * C[.j, .k] * B[.k, .l])
+loop3[] := (
+    B[.i, .j] * C[.j, .k] * B[.k, .i])
+
+# Retain four axes, then select or contract pairs of them.
+K[.i, .j, .k, .l] := (
+    B[.i, .j] * C[.k, .l])
+kplane[.k, .l] := K[2, 1, .k, .l]
+ksum[.i, .j] := K[.i, .j, .k, .l]
+ktrace[] := K[.i, .i, .k, .k]
+
 outputs = record(
     square = square, rows = rows, cols = cols, total = total,
     swap = swap, second = second, diag_cells = diag_cells, diag_total = diag_total,
@@ -84,4 +140,10 @@ outputs = record(
     r_sum = r_sum, r_prod = r_prod, r_min = r_min, r_max = r_max,
     r_mean = r_mean, r_median = r_median, r_var = r_var, r_std = r_std,
     r_any = r_any, r_all = r_all, r_max_global = r_max_global,
-    r_safe = r_safe, hits = hits, pair_prod = pair_prod)
+    r_safe = r_safe, hits = hits, pair_prod = pair_prod,
+    pick = pick, take = take, along = along, subgrid = subgrid, by_get = by_get,
+    ng = ng, totg = totg, wg = wg, atot = atot, avg = avg, wavg = wavg, topg = topg,
+    mu = mu, E = E, cov = cov, peak = peak, ties = ties,
+    minplus = minplus, maxplus = maxplus, maxprod = maxprod, paths = paths,
+    triple = triple, loop3 = loop3,
+    K = K, kplane = kplane, ksum = ksum, ktrace = ktrace)
