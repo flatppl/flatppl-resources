@@ -60,7 +60,7 @@ function renderCard(id) {
 }
 
 const sections = topics.map(topic => `<section class="topic" aria-labelledby="${topic.id}">
-  <h2 id="${topic.id}">${topic.title}</h2>
+  <div class="topic-heading"><h2 id="${topic.id}">${topic.title}</h2></div>
   <ul class="sheet-grid">
     ${topic.sheets.map(renderCard).join("\n")}
   </ul>
