@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { cp, mkdir, readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { spawnSync } from "node:child_process";
@@ -5,6 +6,8 @@ import { spawnSync } from "node:child_process";
 const root = resolve(import.meta.dirname, "..");
 const theme = process.env.FLATPPL_THEME_DIR ?? resolve(root, "../flatppl-theme");
 const output = resolve(root, "build/gallery");
+const stylesheet = await readFile(resolve(import.meta.dirname, "gallery.css"));
+const stylesheetRevision = createHash("sha256").update(stylesheet).digest("hex").slice(0, 12);
 const sheets = (await readFile(resolve(root, "cheatsheets/sheets.txt"), "utf8")).trim().split(/\s+/);
 const readme = await readFile(resolve(root, "README.md"), "utf8");
 const rows = readme.matchAll(/^\| \[([^\]]+)\]\([^\s)]+\/([\w-]+)\.pdf\) \| ([^|]+) \|$/gm);
@@ -77,7 +80,7 @@ const page = `<!doctype html>
   <link rel="stylesheet" href="theme/tokens.css">
   <link rel="stylesheet" href="theme/components.css">
   <link rel="stylesheet" href="theme/shell.css">
-  <link rel="stylesheet" href="gallery.css">
+  <link rel="stylesheet" href="gallery.css?v=${stylesheetRevision}">
   <script src="theme/shell.js"></script>
 </head>
 <body>
@@ -103,7 +106,7 @@ await mkdir(resolve(output, "previews"), { recursive: true });
 for (const file of ["tokens.css", "components.css", "shell.css", "shell.js", "assets/logo.svg", "assets/favicon.svg", "LICENSE.md", "LICENSES"]) {
   await cp(resolve(theme, file), resolve(output, "theme", file), { recursive: true });
 }
-await cp(resolve(import.meta.dirname, "gallery.css"), resolve(output, "gallery.css"));
+await writeFile(resolve(output, "gallery.css"), stylesheet);
 for (const id of sheets) {
   const pdf = resolve(root, "build/cheatsheets", `${id}.pdf`);
   await cp(pdf, resolve(output, "pdf", `${id}.pdf`));
