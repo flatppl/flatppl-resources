@@ -37,9 +37,7 @@ const escape = value => value.replace(/[&<>"]/g, char => ({
   "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;",
 })[char]);
 const header = (await readFile(resolve(theme, "header.html"), "utf8"))
-  .replace('<span data-fp-current="play">Playground</span>',
-    '<span data-fp-current="play">Playground</span>\n      <span data-fp-current="cheatsheets">Cheatsheets</span>')
-  .replace('<a href="https://docs.flatppl.org/"', '<a href="./" data-fp-nav="cheatsheets" aria-current="page">Cheatsheets</a>\n      <a href="https://docs.flatppl.org/"');
+  .replace('data-fp-nav="learn"', 'data-fp-nav="learn" aria-current="page"');
 const footer = await readFile(resolve(theme, "footer.html"), "utf8");
 
 function renderCard(id) {
@@ -69,7 +67,7 @@ const sections = topics.map(topic => `<section class="topic" aria-labelledby="${
 </section>`).join("\n");
 
 const page = `<!doctype html>
-<html lang="en" data-fp-active="cheatsheets">
+<html lang="en" data-fp-active="learn">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">

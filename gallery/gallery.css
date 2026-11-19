@@ -157,12 +157,3 @@ main {
   color: var(--fp-text-muted);
   font-size: 0.9rem;
 }
-
-[data-fp-active="cheatsheets"] [data-fp-current="cheatsheets"] {
-  display: inline;
-}
-
-.fp-product-nav [aria-current="page"] {
-  color: var(--fp-accent);
-  border-bottom-color: var(--fp-accent);
-}

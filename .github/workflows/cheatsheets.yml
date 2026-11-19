@@ -41,11 +41,11 @@ jobs:
         env:
           FLATPPL_THEME_DIR: ${{ runner.temp }}/flatppl-theme
         run: |
-          archive="$RUNNER_TEMP/flatppl-theme-v0.1.11.tar.gz"
+          archive="$RUNNER_TEMP/flatppl-theme-v0.1.12.tar.gz"
           curl --fail --silent --show-error --location --retry 3 \
-            'https://github.com/flatppl/flatppl-theme/releases/download/v0.1.11/flatppl-theme-v0.1.11.tar.gz' \
+            'https://github.com/flatppl/flatppl-theme/releases/download/v0.1.12/flatppl-theme-v0.1.12.tar.gz' \
             --output "$archive"
-          echo "e4fb8c97bd9fd5b472e205e01c083f05b9821233048ee8d3bc2de3d47e7a46b5  $archive" | sha256sum --check
+          echo "60d8089b33575eb5c5b2dbfa14de315f41d8da2513b7b929aeb38933f71f9629  $archive" | sha256sum --check
           mkdir -p "$FLATPPL_THEME_DIR"
           tar -xzf "$archive" -C "$FLATPPL_THEME_DIR"
           bun gallery/build.mjs
