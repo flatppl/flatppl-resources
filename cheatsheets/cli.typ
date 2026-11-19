@@ -21,7 +21,7 @@
         Save this listing as `score.flatppl` in an empty folder. Run the commands there. The query scores a Normal reading. The posterior uses the observed value 1.
       ]),
       command("Check or apply formatting",
-        "flatppl fmt --check score.flatppl\nflatppl fmt score.flatppl", [
+        "flatppl fmt --check score.flatppl\nflatppl fmt score.flatppl\nflatppl fmt - < score.flatppl > clean.flatppl", [
         #lookup((auto, 1fr), ([Arguments to `fmt`], [Result]),
           [`--check FILE`], [Exit 1 if the file needs formatting.],
           [`FILE`], [Format the file in place.],
@@ -59,6 +59,10 @@
         "flatppl analyze --data-input x score.flatppl", [
         Mark `x` as data. The report identifies `mu` as the sole parameter component and shows which inputs each log-density term uses.
       ]),
+      command("Inspect the inferred value sets",
+        "flatppl infer --level valueset --no-header \\\n  score.flatppl sets.flatpir", [
+        Read `%meta` annotations in the output. The selected level leaves later fields unresolved.
+      ]),
       command("Convert or typeset a model",
         "flatppl convert score.flatppl score.flatpir\nflatppl convert typed.flatpir view.flatppl\nflatppl convert score.flatppl score.typ", [
         File extensions select the formats. Use `.flatpir.json` for JSON or `.tex`, `.typ`, `.md`, or `.html` for mathematical notation. `--no-header` omits the generated-file banner.
@@ -89,6 +93,10 @@
       command("Export a Stan posterior",
         "flatppl stan --target posterior \\\n  score.flatppl -o mean.stan \\\n  --data mean.json", [
         The `stan` feature writes the model and its data. Stan sampling statements omit additive log-density terms independent of the parameters.
+      ]),
+      command("Map Stan names to model fields",
+        "flatppl stan --target posterior \\\n  --manifest names.json score.flatppl \\\n  -o mean.stan", [
+        The JSON manifest maps Stan parameters to FlatPPL fields. Here `mu` has the same name in both.
       ]),
       command("Pack a model",
         "flatppl pack score.flatppl score.flatppl.zip", [

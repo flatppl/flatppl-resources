@@ -414,8 +414,9 @@ def gamma_ray_response():
     fig, ax = axes()
     fig.subplots_adjust(left=0.20, top=0.78)
     totals = np.zeros(parts.shape[0])
-    for i, colour in enumerate((BLUE, "#a8c2b3", GOLD)):
-        ax.barh([2, 1, 0], parts[:, i], left=totals, color=colour, height=0.50, label=f"{energy[i]:g} TeV")
+    for i, (colour, hatch) in enumerate(((BLUE, ""), ("#cbdcd3", "//"), ("#f1ddb8", "||"))):
+        ax.barh([2, 1, 0], parts[:, i], left=totals, color=colour, height=0.50,
+                edgecolor=INK, linewidth=0.45, hatch=hatch, label=f"{energy[i]:g} TeV")
         totals += parts[:, i]
     ax.set(yticks=[2, 1, 0], yticklabels=["Bin 1", "Bin 2", "Lost"], xlim=(0, 18),
            xlabel="Expected source counts", xticks=[0, 4, 8, 12, 16])

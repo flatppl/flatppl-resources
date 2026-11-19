@@ -3,67 +3,85 @@ flatppl_compat = "0.1"
 # Select, reorder and sum axes of a matrix.
 A = rowstack([[1, 2, 0], [3, 1, 4]])
 D = rowstack([[2, 5], [7, 3]])
-square[.i,.j] := A[.i,.j]^2
-rows[.i] := A[.i,.j]
-cols[.j] := A[.i,.j]
-total[] := A[.i,.j]
-swap[.j,.i] := A[.i,.j]
-second[.i] := A[.i,2]
-diag_cells[.i] := D[.i,.i]
-diag_total[] := D[.i,.i]
+square[.i, .j] := A[.i, .j]^2
+rows[.i] := A[.i, .j]
+cols[.j] := A[.i, .j]
+total[] := A[.i, .j]
+swap[.j, .i] := A[.i, .j]
+second[.i] := A[.i, 2]
+diag_cells[.i] := D[.i, .i]
+diag_total[] := D[.i, .i]
 
 # Multiply vectors and matrices.
 u = [1, 2]
 v = [3, 4]
 w = [2, 1]
+U = addaxes(u, 0, 1)
 B = rowstack([[1, 2], [3, 1]])
 C = rowstack([[2, 0], [1, 3]])
+add_col[.i, .j] := A[.i, .j] + u[.i]
+scale_rows[.i, .j] := A[.i, .j] * U[.i, !]
 dot_uv[] := u[.i] * v[.i]
-outer_uv[.i,.j] := u[.i] * v[.j]
-mv[.i] := B[.i,.j] * v[.j]
-mm[.i,.k] := B[.i,.j] * C[.j,.k]
-row_dot[.i] := B[.i,.j] * C[.i,.j]
-mm_w[.i,.k] := (
-    B[.i,.j] * w[.j] * C[.j,.k])
-bilinear[] := u[.i] * B[.i,.j] * v[.j]
+outer_uv[.i, .j] := u[.i] * v[.j]
+mv[.i] := B[.i, .j] * v[.j]
+mm[.i, .k] := B[.i, .j] * C[.j, .k]
+row_dot[.i] := B[.i, .j] * C[.i, .j]
+hadamard[.i, .j] := B[.i, .j] * C[.i, .j]
+frobenius[] := B[.i, .j] * C[.i, .j]
+mm_w[.i, .k] := (
+    B[.i, .j] * w[.j] * C[.j, .k])
+loss[.i, .k] := (
+    (B[.i, .j] - C[.j, .k])^2 * w[.j])
+bilinear[] := u[.i] * B[.i, .j] * v[.j]
 
 # Use .b for the first axis of a rank-three array.
 X = array([1, 2, 3, 4, 5, 6, 7, 8], [2, 2, 2], [1, 2, 3])
 V = rowstack([[1, 2], [2, 1]])
-first_slice[.i,.j] := X[1,.i,.j]
-slice_sums[.b] := X[.b,.i,.j]
-middle[.b,.j] := X[.b,.i,.j]
-traces[.b] := X[.b,.i,.i]
-rotate[.j,.b,.i] := X[.b,.i,.j]
-batch_mv[.b,.i] := (
-    X[.b,.i,.j] * V[.b,.j])
-batch_mm[.b,.i,.k] := (
-    X[.b,.i,.j] * C[.j,.k])
+H = array([1, 2, 3, 4, 5, 6], [2, 1, 3], [1, 2, 3])
+q = [1, 0, 1]
+first_slice[.i, .j] := X[1, .i, .j]
+slice_sums[.b] := X[.b, .i, .j]
+middle[.b, .j] := X[.b, .i, .j]
+traces[.b] := X[.b, .i, .i]
+rotate[.j, .b, .i] := X[.b, .i, .j]
+batch_mv[.b, .i] := (
+    X[.b, .i, .j] * V[.b, .j])
+batch_mm[.b, .i, .k] := (
+    X[.b, .i, .j] * C[.j, .k])
+norm_sq[] := X[.b, .i, .j]^2
+rect_sum[.b, .j] := H[.b, .i, .j]
+rect_mv[.b, .i] := H[.b, .i, .j] * q[.j]
 
 # Choose the reduction.
 W = rowstack([[1, 2, 6], [2, 4, 6]])
-r_sum = aggregate(sum, [.i], W[.i,.j])
-r_prod = aggregate(prod, [.i], W[.i,.j])
-r_min = aggregate(minimum, [.i], W[.i,.j])
-r_max = aggregate(maximum, [.i], W[.i,.j])
-r_mean = aggregate(mean, [.i], W[.i,.j])
-r_median = aggregate(median, [.i], W[.i,.j])
-r_var = aggregate(var, [.i], W[.i,.j])
-r_std = aggregate(std, [.i], W[.i,.j])
-r_any = aggregate(lany, [.j], W[.i,.j] >= 4)
-r_all = aggregate(lall, [.j], W[.i,.j] >= 4)
+r_sum = aggregate(sum, [.i], W[.i, .j])
+r_prod = aggregate(prod, [.i], W[.i, .j])
+r_min = aggregate(minimum, [.i], W[.i, .j])
+r_max = aggregate(maximum, [.i], W[.i, .j])
+r_mean = aggregate(mean, [.i], W[.i, .j])
+r_median = aggregate(median, [.i], W[.i, .j])
+r_var = aggregate(var, [.i], W[.i, .j])
+r_std = aggregate(std, [.i], W[.i, .j])
+r_any = aggregate(lany, [.j], W[.i, .j] >= 4)
+r_all = aggregate(lall, [.j], W[.i, .j] >= 4)
+r_max_global = aggregate(maximum, [], W[.i, .j])
+r_safe = aggregate(lall, [], W[.i, .j] < 6)
 hits[.i] := ifelse(
-    W[.i,.j] >= 4, 1, 0)
-pair_prod = aggregate(prod, [.i,.k],
-    B[.i,.j] + C[.j,.k])
+    W[.i, .j] >= 4, 1, 0)
+pair_prod = aggregate(prod, [.i, .k],
+    B[.i, .j] + C[.j, .k])
 
 outputs = record(
     square = square, rows = rows, cols = cols, total = total,
     swap = swap, second = second, diag_cells = diag_cells, diag_total = diag_total,
+    add_col = add_col, scale_rows = scale_rows,
     dot_uv = dot_uv, outer_uv = outer_uv, mv = mv, mm = mm,
     row_dot = row_dot, mm_w = mm_w, bilinear = bilinear,
+    hadamard = hadamard, frobenius = frobenius, loss = loss,
     first_slice = first_slice, slice_sums = slice_sums, middle = middle,
     traces = traces, rotate = rotate, batch_mv = batch_mv, batch_mm = batch_mm,
+    norm_sq = norm_sq, rect_sum = rect_sum, rect_mv = rect_mv,
     r_sum = r_sum, r_prod = r_prod, r_min = r_min, r_max = r_max,
     r_mean = r_mean, r_median = r_median, r_var = r_var, r_std = r_std,
-    r_any = r_any, r_all = r_all, hits = hits, pair_prod = pair_prod)
+    r_any = r_any, r_all = r_all, r_max_global = r_max_global,
+    r_safe = r_safe, hits = hits, pair_prod = pair_prod)

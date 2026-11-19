@@ -26,6 +26,9 @@
     entry("Take a pointwise interval", [
       `probit(0.95)` gives the two-sided 90% Normal multiplier. Subtract and add each half-width to `center` for its corresponding interval.
     ]),
+    entry("Compare the readings at 0 and 3", [
+      Subtract the fitted mean at 0 from the fitted mean at 3 to get $3 beta_2$. Its posterior mean is 3.267 and its variance is $9 V_(22) = 0.4425$. For two new readings at these inputs, add $2 sigma^2=0.5$ to the variance.
+    ]),
   ),
   variants: (
     entry("Intervals at a fixed predictor", [

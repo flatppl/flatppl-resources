@@ -55,6 +55,11 @@
       #v(3pt)
       The tuple fixes the positional argument order. Each call supplies both values to the same compiled query.
     ]),
+    entry("Batch values and gradients together", [
+      #py("both = jax.vmap(gradient, in_axes=(0, None))\nvalues, slopes = both(xs, 0.0)")
+      #v(3pt)
+      This returns two arrays of shape `(3,)`. Read the scores and slopes in the same order as `xs`.
+    ]),
     entry("Save and reload a model", [
       #py("from flatppl import load\nmodel.save(\"normal.flatppl.zip\")\nf = load(\"normal.flatppl.zip\").compile()")
       #v(3pt)

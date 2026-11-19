@@ -59,6 +59,9 @@
       #v(3pt)
       A draw contains `y`. Its law integrates over `p` and `mu`. Use `K_batch` here to predict a batch with one shared component.
     ]),
+    entry("Integrate out the mixing weight", [
+      Under the Beta(2, 2) prior, both readings come from the Normal with probability $E[p^2]=3/10$ under `K` and $E[p]=1/2$ under `K_batch`. For either law, each marginal probability is $1/2$.
+    ]),
   ),
   after-notes: (
     entry("Condition the joint model", [

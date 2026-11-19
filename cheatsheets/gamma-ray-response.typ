@@ -7,7 +7,7 @@
   file: "examples/gamma-ray-response.flatppl", example: "Three true energies, two detector bins",
   illustration: ("Migration into reconstructed bins",
     "Stacked bars show the source counts contributed by each of three true energies to two detector bins and to the lost fraction.",
-    [Colour identifies the true energy. The first two bars give expected source counts in the reconstructed bins. The third gives the expected loss from the corresponding column deficits.]),
+    [Colour and hatching identify the true energy. The first two bars give expected source counts in the reconstructed bins. The third gives the expected loss from the corresponding column deficits.]),
   notes: (
     ("True and reconstructed bin indices", 11, 12, [
       Each column gives the outcome probabilities at one true energy. Each row gives contributions to one reconstructed bin. The column sums are 0.8, 0.8 and 0.7.
@@ -25,6 +25,9 @@
   after-notes: (
     entry("Check the units", [
       Energy is in TeV, effective area in cm², and exposure in seconds. Differential flux times an energy weight, area, and time gives a dimensionless expected count.
+    ]),
+    entry("Follow the 0.5 TeV column", [
+      Of its 19.2158 expected counts, the response sends 13.4511 to bin 1, 1.9216 to bin 2, and 3.8432 outside both bins. Multiply the true count by 0.7, 0.1, and 0.2 respectively.
     ]),
   ),
   variants: (
@@ -53,6 +56,8 @@
       #lookup((1.2fr, 1fr, 1fr, 1fr), ([True energy], [0.5 TeV], [1 TeV], [2 TeV]), numeric: true,
         [Bin 1], [13.4511], [2.5564], [0],
         [Bin 2], [1.9216], [7.6693], [3.5192])
+      #v(3pt)
+      The means of the two on-source Poisson laws are 18.0075 and 16.1101. The off-source means are 8 and 12.
     ]),
     entry("Detection losses", [
       A column deficit is the probability of an event falling outside the selected bins. Renormalizing that column assigns the lost events to the measured bins.

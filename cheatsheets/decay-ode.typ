@@ -30,6 +30,11 @@
     entry("Information at the initial time", [
       All rates give the same initial condition. The first reading therefore adds a constant to the log likelihood. The two later readings constrain the decay rate.
     ]),
+    entry("Sensitivity to the rate", [
+      The exact sensitivity is $partial y / partial k = -t exp(-k t)$. At $k=1$ the sensitivities at times 0, 0.5, and 1 are 0, −0.30327, and −0.36788.
+      #v(3pt)
+      For an observed reading $z$ and predicted state $y$, its score contribution is $(z-y)(partial y / partial k)/sigma^2$.
+    ]),
   ),
   variants: (
     entry("Supply a complete time grid", [

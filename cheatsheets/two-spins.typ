@@ -26,6 +26,9 @@
     entry("Check the partition function", [
       Direct enumeration gives $Z=2 e^K+2 e^(-K)=4 cosh K$. At the stated coupling it equals $8/sqrt(3)$. The four probabilities sum to one.
     ]),
+    entry("Derivatives of the log partition function", [
+      The first derivative with respect to $K$ is the mean bond product $tanh K$. The second is its variance $1-tanh^2 K$, which is $3/4$ at this coupling.
+    ]),
   ),
   variants: (
     entry("Spin correlation", [
@@ -34,7 +37,12 @@
       The product $s_1 s_2$ takes the value +1 for aligned spins and −1 for opposed spins. Its expectation, `correlation`, is $3/4-1/4=1/2$ at this coupling.
     ]),
     entry("Vary the temperature", [
-      Set `ratio = 1` for $K=0$. All four atoms then have the same unit weight and probability $1/4$. For positive $J$, cooling increases $K$ and favours alignment.
+      The weight ratio is $r=exp(2K)$. The probability of alignment is $r/(1+r)$. Change `ratio` to compare the three cases below.
+      #v(4pt)
+      #lookup((1.1fr, 1fr, 1fr, 1fr), ([Ratio], [$1/3$], [$1$], [$3$]), numeric: true,
+        [Aligned], [$1/4$], [$1/2$], [$3/4$],
+        [Correlation], [$-1/2$], [$0$], [$1/2$])
+      For positive $J$, cooling increases $K$ and favours alignment.
     ]),
   ),
   references: (

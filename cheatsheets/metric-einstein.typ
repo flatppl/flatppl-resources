@@ -40,6 +40,11 @@
     entry("Finite displacement", [
       Hold the first reported component at 3. Increasing the second to $1+h$ yields the original residual $(2-h, 1+h)$. Its squared length is $5-2h+2h^2$, which verifies the derivative at $h=0$.
     ]),
+    entry("Norm of the derivative covector", [
+      #code("G: norm2[] := grad[.i_] * grad[.i^]")
+      #v(3pt)
+      With lower components $a=[4,-2]$, the squared norm is $a^T G a$. Multiplication by $G$ gives the upper components $[6,2]$, so the contraction is $24-4=20$.
+    ]),
   ),
   variants: (
     entry("The metric argument", [
