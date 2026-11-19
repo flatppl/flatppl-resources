@@ -1,6 +1,6 @@
 # FlatPPL cheatsheets
 
-The collection contains nineteen worked examples and two quick references. Each occupies one A4 landscape page. Letters A–D mark the annotated passages in the worked examples.
+The collection contains eighteen worked examples and three quick references. Each occupies one A4 landscape page. Letters A–D mark the annotated passages in the worked examples.
 Zero to Hero and the beginner, intermediate and advanced sheets each introduce a complete model. The specialist sheets assume the language covered in those four. Each worked example introduces its own notation, data and model.
 
 Each worked example includes its program in the PDF attachments. The fitting sheet includes both the model and its Python script. The formula reference includes independent Python calls and sample data. The CLI sheet includes pyhf, HS³ and formula inputs. Save attachments in one folder to run them. The measurement, profiling and ODE models and the optional three-flavour example import pinned community modules.
@@ -14,7 +14,7 @@ Each worked example includes its program in the PDF attachments. The fitting she
 | [Advanced](https://github.com/flatppl/flatppl-resources/releases/latest/download/advanced.pdf) | Normal and Gamma mixtures per reading or per batch | Product and superposition, shared components, prediction, and conditioning |
 | [The regression module](https://github.com/flatppl/flatppl-resources/releases/latest/download/regression-module.pdf) | Pulse counts at two gain settings | A two-column design, Poisson rate ratios and all ten response constructors |
 | [The formula API](https://github.com/flatppl/flatppl-resources/releases/latest/download/formula-api.pdf) | Equations and their `from_formula` inputs | Interactions, factor coding, group effects, smooth and nonlinear terms, family parameters, and observation likelihoods |
-| [Einstein summation and reductions](https://github.com/flatppl/flatppl-resources/releases/latest/download/einstein-reductions.pdf) | Two sensor calibrations over three runs | Predictions, squared residuals by run and sensor, Boolean reductions, and cross-products |
+| [Einstein summation and reductions](https://github.com/flatppl/flatppl-resources/releases/latest/download/einstein-reductions.pdf) | Inputs, expressions, and results for 34 small array operations | Axis selection and reordering, batched products, weighted contractions, and every supported reducer |
 | [Metric Einstein summation](https://github.com/flatppl/flatppl-resources/releases/latest/download/metric-einstein.pdf) | A sensor reports the sum of two coordinates | Mahalanobis distance, covariance, lower components, directional derivatives, and invariant mass |
 | [Posterior prediction](https://github.com/flatppl/flatppl-resources/releases/latest/download/posterior-prediction.pdf) | The beginner regression with known noise | Coefficient draws, predictive variance, pointwise intervals, and replicated data |
 | [From a model to a fit](https://github.com/flatppl/flatppl-resources/releases/latest/download/fitting-from-python.pdf) | Gaussian mean and precision from eight readings | External data, free coordinates, BFGS, and a closed-form estimate |

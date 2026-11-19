@@ -19,7 +19,7 @@ Select a title to download its one-page PDF. Start with *Zero to hero* to write 
 | [Advanced: measure composition](https://github.com/flatppl/flatppl-resources/releases/latest/download/advanced.pdf) | Build models from measures and kernels |
 | [The regression module](https://github.com/flatppl/flatppl-resources/releases/latest/download/regression-module.pdf) | Build a design matrix and choose a response law for continuous readings, counts or classes |
 | [The formula API](https://github.com/flatppl/flatppl-resources/releases/latest/download/formula-api.pdf) | Translate equations into regression formulas for population terms, group effects, curves, and observation laws |
-| [Einstein summation and reductions](https://github.com/flatppl/flatppl-resources/releases/latest/download/einstein-reductions.pdf) | Compute calibration residuals by run, sensor, or sensor pair |
+| [Einstein summation and reductions](https://github.com/flatppl/flatppl-resources/releases/latest/download/einstein-reductions.pdf) | Compare inputs and results for indexed products, axis permutations, and reductions |
 | [Metric Einstein summation](https://github.com/flatppl/flatppl-resources/releases/latest/download/metric-einstein.pdf) | Recover the same squared distance after a change of sensor coordinates |
 | [Posterior prediction](https://github.com/flatppl/flatppl-resources/releases/latest/download/posterior-prediction.pdf) | Distinguish uncertainty in a mean from a new reading |
 | [From a model to a fit](https://github.com/flatppl/flatppl-resources/releases/latest/download/fitting-from-python.pdf) | Fit a FlatPPL likelihood from Python and verify the estimate |

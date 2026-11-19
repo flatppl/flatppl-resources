@@ -276,38 +276,6 @@ def zero_to_hero():
     save(fig, "zero-to-hero")
 
 
-def einstein_reductions():
-    sheet = "einstein-reductions"
-    design, coefficients, observed = (matrix_literal(sheet, name) for name in ("X", "B", "y"))
-    squared = (observed - design @ coefficients.T) ** 2
-    rows = [[str(i + 1), *row, row.sum()] for i, row in enumerate(squared)]
-    rows.append(["Total", *squared.sum(axis=0), squared.sum()])
-
-    fig, ax = plt.subplots(figsize=(3.45, 1.46))
-    fig.subplots_adjust(left=0.02, right=0.98, top=0.96, bottom=0.05)
-    ax.axis("off")
-    grid = ax.table(cellText=rows, colLabels=["Run", "Sensor 1", "Sensor 2", "Run total"],
-                    loc="center", cellLoc="center", bbox=[0, 0, 1, 1])
-    grid.auto_set_font_size(False)
-    grid.set_fontsize(8.8)
-    for (row, col), cell in grid.get_celld().items():
-        cell.set_edgecolor(RULE)
-        cell.set_linewidth(0.45)
-        if row == 0:
-            fill, ink = "#eef2f1", INK
-        elif row == len(rows) and col == 3:
-            fill, ink = INK, "white"
-        elif row == len(rows):
-            fill, ink = "#ebf2ec", GREEN
-        elif col == 3:
-            fill, ink = "#e9eff4", BLUE
-        else:
-            continue
-        cell.set_facecolor(fill)
-        cell.set_text_props(weight="bold", color=ink)
-    save(fig, sheet)
-
-
 def metric_einstein():
     sheet = "metric-einstein"
     residual, = literals(sheet, "r")
@@ -494,6 +462,6 @@ def two_spins():
 
 if __name__ == "__main__":
     for draw in (zero_to_hero, distributions, beginner, intermediate, regression_module,
-                 einstein_reductions, metric_einstein, posterior_prediction, fitting_from_python, measurement,
+                 metric_einstein, posterior_prediction, fitting_from_python, measurement,
                  profile_marginal, particle, hadron, neutrino, gamma_ray_response, decay_ode, two_spins):
         draw()
