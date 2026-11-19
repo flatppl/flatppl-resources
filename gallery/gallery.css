@@ -19,7 +19,7 @@ main {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Use the Site and Spec reading column for headings. */
+/* Match the Site and Spec reading column. */
 @media (width > 60em) {
   main {
     --text-start: calc(max(var(--fp-nav-width), (100vw - var(--fp-col-width)) / 2) + 3rem);
@@ -29,7 +29,8 @@ main {
 }
 
 .gallery-intro,
-.topic-heading {
+.topic-heading,
+.sheet-grid {
   max-width: var(--fp-col-width);
   margin-inline: var(--text-start) var(--text-end);
 }
@@ -78,30 +79,31 @@ main {
 }
 
 .sheet-grid {
-  display: grid;
-  width: min(100%, 80rem);
-  margin: 0 auto;
-  padding: 0 clamp(1rem, 4vw, 2.5rem);
+  --columns: 1;
+  --card-gap: clamp(0.75rem, 1.5vw, 1rem);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-block: 0;
+  padding: 0;
   list-style: none;
-  grid-template-columns: minmax(0, 1fr);
-  gap: clamp(0.75rem, 1.5vw, 1rem);
+  gap: var(--card-gap);
+}
+
+.sheet-grid > li {
+  flex: 0 0 calc((100% - (var(--columns) - 1) * var(--card-gap)) / var(--columns));
+  min-width: 0;
 }
 
 @media (min-width: 32rem) {
   .sheet-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    --columns: 2;
   }
 }
 
 @media (min-width: 48rem) {
   .sheet-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
-@media (min-width: 64rem) {
-  .sheet-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    --columns: 3;
   }
 }
 
