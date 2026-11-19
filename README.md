@@ -6,6 +6,8 @@ Cheatsheets and brand assets for FlatPPL.
 
 ## Cheatsheets
 
+Browse the [cheatsheet gallery](https://learn.flatppl.org/) to preview the sheets and open them in your browser.
+
 Select a title to download its one-page PDF. Start with *Zero to hero* to write and check a first model.
 
 | Sheet | Outcome |
